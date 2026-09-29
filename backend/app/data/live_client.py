@@ -24,13 +24,16 @@ answer every hour of every later call from memory. Failures are remembered
 briefly too, so live mode with no internet degrades in seconds, not minutes
 (24 x 2 x 4 s of timeouts).
 
-ON INCOIS / IMD / MOSDAC — the honest position we state in Q&A:
-these agencies publish advisories through portals and bulletins, not through an
-open, documented public JSON API that a hackathon team can key into. ORCA is
-therefore built with a provider interface: Open-Meteo Marine is the open live
-provider today, and INCOIS/IMD/MOSDAC slot in behind the same interface via a
-data-sharing arrangement or bulletin parser without touching agent code.
-We never label Open-Meteo output as INCOIS or IMD data.
+ON INCOIS / IMD / MOSDAC:
+ORCA uses a tiered cascade:
+  Tier 1 (PRIMARY) — MOSDAC THREDDS NCSS (mosdac_thredds.py) for waves and
+    ocean currents; INCOIS ERDDAP (incois_erddap.py) for chlorophyll.
+    Both are unauthenticated, keyless, and serve ISRO/MoES-authoritative data.
+  Tier 2 (FALLBACK) — Open-Meteo Marine/Forecast API, used when Tier 1 is
+    unreachable (network timeout, data stale, land-masked with no wet cell).
+    Every fallback response is labeled provider="Open-Meteo (ISRO unavailable)"
+    so the evidence panel is always transparent about data lineage.
+We never label Open-Meteo output as INCOIS or MOSDAC/ISRO data.
 """
 from __future__ import annotations
 
@@ -138,7 +141,44 @@ def _pick_hour_index(times: list, target: datetime) -> int:
 
 
 def fetch_marine(lat: float, lon: float, when: datetime) -> Optional[Dict]:
-    """Wave height / period / SST / ocean currents. Returns None on any failure."""
+    """Wave height / period / SST / ocean currents.
+
+    Cascade:
+      1. MOSDAC THREDDS NCSS (ISRO-authoritative, keyless, server-side subsetting).
+         Provides SWH, wave period, wind.  SST and currents come from OSF_CIRC.
+      2. Open-Meteo Marine (clearly labeled as non-ISRO fallback).
+
+    Returns None only if both tiers fail.
+    """
+    # ── Tier 1: MOSDAC THREDDS ───────────────────────────────────────────────
+    try:
+        from .mosdac_thredds import fetch_waves_mosdac, fetch_currents_mosdac
+        mosdac_waves = fetch_waves_mosdac(lat, lon, when)
+        if mosdac_waves:
+            # Supplement with OSF_CIRC for SST and ocean currents
+            try:
+                circ = fetch_currents_mosdac(lat, lon, when)
+                if circ:
+                    mosdac_waves["sst_c"] = circ.get("sst_c")
+                    # Convert cm/s to m/s for schema compatibility
+                    spd = circ.get("current_speed_cms")
+                    mosdac_waves["current_speed_ms"] = (
+                        round(spd / 100.0, 3) if spd is not None else None
+                    )
+                    u = circ.get("current_u_cms") or 0.0
+                    v = circ.get("current_v_cms") or 0.0
+                    if u or v:
+                        import math as _math
+                        mosdac_waves["current_direction_deg"] = round(
+                            _math.degrees(_math.atan2(u, v)) % 360, 1
+                        )
+            except Exception:
+                pass  # waves without currents is still useful
+            return mosdac_waves
+    except Exception:
+        pass
+
+    # ── Tier 2: Open-Meteo Marine (fallback) ─────────────────────────────────
     h = _series("marine", MARINE_URL,
                 "wave_height,wave_period,sea_surface_temperature,"
                 "ocean_current_velocity,ocean_current_direction",
@@ -158,8 +198,8 @@ def fetch_marine(lat: float, lon: float, when: datetime) -> Optional[Dict]:
         "sst_c": at("sea_surface_temperature"),
         "current_speed_ms": at("ocean_current_velocity"),
         "current_direction_deg": at("ocean_current_direction"),
-        "valid_time": times[i],
-        "provider": "Open-Meteo Marine",
+        "valid_time": times[i] if i < len(times) else None,
+        "provider": "Open-Meteo Marine (MOSDAC/ISRO unavailable)",
     }
 
 

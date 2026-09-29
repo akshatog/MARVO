@@ -42,7 +42,7 @@ ORCA_AUDIT/
 Ppt SS/
 
 # Cache directories
-data/
+/data/
 
 # Git worktrees (isolated feature branches)
 .worktrees/

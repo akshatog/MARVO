@@ -77,6 +77,19 @@ def run(location: Location, when: datetime, count: int = 3) -> AgentResult:
                 raw = live_zones
                 source = "INCOIS"
                 mode = "LIVE"
+                # Enrich zones with real chlorophyll from INCOIS ERDDAP when
+                # the TextData tables don't include it (they almost never do).
+                try:
+                    from ..data.incois_erddap import fetch_chlorophyll_erddap
+                    for z in raw:
+                        if z.get("chlorophyll_mg_m3") is None:
+                            chl = fetch_chlorophyll_erddap(
+                                z["latitude"], z["longitude"]
+                            )
+                            if chl is not None:
+                                z["chlorophyll_mg_m3"] = chl
+                except Exception:
+                    pass  # enrichment failure never breaks the advisory flow
         except Exception:
             pass
 
