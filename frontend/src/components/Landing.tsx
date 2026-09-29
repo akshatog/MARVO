@@ -29,6 +29,7 @@ import {
   WaveGlyph,
   WindGlyph,
 } from "./glyphs";
+import BrandLogo from "./BrandLogo";
 
 const FOOTER_PRODUCT_ICONS = [CompassIcon, MessageCircle, ShieldCheck, Settings2];
 const FOOTER_EXPLORE_ICONS = [Layers, Workflow, Users, Radar];
@@ -615,10 +616,7 @@ export default function Landing({
     <>
         <nav className="fixed left-0 top-0 z-50 w-full border-b border-[var(--rule)] bg-paper-50/90 backdrop-blur-sm">
           <div className="mx-auto grid max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-8 px-5 py-2.5">
-            <span className="flex shrink-0 items-center gap-2">
-              <CompassMark size={46} className="shrink-0 text-ink-900" />
-              <span className="font-display text-[30px] font-black leading-none tracking-tight text-ink-900">ORCA</span>
-            </span>
+            <BrandLogo className="shrink-0" />
             <div className="hidden items-center justify-center gap-9 md:flex">
               <button
                 onClick={() => document.getElementById("lp-features")?.scrollIntoView({ behavior: "smooth" })}
@@ -953,15 +951,16 @@ export default function Landing({
       <Reveal delay={480}>
         <div className="mt-6 grid gap-4 lg:grid-cols-[1.15fr_0.85fr] lg:items-stretch">
           <div className="prob-a panel p-6">
+            <span className="prob-scan" aria-hidden />
             <p className="text-[14.5px] leading-relaxed text-ink-700">{t.problemBody}</p>
             <div className="mt-5 flex flex-wrap gap-2">
-              {t.problemTags.map((tag) => (
+              {t.problemTags.map((tag, ti) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1.5 rounded-[2px] border px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-ink-500"
-                  style={{ borderColor: "var(--rule)" }}
+                  className="prob-tag inline-flex items-center gap-1.5 rounded-[2px] border px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-ink-500"
+                  style={{ borderColor: "var(--rule)", "--i": ti } as CSSProperties}
                 >
-                  <WarnGlyph size={10} className="text-risk-high/70" />
+                  <WarnGlyph size={10} className="prob-warn text-risk-high/70" />
                   {tag}
                 </span>
               ))}
@@ -1019,11 +1018,17 @@ export default function Landing({
                 </ul>
                 {i === 0 && (
                   <>
-                    <div className="feat-sonar" aria-hidden>
-                      <i />
-                      <i />
-                      <i />
-                      <b />
+                    <div className="feat-radar" aria-hidden>
+                      <span className="fr-ring fr-ring-1" />
+                      <span className="fr-ring fr-ring-2" />
+                      <span className="fr-ring fr-ring-3" />
+                      <span className="fr-cross fr-cross-h" />
+                      <span className="fr-cross fr-cross-v" />
+                      <span className="fr-sweep" />
+                      <span className="fr-blip fr-blip-a"><i /><b>86</b></span>
+                      <span className="fr-blip fr-blip-b"><i /><b>72</b></span>
+                      <span className="fr-blip fr-blip-c"><i /><b>58</b></span>
+                      <span className="fr-me" />
                     </div>
                     <div className="feat-swell" aria-hidden />
                   </>
@@ -1046,8 +1051,8 @@ export default function Landing({
         {t.agents.map((agent, i) => {
           const Icon = AGENT_ICONS[i % AGENT_ICONS.length];
           return (
-            <Reveal key={agent.name} delay={40 + i * 40}>
-              <div className="panel lift group flex h-full flex-col gap-3 p-4">
+            <Reveal key={agent.name} delay={40 + i * 40} className="h-full">
+              <div className="agent-card panel lift group flex h-full flex-col gap-3 p-4" style={{ "--i": i } as CSSProperties}>
                 <div className="flex items-center justify-between">
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[2px] bg-chart-100 text-chart-600 transition-colors duration-300 group-hover:bg-chart-600 group-hover:text-paper-50">
                     <Icon size={16} />
@@ -1102,9 +1107,9 @@ export default function Landing({
         {t.trustCards.map((card, i) => {
           const Icon = [LockGlyph, CheckGlyph, SpeakerGlyph][i];
           return (
-            <Reveal key={card.title} delay={i * 110} from="zoom">
-              <div className="panel lift flex h-full flex-col gap-3 p-4">
-                <span className="grid h-9 w-9 place-items-center rounded-[2px] bg-chart-100 text-chart-600">
+            <Reveal key={card.title} delay={i * 110} from="zoom" className="h-full">
+              <div className="trust-card panel lift flex h-full flex-col gap-3 p-4" style={{ "--i": i } as CSSProperties}>
+                <span className="tc-icon grid h-9 w-9 shrink-0 place-items-center rounded-[2px] bg-chart-100 text-chart-600">
                   <Icon size={16} />
                 </span>
                 <h3 className="font-display text-[15px] font-bold leading-snug text-ink-900">{card.title}</h3>
@@ -1117,16 +1122,21 @@ export default function Landing({
 
       {/* closing CTA — one more push before the footer */}
       <Reveal delay={140}>
-        <div className="cta-ocean panel rule-double relative mt-10 flex flex-col items-center gap-4 overflow-hidden px-6 py-14 text-center">
+        <div className="cta-ocean panel relative mt-10 flex flex-col items-center gap-4 overflow-hidden px-6 py-14 text-center">
+          <span className="cta-spin" aria-hidden />
+          <span className="cta-fill" aria-hidden>
+            <span className="cta-beam" />
+            <span className="cta-flash" />
+          </span>
           <span className="cta-bubble cta-bubble-1" aria-hidden />
           <span className="cta-bubble cta-bubble-2" aria-hidden />
           <span className="cta-bubble cta-bubble-3" aria-hidden />
           <span className="cta-bubble cta-bubble-4" aria-hidden />
-          <h2 className="font-display text-[24px] font-black leading-tight text-ink-900 sm:text-[28px]">
+          <h2 className="relative z-10 font-display text-[24px] font-black leading-tight text-ink-900 sm:text-[28px]">
             {t.closingTitle}
           </h2>
-          <p className="max-w-[440px] text-[13.5px] leading-relaxed text-ink-500">{t.closingSub}</p>
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+          <p className="relative z-10 max-w-[440px] text-[13.5px] leading-relaxed text-ink-500">{t.closingSub}</p>
+          <div className="relative z-10 mt-2 flex flex-wrap items-center justify-center gap-3">
             <button onClick={onTour} className="btn-line !px-5 !py-2.5">
               <PlayGlyph size={11} /> {t.ctaTour}
             </button>
@@ -1143,10 +1153,7 @@ export default function Landing({
           <div className="grid gap-9 pb-8 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
             {/* brand */}
             <div>
-              <span className="flex items-center gap-2">
-                <CompassMark size={46} className="shrink-0 text-ink-900" />
-                <span className="font-display text-[30px] font-black leading-none tracking-tight text-ink-900">ORCA</span>
-              </span>
+              <BrandLogo />
               <p className="mt-3 max-w-[230px] text-[12.5px] leading-relaxed text-ink-500">{t.footerTagline}</p>
               <span
                 className="mt-4 inline-block rounded-[2px] border px-2 py-1 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-ink-400"

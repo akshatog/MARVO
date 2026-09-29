@@ -22,6 +22,7 @@ import {
   WaveGlyph,
   WindGlyph,
 } from "./components/glyphs";
+import BrandLogo from "./components/BrandLogo";
 import GuidedTour, { TOUR } from "./components/GuidedTour";
 import Landing from "./components/Landing";
 import LocationPicker, { PORTS, type PickedLocation } from "./components/LocationPicker";
@@ -636,15 +637,12 @@ export default function App() {
             title="Back to the front page"
             className="flex items-center gap-4 py-3.5 pl-5 pr-6 text-left"
           >
-            <CompassMark size={46} className="shrink-0 text-ink-900" />
-            <div>
-              <h1 className="font-display text-[30px] font-black leading-none tracking-tight text-ink-900">
-                ORCA
-              </h1>
-              <p className="mt-1 font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-chart-600">
-                Marine EcOsystem Reasoning · Collaborative Agents
-              </p>
-            </div>
+            <BrandLogo />
+            <p className="hidden border-l pl-4 font-mono text-[9px] font-semibold uppercase leading-relaxed tracking-[0.18em] text-chart-600 sm:block" style={{ borderColor: "var(--rule)" }}>
+              Marine EcOsystem Reasoning
+              <br />
+              Collaborative Agents
+            </p>
           </button>
 
           {/* title-block cells */}

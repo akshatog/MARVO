@@ -1746,55 +1746,7 @@ html.ocean .feat-swell {
   animation: seadrift-a 5s linear infinite;
 }
 html.ocean #lp-features h3.font-display { padding-top: 0.1em; }
-html.ocean .feat-sonar {
-  position: absolute;
-  left: 50%;
-  bottom: 74px;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-html.ocean .feat-sonar i {
-  position: absolute;
-  left: -70px;
-  top: -70px;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  border: 2px solid rgba(31, 111, 235, 0.55);
-  animation: sonarring 4.5s ease-out infinite;
-}
-html.ocean .feat-sonar i:nth-child(2) { animation-delay: 1.5s; border-color: rgba(18, 181, 200, 0.55); }
-html.ocean .feat-sonar i:nth-child(3) { animation-delay: 3s; border-color: rgba(255, 182, 64, 0.65); }
-html.ocean .feat-sonar b {
-  position: absolute;
-  left: -9px;
-  top: -9px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #1f6feb;
-  border: 3px solid #fff;
-  box-shadow: 0 8px 18px -6px rgba(31, 111, 235, 0.8);
-}
-@keyframes sonarring {
-  0% { transform: scale(0.15); opacity: 0.9; }
-  100% { transform: scale(2.1); opacity: 0; }
-}
-
-/* ---- agents: staggered like buoys on a swell ---- */
-@media (min-width: 1024px) {
-  html.ocean #lp-agents + div > *:nth-child(even) { margin-top: 30px; }
-}
-html.ocean #lp-agents + div > * .panel {
-  animation: buoy 5.5s ease-in-out infinite;
-  border-top: 3px solid #6fb6f0;
-}
-html.ocean #lp-agents + div > *:nth-child(5n+2) .panel { animation-delay: -1.1s; border-top-color: #12b5c8; }
-html.ocean #lp-agents + div > *:nth-child(5n+3) .panel { animation-delay: -2.2s; border-top-color: #ffb640; }
-html.ocean #lp-agents + div > *:nth-child(5n+4) .panel { animation-delay: -3.3s; border-top-color: #f26b4e; }
-html.ocean #lp-agents + div > *:nth-child(5n+5) .panel { animation-delay: -4.4s; border-top-color: #5b6cff; }
-html.ocean #lp-agents + div > * .panel:hover { animation-play-state: paused; }
+/* ---- agents: aligned grid, animated in place (see block at end of file) ---- */
 
 /* ---- pipeline: four connected stages ---- */
 html.ocean .pipe-track::before {
@@ -1802,15 +1754,14 @@ html.ocean .pipe-track::before {
   position: absolute;
   left: 8%;
   right: 8%;
-  top: 22px;
+  top: 14px;
   height: 4px;
   border-radius: 4px;
-  background: linear-gradient(90deg, #1f6feb, #12b5c8, #ffb640, #f26b4e, #1f6feb);
-  background-size: 200% 100%;
-  animation: shimmerx 4s linear infinite;
+  background: linear-gradient(90deg, rgba(31,111,235,.28), rgba(18,181,200,.28), rgba(255,182,64,.35), rgba(242,107,78,.3));
 }
 @media (max-width: 639px) {
-  html.ocean .pipe-track::before { display: none; }
+  html.ocean .pipe-track::before,
+  html.ocean .pipe-track::after { display: none; }
 }
 html.ocean .pipe-step { overflow: visible; }
 html.ocean .pipe-num {
@@ -1826,12 +1777,11 @@ html.ocean .pipe-num {
   color: #fff;
   border: 3px solid #f7fbff;
   box-shadow: 0 12px 22px -10px rgba(11, 42, 91, 0.6);
-  animation: buoy 4.6s ease-in-out infinite;
 }
 html.ocean .pipe-step-0 .pipe-num { background: #1f6feb; }
-html.ocean .pipe-step-1 .pipe-num { background: #12b5c8; animation-delay: -1.1s; }
-html.ocean .pipe-step-2 .pipe-num { background: #ffb640; color: #0b2a5b; animation-delay: -2.2s; }
-html.ocean .pipe-step-3 .pipe-num { background: #f26b4e; animation-delay: -3.3s; }
+html.ocean .pipe-step-1 .pipe-num { background: #12b5c8; }
+html.ocean .pipe-step-2 .pipe-num { background: #ffb640; color: #0b2a5b; }
+html.ocean .pipe-step-3 .pipe-num { background: #f26b4e; }
 html.ocean .pipe-step-1 { background: linear-gradient(170deg, rgba(255,255,255,.92), rgba(196,241,238,.7)); }
 html.ocean .pipe-step-2 { background: linear-gradient(170deg, rgba(255,255,255,.92), rgba(255,230,184,.75)); }
 html.ocean .pipe-step-3 { background: linear-gradient(170deg, rgba(255,255,255,.92), rgba(255,216,207,.7)); }
@@ -1840,10 +1790,6 @@ html.ocean .pipe-step-3 { background: linear-gradient(170deg, rgba(255,255,255,.
 html.ocean #lp-trust-grid > *:nth-child(1) .panel { background: linear-gradient(160deg, rgba(255,255,255,.92), rgba(207,230,255,.85)); }
 html.ocean #lp-trust-grid > *:nth-child(2) .panel { background: linear-gradient(160deg, rgba(255,255,255,.92), rgba(196,241,238,.85)); }
 html.ocean #lp-trust-grid > *:nth-child(3) .panel { background: linear-gradient(160deg, rgba(255,255,255,.92), rgba(255,230,184,.85)); }
-html.ocean #lp-trust-grid > *:nth-child(2) { margin-top: 0; }
-@media (min-width: 768px) {
-  html.ocean #lp-trust-grid > *:nth-child(2) { margin-top: 26px; }
-}
 
 /* ---- closing call-to-action: a patch of open sea ---- */
 html.ocean .cta-ocean {
@@ -1884,4 +1830,461 @@ html.ocean .cta-bubble-4 { right: 9%; width: 18px; height: 18px; animation-delay
 
 @media (prefers-reduced-motion: reduce) {
   html.ocean .rv { opacity: 1; transform: none; transition: none; }
+}
+
+/* =====================================================================
+   LANDING PAGE POLISH — logo, stats, problem, radar, agents, pipeline,
+   trust, closing CTA
+   ===================================================================== */
+
+/* ---------- shared logo (landing nav, landing footer, Ask ORCA header) ---------- */
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1;
+}
+.brand-logo .brand-mark { width: 40px; height: 40px; display: block; }
+.brand-logo .brand-word {
+  display: block;
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: 0.015em;
+  /* optical centring: serif caps sit a hair high in the line box */
+  transform: translateY(1px);
+}
+
+/* ---------- 1. stats strip: sweeping shine + rolling highlight + live dots ---------- */
+html.ocean .stats-strip::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 26%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+  transform: translateX(-130%) skewX(-18deg);
+  animation: lpshine 5.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+html.ocean .stats-strip > div { position: relative; }
+html.ocean .stats-strip > div::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--wash);
+  box-shadow: inset 0 -3px 0 var(--acc);
+  opacity: 0;
+  animation: lpcellwash 7.5s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+  pointer-events: none;
+}
+html.ocean .stats-strip > div::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--acc);
+  animation: lpdot 2.4s ease-out infinite;
+  animation-delay: var(--d, 0s);
+}
+html.ocean .stats-strip > div:nth-child(1) { --wash: #dcefff; --acc: #1f6feb; --d: 0s; }
+html.ocean .stats-strip > div:nth-child(2) { --wash: #d6f6f1; --acc: #12b5c8; --d: 1.5s; }
+html.ocean .stats-strip > div:nth-child(3) { --wash: #ffefcc; --acc: #ffb640; --d: 3s; }
+html.ocean .stats-strip > div:nth-child(4) { --wash: #ffe1d9; --acc: #f26b4e; --d: 4.5s; }
+html.ocean .stats-strip > div:nth-child(5) { --wash: #e2e5ff; --acc: #5b6cff; --d: 6s; }
+@keyframes lpshine {
+  0% { transform: translateX(-130%) skewX(-18deg); }
+  45%, 100% { transform: translateX(480%) skewX(-18deg); }
+}
+@keyframes lpcellwash {
+  0% { opacity: 0; }
+  7% { opacity: 1; }
+  17% { opacity: 1; }
+  26%, 100% { opacity: 0; }
+}
+@keyframes lpdot {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--acc) 60%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 9px transparent; }
+}
+
+/* ---------- 2. problem card: drifting warm glow, alert tags, scan light ---------- */
+html.ocean .prob-a { overflow: hidden; }
+html.ocean .prob-a > *:not(.prob-scan) { position: relative; z-index: 2; }
+html.ocean .prob-a::after { z-index: 0; }
+html.ocean .prob-a::before {
+  content: "";
+  position: absolute;
+  left: -70px;
+  top: -70px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 182, 64, 0.38), transparent 70%);
+  animation: lpblob 10s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+html.ocean .prob-scan {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 32%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  transform: translateX(-140%) skewX(-16deg);
+  animation: lpshine 6.5s ease-in-out infinite 1s;
+  pointer-events: none;
+  z-index: 1;
+}
+html.ocean .prob-tag {
+  animation: lptag 5.4s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 1.1s);
+}
+html.ocean .prob-warn { animation: lpwarn 2.2s ease-in-out infinite; transform-origin: 50% 70%; }
+@keyframes lpblob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(340px, 120px) scale(1.25); }
+}
+@keyframes lptag {
+  0%, 24%, 100% {
+    background-color: transparent;
+    border-color: var(--rule);
+    color: inherit;
+    box-shadow: 0 0 0 0 transparent;
+    transform: translateY(0);
+  }
+  8%, 16% {
+    background-color: rgba(242, 107, 78, 0.14);
+    border-color: rgba(242, 107, 78, 0.75);
+    box-shadow: 0 0 0 4px rgba(242, 107, 78, 0.12);
+    transform: translateY(-2px);
+  }
+}
+@keyframes lpwarn {
+  0%, 100% { transform: scale(1) rotate(0); }
+  15% { transform: scale(1.25) rotate(-8deg); }
+  30% { transform: scale(1.25) rotate(8deg); }
+  45% { transform: scale(1) rotate(0); }
+}
+
+/* ---------- 3. lead feature card: a live sonar radar fills the empty space ---------- */
+html.ocean .feat-radar {
+  position: relative;
+  z-index: 2;
+  width: 210px;
+  height: 210px;
+  margin: 26px auto 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.75), rgba(214, 236, 255, 0.55) 70%);
+  box-shadow: 0 18px 34px -18px rgba(31, 111, 235, 0.55), inset 0 0 0 1px rgba(31, 111, 235, 0.25);
+}
+html.ocean .fr-ring,
+html.ocean .fr-cross,
+html.ocean .fr-sweep { position: absolute; pointer-events: none; }
+html.ocean .fr-ring { border-radius: 50%; border: 1.5px solid rgba(31, 111, 235, 0.32); }
+html.ocean .fr-ring-1 { inset: 0; }
+html.ocean .fr-ring-2 { inset: 22%; }
+html.ocean .fr-ring-3 { inset: 40%; }
+html.ocean .fr-cross-h { left: 0; right: 0; top: 50%; height: 1px; background: rgba(31, 111, 235, 0.2); }
+html.ocean .fr-cross-v { top: 0; bottom: 0; left: 50%; width: 1px; background: rgba(31, 111, 235, 0.2); }
+html.ocean .fr-sweep {
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0deg, transparent 240deg, rgba(18, 181, 200, 0.06) 270deg, rgba(31, 111, 235, 0.42) 360deg);
+  animation: lpspin 4s linear infinite;
+}
+html.ocean .fr-me {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: 50%;
+  background: #1f6feb;
+  border: 3px solid #fff;
+  box-shadow: 0 6px 14px -4px rgba(31, 111, 235, 0.85);
+}
+html.ocean .fr-me::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid rgba(31, 111, 235, 0.6);
+  animation: lpme 2.4s ease-out infinite;
+}
+html.ocean .fr-blip {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  animation: lpblip 4s ease-in-out infinite;
+}
+html.ocean .fr-blip i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bc);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bc) 30%, transparent);
+}
+html.ocean .fr-blip b {
+  font: 700 10px "Spline Sans Mono Variable", monospace;
+  color: #0b2a5b;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 999px;
+  padding: 1px 6px;
+  box-shadow: 0 4px 10px -4px rgba(11, 42, 91, 0.5);
+}
+html.ocean .fr-blip-a { --bc: #1d9a63; left: 64%; top: 22%; animation-delay: 0.6s; }
+html.ocean .fr-blip-b { --bc: #ffb640; left: 8%; top: 30%; animation-delay: 3.1s; }
+html.ocean .fr-blip-c { --bc: #f26b4e; left: 56%; top: 70%; animation-delay: 1.7s; }
+@keyframes lpspin { to { transform: rotate(360deg); } }
+@keyframes lpme {
+  0% { transform: scale(0.8); opacity: 0.9; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+@keyframes lpblip {
+  0% { opacity: 0.25; transform: scale(0.85); }
+  6% { opacity: 1; transform: scale(1.18); }
+  16% { transform: scale(1); }
+  65% { opacity: 0.9; }
+  100% { opacity: 0.25; transform: scale(0.85); }
+}
+
+/* ---------- 4. agents: equal, aligned grid — glow + light beam, no movement ---------- */
+html.ocean .agent-card {
+  overflow: hidden;
+  border-top-width: 1px;
+  animation: lpagentglow 7s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 0.55s);
+}
+html.ocean #lp-agents + div > *:nth-child(5n+1) { --ac: #6fb6f0; }
+html.ocean #lp-agents + div > *:nth-child(5n+2) { --ac: #12b5c8; }
+html.ocean #lp-agents + div > *:nth-child(5n+3) { --ac: #ffb640; }
+html.ocean #lp-agents + div > *:nth-child(5n+4) { --ac: #f26b4e; }
+html.ocean #lp-agents + div > *:nth-child(5n+5) { --ac: #5b6cff; }
+html.ocean .agent-card::before,
+html.ocean .agent-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  pointer-events: none;
+}
+html.ocean .agent-card::before { background: var(--ac, #6fb6f0); }
+html.ocean .agent-card::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent) no-repeat;
+  background-size: 70px 100%;
+  background-position: -70px 0;
+  animation: lpbeam 4.5s linear infinite;
+  animation-delay: calc(var(--i, 0) * 0.45s);
+}
+html.ocean .agent-card:hover { animation-play-state: paused; }
+@keyframes lpbeam {
+  0% { background-position: -70px 0; }
+  40%, 100% { background-position: calc(100% + 70px) 0; }
+}
+@keyframes lpagentglow {
+  0%, 20%, 100% {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 1px 2px rgba(11, 42, 91, 0.06), 0 24px 40px -28px rgba(11, 42, 91, 0.45);
+  }
+  9% {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 0 1px color-mix(in srgb, var(--ac) 70%, transparent), 0 18px 34px -14px color-mix(in srgb, var(--ac) 65%, transparent);
+  }
+}
+
+/* ---------- 5. pipeline: a light travels step 1 → 4 and repeats ---------- */
+html.ocean .pipe-track::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 8%;
+  width: 110px;
+  height: 16px;
+  border-radius: 999px;
+  background: radial-gradient(closest-side, #fff, rgba(255, 255, 255, 0.9) 30%, rgba(31, 111, 235, 0.55) 60%, transparent);
+  filter: blur(1px);
+  opacity: 0;
+  animation: lptravel 4.8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 3;
+}
+html.ocean .pipe-step {
+  --pc: #1f6feb;
+  animation: lppipecard 4.8s ease-in-out infinite;
+}
+html.ocean .pipe-step-1 { --pc: #12b5c8; }
+html.ocean .pipe-step-2 { --pc: #ffb640; }
+html.ocean .pipe-step-3 { --pc: #f26b4e; }
+html.ocean .pipe-step-0, html.ocean .pipe-step-0 .pipe-num { animation-delay: 0s; }
+html.ocean .pipe-step-1, html.ocean .pipe-step-1 .pipe-num { animation-delay: 1.2s; }
+html.ocean .pipe-step-2, html.ocean .pipe-step-2 .pipe-num { animation-delay: 2.4s; }
+html.ocean .pipe-step-3, html.ocean .pipe-step-3 .pipe-num { animation-delay: 3.6s; }
+html.ocean .pipe-num { animation: lppipenum 4.8s ease-in-out infinite; }
+html.ocean .pipe-step::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 3px;
+  background:
+    linear-gradient(90deg, transparent, var(--pc), transparent) no-repeat,
+    color-mix(in srgb, var(--pc) 16%, transparent);
+  background-size: 110px 100%, 100% 100%;
+  background-position: -110px 0, 0 0;
+  animation: lppipebar 4.8s linear infinite;
+  animation-delay: inherit;
+  pointer-events: none;
+}
+html.ocean .pipe-step-0::after { animation-delay: 0s; }
+html.ocean .pipe-step-1::after { animation-delay: 1.2s; }
+html.ocean .pipe-step-2::after { animation-delay: 2.4s; }
+html.ocean .pipe-step-3::after { animation-delay: 3.6s; }
+@keyframes lptravel {
+  0% { left: 8%; opacity: 0; }
+  6% { opacity: 1; }
+  94% { opacity: 1; }
+  100% { left: calc(92% - 110px); opacity: 0; }
+}
+@keyframes lppipecard {
+  0%, 26%, 100% {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 1px 2px rgba(11, 42, 91, 0.06), 0 24px 40px -28px rgba(11, 42, 91, 0.45);
+  }
+  8%, 16% {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 0 1px color-mix(in srgb, var(--pc) 60%, transparent), 0 20px 36px -16px color-mix(in srgb, var(--pc) 70%, transparent);
+  }
+}
+@keyframes lppipenum {
+  0%, 26%, 100% { transform: scale(1); }
+  8%, 16% { transform: scale(1.14); box-shadow: 0 0 0 7px color-mix(in srgb, var(--pc) 28%, transparent), 0 12px 22px -10px rgba(11, 42, 91, 0.6); }
+}
+@keyframes lppipebar {
+  0% { background-position: -110px 0, 0 0; }
+  25%, 100% { background-position: calc(100% + 110px) 0, 0 0; }
+}
+
+/* ---------- 6. trust cards: equal size, sequential shine, pulsing icons ---------- */
+html.ocean .trust-card { overflow: hidden; }
+html.ocean .trust-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 38%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+  transform: translateX(-140%) skewX(-18deg);
+  animation: lpshine 6.5s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 1.6s);
+  pointer-events: none;
+}
+html.ocean .tc-icon { position: relative; }
+html.ocean .tc-icon::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 4px;
+  border: 2px solid currentColor;
+  opacity: 0;
+  animation: lpiconring 3.2s ease-out infinite;
+  animation-delay: calc(var(--i, 0) * 0.8s);
+}
+@keyframes lpiconring {
+  0% { transform: scale(1); opacity: 0.7; }
+  70%, 100% { transform: scale(1.7); opacity: 0; }
+}
+
+/* ---------- 7. closing CTA: rotating light ring, lighthouse beam, flash ---------- */
+html.ocean .cta-ocean { isolation: isolate; }
+html.ocean .cta-spin {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1500px;
+  height: 1500px;
+  margin: -750px 0 0 -750px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 40deg,
+    rgba(18, 181, 200, 0.95) 80deg,
+    transparent 105deg,
+    transparent 220deg,
+    #ffd27a 285deg,
+    #ffffff 335deg,
+    transparent 360deg
+  );
+  animation: lpspin 6s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+html.ocean .cta-fill {
+  position: absolute;
+  inset: 3px;
+  border-radius: 15px;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 90% at 85% 0%, rgba(255, 214, 140, 0.75), transparent 70%),
+    linear-gradient(135deg, #cfe8ff 0%, #8fcbfa 55%, #5fb4f2 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+html.ocean .cta-beam {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1400px;
+  height: 1400px;
+  margin: -700px 0 0 -700px;
+  background: conic-gradient(from 0deg, transparent 0deg, transparent 290deg, rgba(255, 255, 255, 0.5) 345deg, transparent 360deg);
+  animation: lpspin 6s linear infinite;
+}
+html.ocean .cta-flash {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 20%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  transform: translateX(-160%) skewX(-20deg);
+  animation: lpctaflash 5s ease-in-out infinite 1s;
+}
+html.ocean .cta-bubble { z-index: 1; }
+@keyframes lpctaflash {
+  0% { transform: translateX(-160%) skewX(-20deg); }
+  32%, 100% { transform: translateX(640%) skewX(-20deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.ocean .stats-strip::after,
+  html.ocean .stats-strip > div::before,
+  html.ocean .stats-strip > div::after,
+  html.ocean .prob-a::before,
+  html.ocean .prob-scan,
+  html.ocean .prob-tag,
+  html.ocean .prob-warn,
+  html.ocean .fr-sweep,
+  html.ocean .fr-me::after,
+  html.ocean .fr-blip,
+  html.ocean .agent-card,
+  html.ocean .agent-card::after,
+  html.ocean .pipe-track::after,
+  html.ocean .pipe-step,
+  html.ocean .pipe-step::after,
+  html.ocean .pipe-num,
+  html.ocean .trust-card::after,
+  html.ocean .tc-icon::after,
+  html.ocean .cta-spin,
+  html.ocean .cta-beam,
+  html.ocean .cta-flash { animation: none !important; }
 }
