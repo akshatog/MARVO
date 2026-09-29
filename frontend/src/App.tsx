@@ -792,34 +792,35 @@ export default function App() {
 
       {/* ================= HOME : location + today's plan ================= */}
       {tab === "home" && (
-        <div className="grid gap-4 lg:h-[clamp(500px,calc(100dvh-250px),620px)] lg:grid-cols-[minmax(0,1.1fr)_minmax(380px,1fr)] xl:grid-cols-[minmax(0,1fr)_minmax(420px,1fr)]">
-          {/* Map deck: the whole chart is visible without scrolling; controls float on it */}
-          <div
-            className="deck-map relative h-[52dvh] min-h-[380px] max-h-[560px] lg:h-full lg:max-h-none"
-            style={{ ["--glow" as string]: outlook ? RISK_COLOR[outlook.safety.category] : "#2a7391" }}
-          >
-            <MarineMap
-              fill
-              origin={homeOrigin}
-              zones={zones}
-              pfz={[]}
-              areas={outlook?.areas ?? []}
-              radiusKm={outlook?.radius_km ?? RADIUS_KM}
-              routes={outlook?.routes ?? []}
-              geofence={[]}
-              language={uiLang}
-              onPickLocation={pickLocation}
-              focusRank={focusRank}
-              portFeatures={portFeatures}
-              pfzGeoJson={pfzGeoJson}
-            />
-            <div className="absolute left-[60px] right-[70px] top-[14px] z-[650] max-w-[520px]">
-              <LocationPicker compact current={place} language={uiLang} onPick={setPlace} />
+        <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(380px,1fr)] xl:grid-cols-[minmax(0,1fr)_minmax(420px,1fr)]">
+          {/* Left column: location bar sits ABOVE the map (never on it), map stays in view while the page scrolls */}
+          <div className="flex min-w-0 flex-col gap-3 lg:sticky lg:top-4">
+            <LocationPicker current={place} language={uiLang} onPick={setPlace} />
+
+            <div
+              className="deck-map isolate relative h-[52dvh] min-h-[380px] max-h-[560px] lg:h-[clamp(440px,calc(100dvh-230px),720px)] lg:max-h-none"
+              style={{ ["--glow" as string]: outlook ? RISK_COLOR[outlook.safety.category] : "#2a7391" }}
+            >
+              <MarineMap
+                fill
+                origin={homeOrigin}
+                zones={zones}
+                pfz={[]}
+                areas={outlook?.areas ?? []}
+                radiusKm={outlook?.radius_km ?? RADIUS_KM}
+                routes={outlook?.routes ?? []}
+                geofence={[]}
+                language={uiLang}
+                onPickLocation={pickLocation}
+                focusRank={focusRank}
+                portFeatures={portFeatures}
+                pfzGeoJson={pfzGeoJson}
+              />
             </div>
           </div>
 
           {/* Decision rail: verdict first, then numbers, warnings, fishing grounds */}
-          <div className="stagger-in scroll-slim space-y-4 lg:h-full lg:overflow-y-auto lg:pr-1">
+          <div className="stagger-in min-w-0 space-y-4">
             {place && (
               <div className="verdict-glow" style={{ ["--glow" as string]: outlook ? RISK_COLOR[outlook.safety.category] : "#2a7391" }}>
                 <QuickRiskPanel lat={place.latitude} lon={place.longitude} />
