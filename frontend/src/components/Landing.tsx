@@ -30,6 +30,7 @@ import {
   WindGlyph,
 } from "./glyphs";
 import BrandLogo from "./BrandLogo";
+import { HeroDemo, HeroSky } from "./HeroScene";
 
 const FOOTER_PRODUCT_ICONS = [CompassIcon, MessageCircle, ShieldCheck, Settings2];
 const FOOTER_EXPLORE_ICONS = [Layers, Workflow, Users, Radar];
@@ -105,7 +106,6 @@ const L10N: Record<
     tag2b: "intelligence",
     tag2c: ".",
     sub: "ORCA brings together satellite, oceanographic, and weather data through collaborative AI agents to deliver clear, explainable insights and actionable recommendations for safer, smarter decisions at sea.",
-    kicker: "SIH26176 · ISRO · Smart India Hackathon 2026",
     navFeatures: "Features",
     navHow: "How it works",
     navTry: "Try it",
@@ -510,32 +510,6 @@ function useCountUp(target: number | null, ms = 1000): string {
   return target == null ? "—" : String(v);
 }
 
-function HeroArt({ children }: { children: ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [t, setT] = useState({ x: 0, y: 0 });
-  return (
-    <div
-      ref={ref}
-      onMouseMove={(e) => {
-        if (prefersStill()) return;
-        const r = ref.current?.getBoundingClientRect();
-        if (!r) return;
-        const px = (e.clientX - r.left) / r.width - 0.5;
-        const py = (e.clientY - r.top) / r.height - 0.5;
-        setT({ x: px * 9, y: py * 7 });
-      }}
-      onMouseLeave={() => setT({ x: 0, y: 0 })}
-      style={{
-        transform: `perspective(1000px) rotateX(${-t.y}deg) rotateY(${t.x}deg)`,
-        transition: "transform 0.4s cubic-bezier(0.2, 0.7, 0.3, 1)",
-        willChange: "transform",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
 function SectionHeading({
   id,
   kicker,
@@ -648,17 +622,20 @@ export default function Landing({
       <div className="sea-drift" aria-hidden />
       <div className="fish-drift" aria-hidden />
 
-      <div className="flex min-h-[calc(100svh-84px)] flex-col justify-center py-6">
+      <HeroSky confidence={heroConfidence} className="flex min-h-[calc(100svh-84px)] flex-col justify-center pb-24 pt-6">
       {/* hero */}
-      <div className="mt-0 grid items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-x-20 xl:gap-x-24">
+      <div className="mt-0 grid items-center gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-x-12 xl:gap-x-16">
         <div>
           <Reveal delay={200}>
+            <span className="hs-kicker">
+              <i /> {t.kicker}
+            </span>
             <p className="hero-title mt-5 max-w-[620px] font-display text-[40px] font-black leading-[1.16] tracking-tight text-ink-900 sm:text-[46px] lg:text-[52px]">
               {t.tag1}
               <br />
               {t.tag2a}
               <br />
-              <span className="text-chart-600">{t.tag2b}</span>
+              <span className="hs-ul text-chart-600">{t.tag2b}</span>
               {t.tag2c}
             </p>
             <p className="mt-6 max-w-[520px] text-[16px] leading-relaxed text-ink-600 lg:text-[17px]">{t.sub}</p>
@@ -691,220 +668,8 @@ export default function Landing({
           </Reveal>
         </div>
 
-        <Reveal delay={260} className="mt-2 w-full justify-self-center lg:mt-0 lg:justify-self-end lg:pl-6 xl:pl-10">
-          <div className="hero-stage relative">
-          <span className="hero-sun" aria-hidden />
-          <span className="hero-chip hero-chip-a" aria-hidden>
-            <WaveGlyph size={14} /> 1.3 m
-          </span>
-          <span className="hero-chip hero-chip-b" aria-hidden>
-            <WindGlyph size={14} /> 19 km/h
-          </span>
-          <span className="hero-chip hero-chip-c" aria-hidden>
-            <CheckGlyph size={13} /> {heroConfidence}%
-          </span>
-          <HeroArt>
-          <svg viewBox="0 0 440 300" className="w-full max-w-[480px] lg:max-w-[720px]" aria-hidden>
-            {/* ============ layer 0 — ocean / bathymetry (always present) ============ */}
-            <rect x="0" y="0" width="440" height="300" fill="#2A7391" opacity="0.06" />
-            <rect x="0" y="150" width="440" height="150" fill="#2A7391" opacity="0.05" />
-            {[60, 130, 200, 270].map((y) => (
-              <line key={y} x1="0" y1={y} x2="440" y2={y} stroke="#2A7391" strokeWidth="0.5" opacity="0.2" />
-            ))}
-            {[80, 180, 280, 380].map((x) => (
-              <line key={x} x1={x} y1="0" x2={x} y2="300" stroke="#2A7391" strokeWidth="0.5" opacity="0.2" />
-            ))}
-
-            {/* ============ layer 1 — weather (isobars, fades in) ============ */}
-            <g className="layer-weather" fill="none" stroke="#5D7386" strokeWidth="0.8">
-              <path d="M14 38 Q120 16 224 38 T424 36" opacity="0.35" />
-              <path d="M6 60 Q130 40 252 60 T430 56" opacity="0.28" />
-              <path d="M20 20 Q140 4 262 22 T420 16" opacity="0.22" />
-            </g>
-
-            {/* ============ layer 2 — satellite pass (dot grid, fades in) ============ */}
-            <g className="layer-satellite" fill="#12212D">
-              {[70, 150, 230, 310, 390].flatMap((x) =>
-                [48, 108, 168, 226].map((y) => (
-                  <circle key={`${x}-${y}`} cx={x} cy={y} r="1" opacity="0.3" />
-                ))
-              )}
-            </g>
-
-            <g fill="#1E5F7A" opacity="0.5">
-              <g className="svg-swim">
-                <path d="M96 205 C99 201 104 200.5 108 203.8 L114 201 C113 202.3 112.5 203.6 112.5 205 C112.5 206.4 113 207.7 114 209 L108 206.2 C104 209.5 99 209 96 205 Z" />
-              </g>
-              <g className="svg-swim" style={{ animationDelay: "0.9s" }}>
-                <path d="M126 220 C129 216 134 215.5 138 218.8 L144 216 C143 217.3 142.5 218.6 142.5 220 C142.5 221.4 143 222.7 144 224 L138 221.2 C134 224.5 129 224 126 220 Z" />
-              </g>
-              <g className="svg-swim" style={{ animationDelay: "1.7s" }}>
-                <path d="M104 236 C107 232 112 231.5 116 234.8 L122 232 C121 233.3 120.5 234.6 120.5 236 C120.5 237.4 121 238.7 122 240 L116 237.2 C112 240.5 107 240 104 236 Z" />
-              </g>
-            </g>
-            <g fill="#1D7A50" opacity="0.45">
-              <g className="svg-swim" style={{ animationDelay: "0.4s" }}>
-                <path d="M330 100 C333 96 338 95.5 342 98.8 L348 96 C347 97.3 346.5 98.6 346.5 100 C346.5 101.4 347 102.7 348 104 L342 101.2 C338 104.5 333 104 330 100 Z" />
-              </g>
-              <g className="svg-swim" style={{ animationDelay: "1.3s" }}>
-                <path d="M352 116 C355 112 360 111.5 364 114.8 L370 112 C369 113.3 368.5 114.6 368.5 116 C368.5 117.4 369 118.7 370 120 L364 117.2 C360 120.5 355 120 352 116 Z" />
-              </g>
-            </g>
-            {[
-              [40, 80], [120, 45], [330, 130], [70, 170], [250, 250], [380, 200],
-            ].map(([x, y], i) => (
-              <path
-                key={i}
-                d={`M${x} ${y} q4 -3.5 8 0 t8 0`}
-                fill="none"
-                stroke="#2A7391"
-                strokeWidth="1.1"
-                opacity="0.5"
-                strokeLinecap="round"
-              />
-            ))}
-            <text x="150" y="230" fontFamily="Georgia" fontStyle="italic" fontSize="11" fill="#2A7391" opacity="0.65">27</text>
-            <text x="300" y="90" fontFamily="Georgia" fontStyle="italic" fontSize="11" fill="#2A7391" opacity="0.65">44</text>
-
-            <path
-              className="cyclone-trajectory"
-              d="M250 20 C 240 44 220 66 206 92"
-              fill="none"
-              stroke="#AF2318"
-              strokeWidth="1.4"
-              opacity="0.55"
-              strokeLinecap="round"
-            />
-            <g transform="translate(250 16)" opacity="0.85" aria-hidden>
-              <circle r="11" fill="none" stroke="#AF2318" strokeWidth="1.3" strokeDasharray="3 3" className="storm-spin" />
-              <circle
-                r="6"
-                fill="none"
-                stroke="#AF2318"
-                strokeWidth="1.3"
-                strokeDasharray="2 3"
-                className="storm-spin"
-                style={{ animationDirection: "reverse", animationDuration: "3.4s" }}
-              />
-              <circle r="2" fill="#AF2318" />
-            </g>
-            <g>
-              <rect
-                className="risk-pulse"
-                x="150" y="95" width="105" height="62"
-                fill="url(#hatch-critical)" stroke="#AF2318" strokeWidth="1.4" strokeDasharray="7 4"
-              />
-              <text x="202" y="130" textAnchor="middle" fontFamily="'Spline Sans Mono Variable',monospace" fontSize="8.5" fill="#AF2318" letterSpacing="1.5">
-                NO ENTRY
-              </text>
-              <rect
-                className="risk-pulse--soft"
-                x="265" y="180" width="80" height="50"
-                fill="url(#hatch-warning)" stroke="#BF4E12" strokeWidth="1.2" strokeDasharray="7 4"
-              />
-            </g>
-            <line x1="60" y1="252" x2="366" y2="60" stroke="#5D7386" strokeWidth="1.6" strokeDasharray="2 6" opacity="0.6" />
-            <path
-              pathLength={100}
-              d="M60 252 C 105 240 120 205 138 178 C 155 152 130 120 160 84 C 185 55 260 40 320 46 C 342 48 356 52 366 60"
-              fill="none"
-              stroke="#1D7A50"
-              strokeWidth="3"
-              strokeDasharray="100"
-              strokeLinecap="round"
-              className="route-draw"
-            />
-            <path
-              className="route-flow"
-              d="M60 252 C 105 240 120 205 138 178 C 155 152 130 120 160 84 C 185 55 260 40 320 46 C 342 48 356 52 366 60"
-              fill="none"
-              stroke="#1D7A50"
-              strokeWidth="3"
-              strokeDasharray="11 8"
-              strokeLinecap="round"
-            />
-            <g aria-hidden>
-              <circle className="hero-sail-ring" r="7" fill="none" stroke="#1D7A50" strokeWidth="2" />
-              <circle className="hero-sail hero-sail--tail" r="4" fill="#1D7A50" />
-              <circle className="hero-sail hero-sail--tail2" r="5.5" fill="#1D7A50" />
-              <circle className="hero-sail hero-sail--head" r="7.5" fill="#FBF7ED" stroke="#1D7A50" strokeWidth="3" />
-            </g>
-            <g transform="translate(60 252)">
-              <g className="svg-bob">
-                <circle r="22" fill="none" stroke="#2A7391" strokeWidth="1.4" opacity="0.5" />
-                <circle r="15" fill="#12212D" stroke="#FBF7ED" strokeWidth="2.5" />
-                <path d="M0 -8 v8 M0 -6 l5.5 6 h-5.5 z" stroke="#FBF7ED" strokeWidth="1.6" fill="#FBF7ED" />
-                <path d="M-6 4 q3 2.4 6 0 t6 0" stroke="#FBF7ED" strokeWidth="1.4" fill="none" />
-              </g>
-            </g>
-            <g transform="translate(366 60)">
-              <circle className="svg-ping" r="17" fill="none" stroke="#1D7A50" strokeWidth="2" />
-              <g className="svg-bob" style={{ animationDelay: "1.2s" }}>
-                <circle r="17" fill="#FBF7ED" stroke="#1D7A50" strokeWidth="4" />
-                <text y="6" textAnchor="middle" fontFamily="'Fraunces Variable',Georgia,serif" fontWeight="800" fontSize="16" fill="#12212D">
-                  1
-                </text>
-              </g>
-            </g>
-            <g transform="translate(400 250)" opacity="0.75">
-              <circle r="24" fill="none" stroke="#12212D" strokeWidth="1.3" />
-              <text y="-27" textAnchor="middle" fontFamily="'Spline Sans Mono Variable',monospace" fontSize="8" fill="#12212D">
-                N
-              </text>
-              <g className="hero-compass-needle">
-                <path d="M0 -12 L2.6 0 L0 2 L-2.6 0 Z" fill="#12212D" />
-                <path d="M0 12 L2 0 L0 -2 L-2 0 Z" fill="#12212D" opacity="0.35" />
-              </g>
-              <circle r="1.6" fill="#12212D" />
-            </g>
-
-            <g
-              className="hero-verdict"
-              transform="translate(210 245)"
-            >
-              <circle
-                cx="0"
-                cy="0"
-                r="3.5"
-                fill="#1D7A50"
-              />
-
-              <text
-                x="10"
-                y="4"
-                fontFamily="'Spline Sans Mono Variable', monospace"
-                fontSize="8"
-                fontWeight="700"
-                fill="#12212D"
-                letterSpacing="1"
-              >
-                SAFE ROUTE
-              </text>
-
-              <text
-                x="10"
-                y="17"
-                fontFamily="'Spline Sans Mono Variable', monospace"
-                fontSize="6.5"
-                fontWeight="600"
-                fill="#5D7386"
-                letterSpacing="0.8"
-              >
-                {heroConfidence}% CONFIDENCE
-              </text>
-              <line
-                x1="10"
-                y1="23"
-                x2="115"
-                y2="23"
-                stroke="#1D7A50"
-                strokeWidth="1"
-                opacity="0.35"
-              />
-            </g>
-          </svg>
-          </HeroArt>
-          </div>
+        <Reveal delay={260} className="w-full justify-self-center lg:justify-self-end">
+          <HeroDemo language={language} />
         </Reveal>
       </div>
 
@@ -920,7 +685,7 @@ export default function Landing({
           <CourseArrow size={13} className="rotate-90" />
         </button>
       </Reveal>
-      </div>
+      </HeroSky>
       {/* ================= /HERO SCREEN ================= */}
 
       <div id="lp-more" />
