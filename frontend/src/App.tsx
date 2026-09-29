@@ -624,7 +624,7 @@ export default function App() {
   }
 
   return (
-    <div className="mx-auto flex min-h-full max-w-[1580px] flex-col gap-4 p-4 lg:p-6">
+    <div className={`mx-auto flex min-h-full max-w-[1580px] flex-col gap-4 p-4 lg:p-6 ${tab === "ask" ? "lg:h-dvh lg:max-h-dvh lg:overflow-hidden" : ""}`}>
       <ChartDefs />
       <div className="sea-drift" aria-hidden />
       <div className="fish-drift" aria-hidden />
@@ -798,7 +798,7 @@ export default function App() {
             <LocationPicker current={place} language={uiLang} onPick={setPlace} />
 
             <div
-              className="deck-map isolate relative h-[52dvh] min-h-[380px] max-h-[560px] lg:h-[clamp(440px,calc(100dvh-230px),720px)] lg:max-h-none"
+              className="deck-map isolate relative h-[52dvh] min-h-[380px] max-h-[560px] lg:h-[clamp(320px,calc(100dvh-350px),720px)] lg:min-h-0 lg:max-h-none"
               style={{ ["--glow" as string]: outlook ? RISK_COLOR[outlook.safety.category] : "#2a7391" }}
             >
               <MarineMap
@@ -963,8 +963,8 @@ export default function App() {
             ))}
           </div>
 
-          <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[minmax(350px,1fr)_1.6fr]">
-            <div className="min-h-[540px] lg:h-[calc(100vh-280px)]">
+          <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[minmax(350px,1fr)_1.6fr] lg:grid-rows-[minmax(0,1fr)]">
+            <div className="min-h-[540px] lg:h-full lg:min-h-0">
               <ChatPanel
                 messages={messages}
                 busy={busy}
@@ -982,19 +982,30 @@ export default function App() {
               />
             </div>
 
-            <div className="space-y-4 lg:h-[calc(100vh-280px)] lg:overflow-y-auto lg:pr-1">
-              {latest && <ConditionsStrip res={latest} language={latest.language} />}
+            <div className="flex min-h-0 flex-col gap-4 lg:h-full">
+              {/* Map stays pinned: fills the column until an answer arrives, then shrinks to make room for the results */}
+              <div
+                className={`min-h-[300px] shrink-0 transition-[height,flex-basis] duration-300 ease-out lg:min-h-0 ${
+                  latest ? "h-[46dvh] lg:h-auto lg:flex-[0_0_44%]" : "h-[60dvh] lg:h-auto lg:flex-1"
+                }`}
+              >
+                <MarineMap
+                  fitParent
+                  origin={latest?.intent.location ?? null}
+                  zones={zones}
+                  pfz={latest?.pfz ?? []}
+                  routes={latest?.routes ?? []}
+                  geofence={latest?.geofence ?? []}
+                  alerts={latest?.alerts ?? []}
+                  language={uiLang}
+                  portFeatures={portFeatures}
+                />
+              </div>
 
-              <MarineMap
-                origin={latest?.intent.location ?? null}
-                zones={zones}
-                pfz={latest?.pfz ?? []}
-                routes={latest?.routes ?? []}
-                geofence={latest?.geofence ?? []}
-                alerts={latest?.alerts ?? []}
-                language={uiLang}
-                portFeatures={portFeatures}
-              />
+              {/* Results scroll on their own, separately from the map */}
+              {latest && (
+              <div className="scroll-slim min-h-0 flex-1 space-y-4 overflow-y-auto lg:pr-1">
+              <ConditionsStrip res={latest} language={latest.language} />
 
               {latest?.risk && (
                 <RiskCard
@@ -1097,6 +1108,8 @@ export default function App() {
                 <p className="px-1 pb-2 font-mono text-[10.5px] leading-relaxed text-ink-400">
                   {latest.disclaimer}
                 </p>
+              )}
+              </div>
               )}
             </div>
           </div>

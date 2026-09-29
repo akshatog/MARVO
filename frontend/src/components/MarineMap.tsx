@@ -114,6 +114,7 @@ export default function MarineMap({
   focusRank,
   heightPx,
   fill = false,
+  fitParent = false,
   portFeatures,
   pfzGeoJson,
 }: {
@@ -131,6 +132,8 @@ export default function MarineMap({
   heightPx?: number;
   /** Fill the parent's height (desktop Today deck) instead of a fixed pixel height. */
   fill?: boolean;
+  /** Chart-sheet look, but stretch to the parent's height (Ask ORCA pinned map). */
+  fitParent?: boolean;
   language?: Language;
   /** Tap anywhere on the water to move the fisher's position. */
   onPickLocation?: (lat: number, lon: number) => void;
@@ -163,11 +166,11 @@ export default function MarineMap({
   // Fill mode: the parent decides the size, so follow it.
   useEffect(() => {
     const el = containerRef.current;
-    if (!fill || !el || typeof ResizeObserver === "undefined") return;
+    if ((!fill && !fitParent) || !el || typeof ResizeObserver === "undefined") return;
     const ro = new ResizeObserver(() => mapRef.current?.invalidateSize());
     ro.observe(el);
     return () => ro.disconnect();
-  }, [fill]);
+  }, [fill, fitParent]);
 
   // ---- init once -------------------------------------------------------
   useEffect(() => {
@@ -632,8 +635,8 @@ export default function MarineMap({
         : null;
 
   return (
-    <div className={fill ? "map-deck" : "chart-sheet"}>
-      <div className={fill ? "map-deck-frame" : "chart-frame"}>
+    <div className={fill ? "map-deck" : fitParent ? "chart-sheet chart-sheet-fit" : "chart-sheet"}>
+      <div className={fill ? "map-deck-frame" : fitParent ? "chart-frame chart-frame-fit" : "chart-frame"}>
         {/*
           The height is an inline style on purpose. Leaflet adds its own classes
           (leaflet-container, leaflet-touch, ...) to this element on mount; a
@@ -643,7 +646,7 @@ export default function MarineMap({
           tile renders at zero width — tiles download fine, the map just vanishes.
           React writes style properties individually, so this leaves classes alone.
         */}
-        <div ref={containerRef} className="w-full" style={{ height: fill ? "100%" : mapHeight }} />
+        <div ref={containerRef} className="w-full" style={{ height: fill || fitParent ? "100%" : mapHeight }} />
 
         {fill && <div className="map-vignette" aria-hidden />}
         {fill && (
@@ -770,7 +773,7 @@ export default function MarineMap({
 
       {/* sheet margin note */}
       {!fill && (
-      <div className="mt-[7px] flex items-baseline justify-between">
+      <div className="mt-[7px] shrink-0 flex items-baseline justify-between">
         <span className="font-mono text-[8.5px] font-semibold uppercase tracking-[0.18em] text-ink-400">
           {(LEGEND[language] ?? LEGEND.en).marginL}
         </span>

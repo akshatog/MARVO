@@ -3018,3 +3018,15 @@ html.ocean .hd-src {
   .radar-sweep,
   .sail-wake { animation: none; }
 }
+/* Ask ORCA: pinned map that stretches to its parent while keeping the chart-sheet look */
+.chart-sheet.chart-sheet-fit {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 14px 14px 10px;
+}
+.chart-sheet.chart-sheet-fit > .chart-frame-fit {
+  flex: 1 1 auto;
+  min-height: 0;
+}
