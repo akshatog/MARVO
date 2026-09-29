@@ -408,10 +408,6 @@ export default function MobileApp() {
     return () => document.removeEventListener("mousedown", onClick);
   }, [portMenuOpen]);
 
-  // Today tab opens in a short, simple summary; the fuller breakdown (risk
-  // timeline, ranked grounds, fuel/profit) is one tap away, not automatic.
-  const [showDetails, setShowDetails] = useState(false);
-
   const [activeAlert, setActiveAlert] = useState<AlertEvent | null>(null);
   const [activeVoyage, setActiveVoyage] = useState<Voyage | null>(null);
   const [voyageLoading, setVoyageLoading] = useState(false);
@@ -1031,20 +1027,8 @@ export default function MobileApp() {
                 )}
               </div>
 
-              {/* one tap to expand — everything below is optional depth */}
-              <button
-                onClick={() => setShowDetails((v) => !v)}
-                className="flex w-full items-center justify-center gap-1.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wide text-chart-600 transition active:scale-95"
-              >
-                {showDetails ? t.lessDetails : t.moreDetails}
-                <ChevronDownGlyph
-                  size={11}
-                  className={`transition-transform ${showDetails ? "rotate-180" : ""}`}
-                />
-              </button>
-
-              {showDetails && (
-                <div className="animate-rise space-y-3">
+              {/* full breakdown — always shown, no extra tap */}
+              <div className="animate-rise space-y-3">
                   {/* Live alerts from GET /api/alerts */}
                   {place && (
                     <AlertsPanel lat={place.lat} lon={place.lon} compact refreshMs={60000} />
@@ -1125,8 +1109,7 @@ export default function MobileApp() {
                       </div>
                     </div>
                   )}
-                </div>
-              )}
+              </div>
             </>
           )}
         </main>

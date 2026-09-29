@@ -101,11 +101,11 @@ html.ocean.phone header.sticky {
 
 
 /* ==================================================================
-   v2 — TABS THAT FEEL LIKE DIFFERENT PLACES
-   Each tab owns a colour pair. The pair is registered with @property so
-   it MORPHS when you switch tabs instead of snapping.
-     Today → ocean blue → aqua      Map → teal → sea-green
-     Ask   → coral → sun
+   v2 — ONE THEME ACROSS ALL THREE TABS
+   Today, Map and Ask now share the same ocean-blue → aqua pair, so the
+   header rule, title strip, cards, mic ring and the bottom dock look like
+   one app. (Map used to go teal/green and Ask coral/orange.)
+   To re-tint the whole phone app, change these two values only.
    ================================================================== */
 @property --tab-a { syntax: "<color>"; inherits: true; initial-value: #1f6feb; }
 @property --tab-b { syntax: "<color>"; inherits: true; initial-value: #12b5c8; }
@@ -113,10 +113,7 @@ html.ocean.phone header.sticky {
 html.phone .m-root {
   --tab-a: #1f6feb;
   --tab-b: #12b5c8;
-  transition: --tab-a 0.55s ease, --tab-b 0.55s ease;
 }
-html.phone .m-root[data-tab="map"] { --tab-a: #0e9e8a; --tab-b: #35c98f; }
-html.phone .m-root[data-tab="ask"] { --tab-a: #f26b4e; --tab-b: #ffb640; }
 
 /* a wash of the tab colour at the top of the screen + a low glow at the foot */
 html.phone .m-aura {
