@@ -11,6 +11,30 @@
    ============================================================ */
 
 :root {
+  /* Channel defaults = the original chart-paper palette (phone app).
+     html.ocean below swaps them for the light ocean theme. */
+  --c-paper-50: 251 247 237;
+  --c-paper-100: 245 238 221;
+  --c-paper-150: 239 230 207;
+  --c-paper-200: 230 218 189;
+  --c-paper-300: 214 199 162;
+  --c-paper-400: 185 166 124;
+  --c-ink-900: 18 33 45;
+  --c-ink-800: 27 47 62;
+  --c-ink-700: 38 59 77;
+  --c-ink-600: 52 76 96;
+  --c-ink-500: 66 89 109;
+  --c-ink-400: 93 115 134;
+  --c-ink-300: 130 148 159;
+  --c-chart-700: 23 79 104;
+  --c-chart-600: 30 95 122;
+  --c-chart-500: 42 115 145;
+  --c-chart-300: 127 169 188;
+  --c-chart-100: 216 231 235;
+  --c-signal: 199 68 46;
+}
+
+:root {
   color-scheme: light;
   --paper: #f5eedd;
   --paper-bright: #fbf7ed;
@@ -1122,4 +1146,742 @@ path.radius-drift {
     opacity: 1 !important;
     transform: none !important;
   }
+}
+
+/* ==================================================================
+   ORCA — LIGHT OCEAN THEME (desktop website only)
+   Activated by <html class="ocean">, added in main.tsx for every
+   non-phone screen. The phone app never gets this class, so it keeps
+   the original chart-paper look untouched.
+
+   Palette: navy #0B2A5B · ocean #1F6FEB · sky #6FB6F0 · aqua #12B5C8
+            teal #0E9E8A · sun #FFB640 · coral #F26B4E · foam #EAF5FF
+   ================================================================== */
+
+html.ocean {
+  /* token overrides (R G B channels) */
+  --c-paper-50: 247 251 255;
+  --c-paper-100: 234 244 255;
+  --c-paper-150: 220 235 252;
+  --c-paper-200: 201 222 245;
+  --c-paper-300: 179 206 234;
+  --c-paper-400: 143 180 219;
+  --c-ink-900: 11 42 91;
+  --c-ink-800: 18 58 115;
+  --c-ink-700: 29 75 138;
+  --c-ink-600: 55 96 154;
+  --c-ink-500: 79 108 147;
+  --c-ink-400: 79 108 147;
+  --c-ink-300: 127 155 190;
+  --c-chart-700: 15 79 168;
+  --c-chart-600: 26 98 207;
+  --c-chart-500: 43 127 230;
+  --c-chart-300: 140 192 242;
+  --c-chart-100: 220 238 255;
+  --c-signal: 242 107 78;
+
+  --paper: #eaf4ff;
+  --paper-bright: #f7fbff;
+  --ink: #0b2a5b;
+  --rule: rgba(31, 100, 190, 0.22);
+  --rule-strong: rgba(31, 100, 190, 0.42);
+  --rule-faint: rgba(31, 100, 190, 0.12);
+  --chart-teal: #1f6feb;
+
+  /* named accents for the CSS below */
+  --o-navy: #0b2a5b;
+  --o-ocean: #1f6feb;
+  --o-sky: #6fb6f0;
+  --o-aqua: #12b5c8;
+  --o-teal: #0e9e8a;
+  --o-sun: #ffb640;
+  --o-coral: #f26b4e;
+  --o-violet: #5b6cff;
+
+  /* flowing heading gradient stops (sections override these) */
+  --h1: #0b2a5b;
+  --h2: #1f6feb;
+  --h3: #12b5c8;
+}
+
+html.ocean,
+html.ocean body {
+  background: linear-gradient(180deg, #f8fcff 0%, #e4f2ff 55%, #d3e9fc 100%) fixed;
+}
+
+html.ocean body {
+  color: rgb(var(--c-ink-700));
+  font-family: "Figtree Variable", "Archivo Variable", "Segoe UI", "Nirmala UI", system-ui, sans-serif;
+}
+
+/* soft drifting light behind everything: sky, sun-glow, aqua */
+html.ocean body::before {
+  background-image:
+    radial-gradient(38vw 38vw at 8% 6%, rgba(160, 208, 255, 0.55), transparent 70%),
+    radial-gradient(30vw 30vw at 92% 14%, rgba(255, 214, 140, 0.5), transparent 70%),
+    radial-gradient(36vw 36vw at 55% 96%, rgba(150, 236, 236, 0.5), transparent 70%);
+  background-repeat: no-repeat;
+  background-position: 8% 6%, 92% 14%, 55% 96%;
+  background-size: auto;
+  animation: oceanglow 26s ease-in-out infinite alternate;
+}
+@keyframes oceanglow {
+  0% { background-position: 8% 6%, 92% 14%, 55% 96%; }
+  100% { background-position: 16% 14%, 82% 24%, 45% 86%; }
+}
+/* no paper grain on the ocean sheet */
+html.ocean body::after {
+  display: none;
+}
+
+html.ocean ::selection {
+  background: var(--o-ocean);
+  color: #fff;
+}
+html.ocean :focus-visible {
+  outline: 3px solid var(--o-sun);
+  outline-offset: 2px;
+}
+
+/* ---------------- type ---------------- */
+html.ocean .font-display {
+  font-family: "Bricolage Grotesque Variable", "Noto Serif Devanagari Variable", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: -0.015em;
+}
+html.ocean .font-mono,
+html.ocean .label {
+  font-family: "Figtree Variable", "Archivo Variable", "Nirmala UI", "Segoe UI", system-ui, sans-serif;
+}
+html.ocean .sounding {
+  font-family: "Bricolage Grotesque Variable", "Segoe UI", sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-variation-settings: normal;
+}
+
+/* Headings flow through the palette. Each section can set --h1..--h3. */
+html.ocean :is(h1, h2, h3, h4, p, span, div).font-display.text-ink-900 {
+  background-image: linear-gradient(100deg, var(--h1) 0%, var(--h2) 38%, var(--h3) 68%, var(--h1) 100%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: oceanflow 10s linear infinite;
+  /* room for descenders / Devanagari matras: background-clip:text clips to the box */
+  padding: 0.14em 0.08em 0.18em;
+}
+@keyframes oceanflow {
+  to { background-position: -300% 0; }
+}
+/* the highlighted words inside the hero headline: sun-to-coral */
+html.ocean .font-display .text-chart-600 {
+  background-image: linear-gradient(100deg, var(--o-coral), var(--o-sun), var(--o-coral));
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: oceanflow 7s linear infinite;
+}
+/* per-section heading moods */
+html.ocean #lp-agents { --h1: #0b2a5b; --h2: #5b6cff; --h3: #1f6feb; }
+html.ocean #lp-pipeline { --h1: #0e9e8a; --h2: #1f6feb; --h3: #5b6cff; }
+html.ocean #lp-trust { --h1: #0e9e8a; --h2: #1f6feb; --h3: #0b2a5b; }
+html.ocean .rule-double h2.font-display { --h1: #0b2a5b; --h2: #1f6feb; --h3: #0e9e8a; }
+html.ocean #lp-features h3.font-display { --h1: #0b2a5b; --h2: #0e9e8a; --h3: #12b5c8; }
+
+/* ---------------- panels ---------------- */
+html.ocean .panel {
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.84);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-color: var(--rule);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 1px 2px rgba(11, 42, 91, 0.06),
+    0 24px 40px -28px rgba(11, 42, 91, 0.45);
+}
+html.ocean .panel-tint {
+  border-radius: 16px;
+  background: rgba(234, 244, 255, 0.75);
+}
+/* replaces the double rule with a flowing colour bar */
+html.ocean .rule-double {
+  border-top: 1px solid var(--rule);
+}
+html.ocean .rule-double::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 5px;
+  border-radius: 18px 18px 0 0;
+  background: linear-gradient(90deg, var(--o-ocean), var(--o-aqua), var(--o-sun), var(--o-coral), var(--o-ocean));
+  background-size: 300% 100%;
+  animation: oceanflow 9s linear infinite;
+  pointer-events: none;
+}
+html.ocean .panel > .hd:first-child,
+html.ocean .panel .hd {
+  border-radius: 17px 17px 0 0;
+}
+html.ocean .hd {
+  background: linear-gradient(100deg, rgba(220, 238, 255, 0.9), rgba(255, 255, 255, 0.4) 70%, rgba(200, 245, 240, 0.5));
+}
+html.ocean .lift:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 3px 6px rgba(11, 42, 91, 0.08),
+    0 30px 46px -26px rgba(31, 111, 235, 0.55);
+}
+html.ocean .lift.rule-double:hover {
+  border-top-color: var(--o-ocean);
+}
+
+/* landing cards get their own tint so the page is not all one blue */
+html.ocean #lp-features > *:nth-child(1) .panel { background: linear-gradient(160deg, rgba(255,255,255,.92), rgba(205,230,255,.85)); }
+html.ocean #lp-features > *:nth-child(2) .panel { background: linear-gradient(160deg, rgba(255,251,240,.95), rgba(255,226,170,.8)); }
+html.ocean #lp-features > *:nth-child(3) .panel { background: linear-gradient(160deg, rgba(240,255,252,.95), rgba(170,232,222,.8)); }
+html.ocean #lp-features > *:nth-child(2) .hd { background: linear-gradient(100deg, rgba(255,222,160,.7), rgba(255,255,255,.3)); }
+html.ocean #lp-features > *:nth-child(3) .hd { background: linear-gradient(100deg, rgba(160,232,220,.7), rgba(255,255,255,.3)); }
+/* icon tiles cycle sky / aqua / sun / coral / violet */
+html.ocean #lp-agents + div > *:nth-child(5n+1) .bg-chart-100,
+html.ocean #lp-trust + div > *:nth-child(3n+1) .bg-chart-100 { background: #cfe6ff; color: #1a62cf; }
+html.ocean #lp-agents + div > *:nth-child(5n+2) .bg-chart-100,
+html.ocean #lp-trust + div > *:nth-child(3n+2) .bg-chart-100 { background: #c4f1ee; color: #0a7f70; }
+html.ocean #lp-agents + div > *:nth-child(5n+3) .bg-chart-100,
+html.ocean #lp-trust + div > *:nth-child(3n+3) .bg-chart-100 { background: #ffe6b8; color: #a5610a; }
+html.ocean #lp-agents + div > *:nth-child(5n+4) .bg-chart-100 { background: #ffd8cf; color: #c4442a; }
+html.ocean #lp-agents + div > *:nth-child(5n+5) .bg-chart-100 { background: #dfe2ff; color: #3f4fd6; }
+
+/* ---------------- controls ---------------- */
+html.ocean .btn-ink {
+  font-family: "Figtree Variable", "Segoe UI", sans-serif;
+  border-radius: 12px;
+  color: #fff;
+  background-image: linear-gradient(120deg, var(--o-navy), var(--o-ocean) 60%, var(--o-aqua));
+  background-size: 200% 100%;
+  background-color: var(--o-navy);
+  box-shadow: 0 10px 22px -12px rgba(31, 111, 235, 0.8);
+  transition: background-position 0.5s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+html.ocean .btn-ink:hover:not(:disabled) {
+  background-color: var(--o-navy);
+  background-position: 100% 0;
+  box-shadow: 0 14px 26px -12px rgba(31, 111, 235, 0.85);
+}
+html.ocean .btn-line {
+  font-family: "Figtree Variable", "Segoe UI", sans-serif;
+  border-radius: 12px;
+  border-color: var(--o-sky);
+  color: var(--o-navy);
+  background: rgba(255, 255, 255, 0.7);
+}
+html.ocean .btn-line:hover:not(:disabled) {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(120deg, var(--o-ocean), var(--o-aqua));
+  box-shadow: 0 10px 22px -12px rgba(18, 181, 200, 0.8);
+}
+html.ocean .btn-square {
+  border-radius: 10px;
+  border-color: var(--o-sky);
+  color: var(--o-navy);
+  background: rgba(255, 255, 255, 0.7);
+}
+html.ocean .btn-square:hover:not(:disabled) {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(120deg, var(--o-ocean), var(--o-aqua));
+}
+html.ocean .chip {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  border-color: var(--o-sky);
+  color: var(--o-navy);
+}
+html.ocean .chip:hover:not(:disabled) {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(120deg, var(--o-ocean), var(--o-aqua));
+}
+html.ocean .tab {
+  font-family: "Figtree Variable", "Segoe UI", sans-serif;
+}
+html.ocean .tab::after {
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--o-ocean), var(--o-aqua), var(--o-sun));
+}
+html.ocean .tab:not(.tab-on):hover::after {
+  background: var(--o-aqua);
+}
+html.ocean .tab-on {
+  color: var(--o-ocean);
+}
+html.ocean .field {
+  border-radius: 12px;
+  background: #fff;
+  border-color: var(--rule);
+}
+html.ocean .field:focus {
+  border-color: var(--o-ocean);
+  box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.22);
+}
+html.ocean .stamp {
+  border-radius: 8px;
+}
+html.ocean .risk-chip {
+  border-radius: 999px;
+}
+html.ocean .pipe-joint svg {
+  color: var(--o-ocean);
+}
+html.ocean .signal-line > i {
+  background: var(--o-aqua);
+}
+html.ocean .hatch-danger {
+  background-image: repeating-linear-gradient(45deg, rgba(242, 107, 78, 0.16) 0 1.5px, transparent 1.5px 8px);
+}
+
+/* the map sheet */
+html.ocean .chart-sheet {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 1px 2px rgba(11, 42, 91, 0.06), 0 24px 40px -28px rgba(11, 42, 91, 0.45);
+}
+html.ocean .chart-sheet::before {
+  opacity: 0.6;
+}
+html.ocean .chart-frame {
+  border-radius: 12px;
+}
+
+/* ---------------- leaflet ---------------- */
+html.ocean .leaflet-container {
+  background: #cde7ff;
+}
+html.ocean .leaflet-tile {
+  filter: saturate(1.1) hue-rotate(-6deg) brightness(1.03);
+}
+html.ocean .leaflet-control-attribution {
+  background: rgba(247, 251, 255, 0.88) !important;
+  color: #4f6c93 !important;
+  font-family: "Figtree Variable", system-ui, sans-serif;
+}
+html.ocean .leaflet-control-attribution a {
+  color: #1a62cf !important;
+}
+html.ocean .leaflet-popup-content-wrapper,
+html.ocean .leaflet-popup-tip {
+  background: #f7fbff;
+  color: #1d4b8a;
+  border-radius: 14px;
+  box-shadow: 0 14px 30px rgba(11, 42, 91, 0.28);
+}
+html.ocean .leaflet-popup-content b {
+  font-family: "Bricolage Grotesque Variable", "Segoe UI", sans-serif;
+}
+html.ocean .leaflet-bar {
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(11, 42, 91, 0.2) !important;
+}
+html.ocean .leaflet-bar a {
+  background: #f7fbff !important;
+  color: #0b2a5b !important;
+}
+html.ocean .leaflet-bar a:hover {
+  background: #1f6feb !important;
+  color: #fff !important;
+}
+html.ocean .leaflet-tooltip.storm-label {
+  background: #f7fbff;
+  color: #c4442a;
+  border-color: #f26b4e;
+  border-radius: 8px;
+  font-family: "Figtree Variable", system-ui, sans-serif;
+}
+html.ocean .leaflet-tooltip-top.storm-label::before {
+  border-top-color: #f26b4e;
+}
+
+/* ---------------- scrollbars ---------------- */
+html.ocean ::-webkit-scrollbar-thumb {
+  background: rgba(43, 127, 230, 0.45);
+  background-clip: content-box;
+}
+html.ocean ::-webkit-scrollbar-thumb:hover {
+  background: rgba(26, 98, 207, 0.7);
+  background-clip: content-box;
+}
+html.ocean .scroll-slim {
+  scrollbar-color: rgba(43, 127, 230, 0.35) transparent;
+}
+html.ocean .scroll-slim::-webkit-scrollbar-thumb {
+  background: rgba(43, 127, 230, 0.3);
+}
+html.ocean .scroll-slim:hover::-webkit-scrollbar-thumb,
+html.ocean .scroll-slim:focus-within::-webkit-scrollbar-thumb {
+  background: rgba(26, 98, 207, 0.6);
+}
+
+/* ---------------- animated waves at the foot of every page ----------------
+   Same three layers / keyframes as before, recoloured to light blues, taller
+   and slower so they read as flowing water. Tile widths (280/340/420) match
+   the seadrift-a/b/c keyframe distances, so the loop is seamless. */
+html.ocean .sea-drift {
+  height: 230px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='90' viewBox='0 0 280 90'%3E%3Cpath d='M0 46 Q35 12 70 46 T140 46 T210 46 T280 46 L280 90 L0 90 Z' fill='%23BFE0FB' fill-opacity='0.62'/%3E%3C/svg%3E");
+  background-size: 280px 90px;
+  animation: seadrift-a 4.2s linear infinite, swellbob 5.5s ease-in-out infinite;
+}
+html.ocean .sea-drift::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='100' viewBox='0 0 340 100'%3E%3Cpath d='M0 52 Q42 16 85 52 T170 52 T255 52 T340 52 L340 100 L0 100 Z' fill='%236FB6F0' fill-opacity='0.42'/%3E%3C/svg%3E");
+  background-size: 340px 100px;
+  animation: seadrift-b 6s linear infinite, swellbob 4.6s ease-in-out -1.5s infinite;
+}
+html.ocean .sea-drift::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='110' viewBox='0 0 420 110'%3E%3Cpath d='M0 58 Q52 22 105 58 T210 58 T315 58 T420 58 L420 110 L0 110 Z' fill='%2312B5C8' fill-opacity='0.30'/%3E%3C/svg%3E");
+  background-size: 420px 110px;
+  animation: seadrift-c 8.5s linear infinite, swellbob 6.4s ease-in-out -3s infinite;
+}
+html.ocean .fish-drift {
+  opacity: 0.55;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='620' height='90' viewBox='0 0 620 90' fill='%231F6FEB'%3E%3Cg opacity='0.32'%3E%3Cpath d='M40 30 C43 26 48 25.5 52 28.8 L58 26 C57 27.3 56.5 28.6 56.5 30 C56.5 31.4 57 32.7 58 34 L52 31.2 C48 34.5 43 34 40 30 Z'/%3E%3Cpath d='M70 44 C73 40 78 39.5 82 42.8 L88 40 C87 41.3 86.5 42.6 86.5 44 C86.5 45.4 87 46.7 88 48 L82 45.2 C78 48.5 73 48 70 44 Z'/%3E%3Cpath d='M52 60 C55 56 60 55.5 64 58.8 L70 56 C69 57.3 68.5 58.6 68.5 60 C68.5 61.4 69 62.7 70 64 L64 61.2 C60 64.5 55 64 52 60 Z'/%3E%3C/g%3E%3Cg opacity='0.2' fill='%2312B5C8' transform='translate(330 12)'%3E%3Cpath d='M0 18 C4 13 10 12.5 15 16.5 L23 13 C21.7 14.7 21 16.3 21 18 C21 19.7 21.7 21.3 23 23 L15 19.5 C10 23.5 4 23 0 18 Z'/%3E%3Cpath d='M38 34 C42 29 48 28.5 53 32.5 L61 29 C59.7 30.7 59 32.3 59 34 C59 35.7 59.7 37.3 61 39 L53 35.5 C48 39.5 42 39 38 34 Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ---------------- remap hard-coded warm neutrals (desktop only) ----------------
+   Some System/Authority components use fixed hex classes. Re-point them at the
+   ocean palette here so those files need no edits and the phone is unaffected. */
+html.ocean .text-\[\#12212d\],
+html.ocean .text-\[\#1b2b34\] { color: #0b2a5b; }
+html.ocean .text-\[\#3e515d\],
+html.ocean .text-\[\#425460\] { color: #37609a; }
+html.ocean .text-\[\#556975\] { color: #4f6c93; }
+html.ocean .text-\[\#70808b\],
+html.ocean .text-\[\#a0aab0\],
+html.ocean .text-\[\#9eaab2\] { color: #6d8bb2; }
+html.ocean .text-\[\#2a7391\],
+html.ocean .text-\[\#0d3c61\] { color: #1a62cf; }
+html.ocean .border-\[\#d6cfbe\],
+html.ocean .border-\[\#d8cfbe\] { border-color: #bcd5ef; }
+html.ocean .border-\[\#e5dfd0\],
+html.ocean .border-\[\#e2dacb\],
+html.ocean .border-\[\#f0eae0\],
+html.ocean .border-\[\#eee7d8\],
+html.ocean .border-\[\#ece4d5\] { border-color: #d5e6f8; }
+html.ocean .divide-\[\#ece6d8\] > :not([hidden]) ~ :not([hidden]) { border-color: #d5e6f8; }
+html.ocean .hover\:border-\[\#b0a795\]:hover { border-color: #6fb6f0; }
+html.ocean .border-\[\#2a7391\],
+html.ocean .focus\:border-\[\#2a7391\]:focus { border-color: #1f6feb; }
+html.ocean .bg-\[\#2a7391\] { background-color: #1f6feb; }
+html.ocean .hover\:bg-\[\#2a7391\]:hover { background-color: #1a62cf; }
+html.ocean .hover\:bg-\[\#205971\]:hover { background-color: #0f4fa8; }
+html.ocean .ring-\[\#2a7391\] { --tw-ring-color: #1f6feb; }
+html.ocean .bg-\[\#fcfaf4\],
+html.ocean .bg-\[\#f7f5ed\],
+html.ocean .bg-\[\#fafafa\] { background-color: rgba(255, 255, 255, 0.78); }
+html.ocean .bg-\[\#f0eae0\],
+html.ocean .bg-\[\#f2ecde\],
+html.ocean .bg-\[\#e0d9cb\],
+html.ocean .bg-\[\#f5f5f5\],
+html.ocean .bg-\[\#f0f4f7\] { background-color: #e6f1fd; }
+html.ocean .bg-\[\#eef7fb\],
+html.ocean .bg-\[\#e8f4fd\] { background-color: #dcefff; }
+html.ocean .bg-\[\#fdf2e9\] { background-color: #fff1de; }
+html.ocean .bg-\[\#edf7ed\],
+html.ocean .bg-\[\#f4faf4\] { background-color: #e0f7f1; }
+/* inline-styled cream fills used by SVG / cards on desktop screens */
+html.ocean [fill="#FBF7ED"],
+html.ocean [fill="#fbf7ed"] { fill: #f7fbff; }
+html.ocean [fill="#F5EEDD"] { fill: #eaf4ff; }
+html.ocean [style*="background: #FBF7ED"],
+html.ocean [style*="background:#FBF7ED"],
+html.ocean [style*="background: rgb(251, 247, 237)"] { background: #f7fbff !important; }
+
+
+/* ==================================================================
+   OCEAN THEME v2 — faster water, real scroll reveals, new home layout
+   ================================================================== */
+
+@keyframes swellbob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+@keyframes buoy {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -8px; }
+}
+@keyframes sunpulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.14); opacity: 1; }
+}
+@keyframes bubbleup {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  15% { opacity: 0.75; }
+  100% { transform: translateY(-260px) scale(1.15); opacity: 0; }
+}
+@keyframes linegrow {
+  0%, 100% { width: 1.5rem; }
+  50% { width: 3.5rem; }
+}
+@keyframes shimmerx {
+  to { background-position: 200% 0; }
+}
+
+/* ---- scroll reveals (JS in Landing.tsx adds .rv-in; fail-safe timer included) ---- */
+html.ocean .rv {
+  opacity: 0;
+  transition: opacity 0.85s ease, transform 0.95s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: var(--rv-d, 0ms);
+}
+html.ocean .rv-up { transform: translateY(38px); }
+html.ocean .rv-left { transform: translateX(-46px); }
+html.ocean .rv-right { transform: translateX(46px); }
+html.ocean .rv-zoom { transform: scale(0.93) translateY(16px); }
+html.ocean .rv.rv-in { opacity: 1; transform: none; }
+html.ocean .sec-line { animation: linegrow 3.2s ease-in-out infinite; }
+
+/* ---- hero ---- */
+html.ocean .hero-title {
+  padding-top: 0.2em;
+  padding-bottom: 0.24em;
+}
+html.ocean .hero-stage { isolation: isolate; }
+html.ocean .hero-sun {
+  position: absolute;
+  z-index: -1;
+  width: 62%;
+  aspect-ratio: 1;
+  right: -6%;
+  top: -18%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 200, 100, 0.75), rgba(255, 200, 100, 0) 68%);
+  animation: sunpulse 7s ease-in-out infinite;
+  pointer-events: none;
+}
+html.ocean .hero-chip {
+  position: absolute;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  font: 700 12.5px "Figtree Variable", system-ui, sans-serif;
+  color: #0b2a5b;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(31, 111, 235, 0.25);
+  box-shadow: 0 14px 26px -14px rgba(11, 42, 91, 0.55);
+  animation: buoy 4.8s ease-in-out infinite;
+  pointer-events: none;
+}
+html.ocean .hero-chip svg { color: #1f6feb; }
+html.ocean .hero-chip-a { left: -3%; top: 10%; }
+html.ocean .hero-chip-b { right: 1%; bottom: 8%; animation-delay: -1.6s; }
+html.ocean .hero-chip-b svg { color: #0e9e8a; }
+html.ocean .hero-chip-c { left: 12%; bottom: -3%; animation-delay: -3.1s; background: linear-gradient(120deg, #d7f6f1, #fff); }
+html.ocean .hero-chip-c svg { color: #0e9e8a; }
+
+/* ---- stats strip: four bright tiles with a shimmering top edge ---- */
+html.ocean .stats-strip {
+  overflow: hidden;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+}
+html.ocean .stats-strip::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, #1f6feb, #12b5c8, #ffb640, #f26b4e, #1f6feb);
+  background-size: 200% 100%;
+  animation: shimmerx 5s linear infinite;
+}
+html.ocean .stats-strip > div { padding-top: 1.1rem; padding-bottom: 1rem; }
+html.ocean .stats-strip > div:nth-child(1):hover { background: #dcefff; }
+html.ocean .stats-strip > div:nth-child(2):hover { background: #d6f6f1; }
+html.ocean .stats-strip > div:nth-child(3):hover { background: #ffefcc; }
+html.ocean .stats-strip > div:nth-child(4):hover { background: #ffe1d9; }
+html.ocean .stats-strip > div:nth-child(5):hover { background: #e2e5ff; }
+
+/* ---- problem: a warm "problem" card next to a cool "question" card ---- */
+html.ocean .prob-a {
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.95), rgba(255, 224, 205, 0.85));
+  border-color: rgba(242, 107, 78, 0.28);
+}
+html.ocean .prob-a::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  bottom: -40px;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242, 107, 78, 0.22), transparent 70%);
+  animation: sunpulse 6s ease-in-out infinite;
+  pointer-events: none;
+}
+html.ocean .prob-b {
+  background: linear-gradient(160deg, rgba(240, 255, 252, 0.95), rgba(170, 232, 240, 0.8));
+  border-color: rgba(18, 181, 200, 0.35);
+}
+
+/* ---- features: bento with a swelling sea in the lead card ---- */
+html.ocean .feat-swell {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 110px;
+  pointer-events: none;
+  opacity: 0.9;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='60' viewBox='0 0 260 60'%3E%3Cpath d='M0 30 Q32.5 6 65 30 T130 30 T195 30 T260 30 V60 H0Z' fill='%236FB6F0' fill-opacity='0.45'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='70' viewBox='0 0 340 70'%3E%3Cpath d='M0 36 Q42 10 85 36 T170 36 T255 36 T340 36 V70 H0Z' fill='%2312B5C8' fill-opacity='0.32'/%3E%3C/svg%3E");
+  background-repeat: repeat-x, repeat-x;
+  background-position: 0 bottom, 0 bottom;
+  background-size: 260px 60px, 340px 70px;
+  animation: seadrift-a 5s linear infinite;
+}
+html.ocean #lp-features h3.font-display { padding-top: 0.1em; }
+html.ocean .feat-sonar {
+  position: absolute;
+  left: 50%;
+  bottom: 74px;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+html.ocean .feat-sonar i {
+  position: absolute;
+  left: -70px;
+  top: -70px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 2px solid rgba(31, 111, 235, 0.55);
+  animation: sonarring 4.5s ease-out infinite;
+}
+html.ocean .feat-sonar i:nth-child(2) { animation-delay: 1.5s; border-color: rgba(18, 181, 200, 0.55); }
+html.ocean .feat-sonar i:nth-child(3) { animation-delay: 3s; border-color: rgba(255, 182, 64, 0.65); }
+html.ocean .feat-sonar b {
+  position: absolute;
+  left: -9px;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #1f6feb;
+  border: 3px solid #fff;
+  box-shadow: 0 8px 18px -6px rgba(31, 111, 235, 0.8);
+}
+@keyframes sonarring {
+  0% { transform: scale(0.15); opacity: 0.9; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+
+/* ---- agents: staggered like buoys on a swell ---- */
+@media (min-width: 1024px) {
+  html.ocean #lp-agents + div > *:nth-child(even) { margin-top: 30px; }
+}
+html.ocean #lp-agents + div > * .panel {
+  animation: buoy 5.5s ease-in-out infinite;
+  border-top: 3px solid #6fb6f0;
+}
+html.ocean #lp-agents + div > *:nth-child(5n+2) .panel { animation-delay: -1.1s; border-top-color: #12b5c8; }
+html.ocean #lp-agents + div > *:nth-child(5n+3) .panel { animation-delay: -2.2s; border-top-color: #ffb640; }
+html.ocean #lp-agents + div > *:nth-child(5n+4) .panel { animation-delay: -3.3s; border-top-color: #f26b4e; }
+html.ocean #lp-agents + div > *:nth-child(5n+5) .panel { animation-delay: -4.4s; border-top-color: #5b6cff; }
+html.ocean #lp-agents + div > * .panel:hover { animation-play-state: paused; }
+
+/* ---- pipeline: four connected stages ---- */
+html.ocean .pipe-track::before {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 22px;
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #1f6feb, #12b5c8, #ffb640, #f26b4e, #1f6feb);
+  background-size: 200% 100%;
+  animation: shimmerx 4s linear infinite;
+}
+@media (max-width: 639px) {
+  html.ocean .pipe-track::before { display: none; }
+}
+html.ocean .pipe-step { overflow: visible; }
+html.ocean .pipe-num {
+  position: absolute;
+  top: -6px;
+  left: 16px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font: 800 18px "Bricolage Grotesque Variable", system-ui, sans-serif;
+  color: #fff;
+  border: 3px solid #f7fbff;
+  box-shadow: 0 12px 22px -10px rgba(11, 42, 91, 0.6);
+  animation: buoy 4.6s ease-in-out infinite;
+}
+html.ocean .pipe-step-0 .pipe-num { background: #1f6feb; }
+html.ocean .pipe-step-1 .pipe-num { background: #12b5c8; animation-delay: -1.1s; }
+html.ocean .pipe-step-2 .pipe-num { background: #ffb640; color: #0b2a5b; animation-delay: -2.2s; }
+html.ocean .pipe-step-3 .pipe-num { background: #f26b4e; animation-delay: -3.3s; }
+html.ocean .pipe-step-1 { background: linear-gradient(170deg, rgba(255,255,255,.92), rgba(196,241,238,.7)); }
+html.ocean .pipe-step-2 { background: linear-gradient(170deg, rgba(255,255,255,.92), rgba(255,230,184,.75)); }
+html.ocean .pipe-step-3 { background: linear-gradient(170deg, rgba(255,255,255,.92), rgba(255,216,207,.7)); }
+
+/* ---- trust: three tinted cards ---- */
+html.ocean #lp-trust-grid > *:nth-child(1) .panel { background: linear-gradient(160deg, rgba(255,255,255,.92), rgba(207,230,255,.85)); }
+html.ocean #lp-trust-grid > *:nth-child(2) .panel { background: linear-gradient(160deg, rgba(255,255,255,.92), rgba(196,241,238,.85)); }
+html.ocean #lp-trust-grid > *:nth-child(3) .panel { background: linear-gradient(160deg, rgba(255,255,255,.92), rgba(255,230,184,.85)); }
+html.ocean #lp-trust-grid > *:nth-child(2) { margin-top: 0; }
+@media (min-width: 768px) {
+  html.ocean #lp-trust-grid > *:nth-child(2) { margin-top: 26px; }
+}
+
+/* ---- closing call-to-action: a patch of open sea ---- */
+html.ocean .cta-ocean {
+  background:
+    radial-gradient(60% 90% at 85% 0%, rgba(255, 214, 140, 0.75), transparent 70%),
+    linear-gradient(135deg, #cfe8ff 0%, #8fcbfa 55%, #5fb4f2 100%);
+  border-color: rgba(31, 111, 235, 0.3);
+}
+html.ocean .cta-ocean h2.font-display {
+  background: none;
+  -webkit-text-fill-color: #0b2a5b;
+  color: #0b2a5b;
+  animation: none;
+}
+html.ocean .cta-ocean p { color: #1d4a85; }
+html.ocean .cta-ocean .btn-ink {
+  color: #0b2a5b;
+  background-image: linear-gradient(120deg, #ffd27a, #ffb640);
+  box-shadow: 0 12px 24px -12px rgba(255, 150, 40, 0.9);
+}
+html.ocean .cta-ocean .btn-line {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.9);
+}
+html.ocean .cta-bubble {
+  position: absolute;
+  bottom: -20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.25);
+  animation: bubbleup 7s ease-in infinite;
+  pointer-events: none;
+}
+html.ocean .cta-bubble-1 { left: 8%; width: 26px; height: 26px; }
+html.ocean .cta-bubble-2 { left: 24%; width: 14px; height: 14px; animation-delay: -2.5s; animation-duration: 8.5s; }
+html.ocean .cta-bubble-3 { right: 22%; width: 34px; height: 34px; animation-delay: -4s; }
+html.ocean .cta-bubble-4 { right: 9%; width: 18px; height: 18px; animation-delay: -1s; animation-duration: 9s; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.ocean .rv { opacity: 1; transform: none; transition: none; }
 }

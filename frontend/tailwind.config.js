@@ -4,32 +4,40 @@ export default {
   theme: {
     extend: {
       colors: {
-        // "Living nautical chart": warm chart paper, marine ink, shallow-water
-        // teal, and buoy/signal colours. Everything reads like a drafted sheet.
+        // Every neutral / brand shade is a CSS variable (R G B channels) so the
+        // desktop site can wear the light "ocean" theme (html.ocean, set in
+        // main.tsx) while the phone app keeps the original chart-paper palette.
+        // The defaults live in :root and the ocean values in html.ocean, both
+        // in src/index.css.
         paper: {
-          50: "#FBF7ED",
-          100: "#F5EEDD",
-          150: "#EFE6CF",
-          200: "#E6DABD",
-          300: "#D6C7A2",
-          400: "#B9A67C",
+          50: "rgb(var(--c-paper-50) / <alpha-value>)",
+          100: "rgb(var(--c-paper-100) / <alpha-value>)",
+          150: "rgb(var(--c-paper-150) / <alpha-value>)",
+          200: "rgb(var(--c-paper-200) / <alpha-value>)",
+          300: "rgb(var(--c-paper-300) / <alpha-value>)",
+          400: "rgb(var(--c-paper-400) / <alpha-value>)",
         },
         ink: {
-          900: "#12212D",
-          800: "#1B2F3E",
-          700: "#263B4D",
-          500: "#42596D",
-          400: "#5D7386",
-          300: "#82949F",
+          900: "rgb(var(--c-ink-900) / <alpha-value>)",
+          800: "rgb(var(--c-ink-800) / <alpha-value>)",
+          700: "rgb(var(--c-ink-700) / <alpha-value>)",
+          600: "rgb(var(--c-ink-600) / <alpha-value>)",
+          500: "rgb(var(--c-ink-500) / <alpha-value>)",
+          400: "rgb(var(--c-ink-400) / <alpha-value>)",
+          300: "rgb(var(--c-ink-300) / <alpha-value>)",
         },
         chart: {
-          700: "#174F68",
-          600: "#1E5F7A",
-          500: "#2A7391",
-          300: "#7FA9BC",
-          100: "#D8E7EB",
+          700: "rgb(var(--c-chart-700) / <alpha-value>)",
+          600: "rgb(var(--c-chart-600) / <alpha-value>)",
+          500: "rgb(var(--c-chart-500) / <alpha-value>)",
+          300: "rgb(var(--c-chart-300) / <alpha-value>)",
+          100: "rgb(var(--c-chart-100) / <alpha-value>)",
         },
-        signal: "#C7442E",
+        signal: "rgb(var(--c-signal) / <alpha-value>)",
+        // Extra accents used by the ocean theme for the colour "mix".
+        sun: "#FFB640",
+        aqua: "#12B5C8",
+        coral: "#F26B4E",
         risk: {
           low: "#1D7A50",
           moderate: "#A17000",

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
   ArrowUp,
   Compass as CompassIcon,
@@ -26,6 +26,8 @@ import {
   SchoolGlyph,
   SpeakerGlyph,
   WarnGlyph,
+  WaveGlyph,
+  WindGlyph,
 } from "./glyphs";
 
 const FOOTER_PRODUCT_ICONS = [CompassIcon, MessageCircle, ShieldCheck, Settings2];
@@ -429,23 +431,53 @@ function prefersStill(): boolean {
   );
 }
 
+/** True once the element has scrolled into view (fail-safe: always true after a few seconds
+ *  or when motion is reduced, so content can never stay hidden). */
+function useInView<T extends HTMLElement>(delay = 0): [React.RefObject<T>, boolean] {
+  const ref = useRef<T>(null);
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || prefersStill() || typeof IntersectionObserver === "undefined") {
+      setShown(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.08, rootMargin: "0px 0px -6% 0px" },
+    );
+    io.observe(el);
+    const failsafe = window.setTimeout(() => setShown(true), 4500 + delay);
+    return () => {
+      io.disconnect();
+      window.clearTimeout(failsafe);
+    };
+  }, [delay]);
+  return [ref, shown];
+}
+
 function Reveal({
   className = "",
   children,
+  delay = 0,
+  from = "up",
 }: {
   delay?: number;
   className?: string;
+  from?: "up" | "left" | "right" | "zoom";
   children: ReactNode;
 }) {
+  const [ref, shown] = useInView<HTMLDivElement>(delay);
   return (
     <div
-      className={className}
-      style={{
-        opacity: 1,
-        transform: "none",
-        transition: "none",
-        animation: "none",
-      }}
+      ref={ref}
+      className={`${className} rv rv-${from} ${shown ? "rv-in" : ""}`}
+      style={{ "--rv-d": `${Math.min(delay, 420)}ms` } as CSSProperties}
     >
       {children}
     </div>
@@ -514,10 +546,11 @@ function SectionHeading({
   title: string;
   sub?: string;
 }) {
+  const [ref, shown] = useInView<HTMLDivElement>();
   return (
-    <div id={id} className="mt-16 max-w-[640px] scroll-mt-20">
+    <div ref={ref} id={id} className={`rv rv-left mt-16 max-w-[640px] scroll-mt-20 ${shown ? "rv-in" : ""}`}>
       <div className="flex items-center gap-2">
-        <span className="h-px w-6 bg-chart-500/70" />
+        <span className="sec-line h-px w-6 bg-chart-500/70" />
         <span className="label !text-chart-600">{kicker}</span>
       </div>
       <h2 className="mt-2 font-display text-[26px] font-black leading-tight tracking-tight text-ink-900 sm:text-[30px]">
@@ -581,10 +614,10 @@ export default function Landing({
   return (
     <>
         <nav className="fixed left-0 top-0 z-50 w-full border-b border-[var(--rule)] bg-paper-50/90 backdrop-blur-sm">
-          <div className="mx-auto grid max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-8 px-5 py-4">
+          <div className="mx-auto grid max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-8 px-5 py-2.5">
             <span className="flex shrink-0 items-center gap-2">
-              <CompassMark size={26} className="text-ink-900" />
-              <span className="font-display text-[19px] font-black tracking-tight text-ink-900">ORCA</span>
+              <CompassMark size={46} className="shrink-0 text-ink-900" />
+              <span className="font-display text-[30px] font-black leading-none tracking-tight text-ink-900">ORCA</span>
             </span>
             <div className="hidden items-center justify-center gap-9 md:flex">
               <button
@@ -613,16 +646,16 @@ export default function Landing({
           </div>
         </nav>
 
-      <div className="mx-auto flex min-h-full max-w-[1240px] flex-col px-5 pb-5 pt-[88px]">
+      <div className="mx-auto flex min-h-full max-w-[1240px] flex-col px-5 pb-5 pt-[100px]">
       <div className="sea-drift" aria-hidden />
       <div className="fish-drift" aria-hidden />
 
-      <div className="flex min-h-[calc(100svh-70px)] flex-col justify-center py-6">
+      <div className="flex min-h-[calc(100svh-84px)] flex-col justify-center py-6">
       {/* hero */}
       <div className="mt-0 grid items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-x-20 xl:gap-x-24">
         <div>
           <Reveal delay={200}>
-            <p className="mt-5 max-w-[600px] font-display text-[40px] font-black leading-[1.1] tracking-tight text-ink-900 sm:text-[46px] lg:text-[52px]">
+            <p className="hero-title mt-5 max-w-[620px] font-display text-[40px] font-black leading-[1.16] tracking-tight text-ink-900 sm:text-[46px] lg:text-[52px]">
               {t.tag1}
               <br />
               {t.tag2a}
@@ -661,6 +694,17 @@ export default function Landing({
         </div>
 
         <Reveal delay={260} className="mt-2 w-full justify-self-center lg:mt-0 lg:justify-self-end lg:pl-6 xl:pl-10">
+          <div className="hero-stage relative">
+          <span className="hero-sun" aria-hidden />
+          <span className="hero-chip hero-chip-a" aria-hidden>
+            <WaveGlyph size={14} /> 1.3 m
+          </span>
+          <span className="hero-chip hero-chip-b" aria-hidden>
+            <WindGlyph size={14} /> 19 km/h
+          </span>
+          <span className="hero-chip hero-chip-c" aria-hidden>
+            <CheckGlyph size={13} /> {heroConfidence}%
+          </span>
           <HeroArt>
           <svg viewBox="0 0 440 300" className="w-full max-w-[480px] lg:max-w-[720px]" aria-hidden>
             {/* ============ layer 0 — ocean / bathymetry (always present) ============ */}
@@ -862,6 +906,7 @@ export default function Landing({
             </g>
           </svg>
           </HeroArt>
+          </div>
         </Reveal>
       </div>
 
@@ -883,7 +928,7 @@ export default function Landing({
       <div id="lp-more" />
 
       <Reveal delay={420}>
-        <div className="panel mt-12 grid grid-cols-2 sm:grid-cols-5">
+        <div className="stats-strip panel mt-12 grid grid-cols-2 sm:grid-cols-5">
           {stats.map((x, i) => (
             <div
               key={x.k}
@@ -907,7 +952,7 @@ export default function Landing({
       <SectionHeading id="lp-problem" kicker={t.problemKicker} title={t.problemTitle} />
       <Reveal delay={480}>
         <div className="mt-6 grid gap-4 lg:grid-cols-[1.15fr_0.85fr] lg:items-stretch">
-          <div className="panel p-5">
+          <div className="prob-a panel p-6">
             <p className="text-[14.5px] leading-relaxed text-ink-700">{t.problemBody}</p>
             <div className="mt-5 flex flex-wrap gap-2">
               {t.problemTags.map((tag) => (
@@ -922,7 +967,7 @@ export default function Landing({
               ))}
             </div>
           </div>
-          <div className="panel lift flex flex-col items-center justify-center gap-3 p-5 text-center">
+          <div className="prob-b panel lift flex flex-col items-center justify-center gap-3 p-5 text-center">
             <div className="grid w-full grid-cols-2 gap-2">
               {t.problemTags.map((tag) => (
                 <div
@@ -950,9 +995,9 @@ export default function Landing({
 
       {/* feature cards */}
       <SectionHeading kicker={t.featuresKicker} title={t.featuresTitle} />
-      <div id="lp-features" className="mt-5 scroll-mt-20 grid gap-4 md:grid-cols-3">
+      <div id="lp-features" className="mt-5 scroll-mt-20 grid gap-4 md:grid-cols-[1.2fr_1fr] md:grid-rows-2">
         {t.cards.map((c, i) => (
-          <Reveal key={cardTabs[i]} delay={520 + i * 110}>
+          <Reveal key={cardTabs[i]} delay={i * 120} from={i === 0 ? "left" : "right"} className={i === 0 ? "md:row-span-2" : ""}>
             <div className="panel rule-double lift group flex h-full flex-col">
               <div className="hd">
                 <span className="label flex items-center gap-2 transition-colors group-hover:!text-chart-600">
@@ -960,8 +1005,8 @@ export default function Landing({
                   {i === 0 && <FishGlyph size={15} className="swim text-chart-500" />}
                 </span>
               </div>
-              <div className="flex-1 px-4 py-4">
-                <h3 className="font-display text-[19px] font-bold leading-snug text-ink-900">
+              <div className="relative flex-1 overflow-hidden px-4 py-4">
+                <h3 className={`font-display font-bold leading-snug text-ink-900 ${i === 0 ? "text-[26px]" : "text-[19px]"}`}>
                   {c.title}
                 </h3>
                 <ul className="mt-3 space-y-2">
@@ -972,6 +1017,17 @@ export default function Landing({
                     </li>
                   ))}
                 </ul>
+                {i === 0 && (
+                  <>
+                    <div className="feat-sonar" aria-hidden>
+                      <i />
+                      <i />
+                      <i />
+                      <b />
+                    </div>
+                    <div className="feat-swell" aria-hidden />
+                  </>
+                )}
               </div>
               <div className="border-t px-4 py-3" style={{ borderColor: "var(--rule-faint)" }}>
                 <button onClick={() => onEnter(cardTabs[i])} className="btn-line group/open w-full justify-center">
@@ -1015,9 +1071,9 @@ export default function Landing({
 
       {/* how it decides — the differentiator */}
       <SectionHeading id="lp-pipeline" kicker={t.pipelineKicker} title={t.pipelineTitle} sub={t.pipelineSub} />
-      <Reveal delay={880}>
-        <div className="panel mt-6 overflow-hidden">
-          <div className="hd justify-end">
+      <Reveal delay={120}>
+        <div className="mt-6">
+          <div className="mb-4 flex justify-end">
             <button
               onClick={() => onEnter("system")}
               className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-chart-600 underline decoration-dashed underline-offset-4 transition-colors hover:text-ink-900"
@@ -1025,26 +1081,15 @@ export default function Landing({
               {t.watchLive}
             </button>
           </div>
-          <div className="grid sm:grid-cols-4">
+          <div className="pipe-track relative grid gap-4 sm:grid-cols-4">
             {t.phases.map((p, i) => (
-              <div
-                key={p.t}
-                className={`group relative px-4 py-3.5 transition-colors hover:bg-chart-100/40 ${i > 0 ? "sm:border-l" : ""}`}
-                style={{ borderColor: "var(--rule-faint)" }}
-              >
+              <div key={p.t} className={`pipe-step pipe-step-${i} panel lift group relative px-4 pb-4 pt-10`}>
+                <span className="pipe-num">{i + 1}</span>
                 <div className="flex items-baseline gap-2">
-                  <span className="font-display text-[15px] font-bold text-ink-900">{p.t}</span>
-                  {i === 1 && (
-                    <span className="font-mono text-[9px] font-bold text-chart-700">∥ 5</span>
-                  )}
+                  <span className="font-display text-[17px] font-bold text-ink-900">{p.t}</span>
+                  {i === 1 && <span className="font-mono text-[9px] font-bold text-chart-700">∥ 5</span>}
                 </div>
-                <p className="mt-1 text-[11.5px] italic leading-snug text-ink-500">{p.n}</p>
-                {i < 3 && (
-                  <CourseArrow
-                    size={13}
-                    className="absolute -right-1.5 top-1/2 hidden -translate-y-1/2 text-ink-300 transition-all group-hover:translate-x-0.5 group-hover:text-chart-600 sm:block"
-                  />
-                )}
+                <p className="mt-1.5 text-[12px] italic leading-snug text-ink-500">{p.n}</p>
               </div>
             ))}
           </div>
@@ -1053,11 +1098,11 @@ export default function Landing({
 
       {/* trust — why the numbers can be believed */}
       <SectionHeading id="lp-trust" kicker={t.trustKicker} title={t.trustTitle} />
-      <div className="mt-6 grid gap-4 md:grid-cols-3">
+      <div id="lp-trust-grid" className="mt-6 grid gap-4 md:grid-cols-3">
         {t.trustCards.map((card, i) => {
           const Icon = [LockGlyph, CheckGlyph, SpeakerGlyph][i];
           return (
-            <Reveal key={card.title} delay={60 + i * 100}>
+            <Reveal key={card.title} delay={i * 110} from="zoom">
               <div className="panel lift flex h-full flex-col gap-3 p-4">
                 <span className="grid h-9 w-9 place-items-center rounded-[2px] bg-chart-100 text-chart-600">
                   <Icon size={16} />
@@ -1072,7 +1117,11 @@ export default function Landing({
 
       {/* closing CTA — one more push before the footer */}
       <Reveal delay={140}>
-        <div className="panel rule-double mt-10 flex flex-col items-center gap-4 px-6 py-10 text-center">
+        <div className="cta-ocean panel rule-double relative mt-10 flex flex-col items-center gap-4 overflow-hidden px-6 py-14 text-center">
+          <span className="cta-bubble cta-bubble-1" aria-hidden />
+          <span className="cta-bubble cta-bubble-2" aria-hidden />
+          <span className="cta-bubble cta-bubble-3" aria-hidden />
+          <span className="cta-bubble cta-bubble-4" aria-hidden />
           <h2 className="font-display text-[24px] font-black leading-tight text-ink-900 sm:text-[28px]">
             {t.closingTitle}
           </h2>
@@ -1095,8 +1144,8 @@ export default function Landing({
             {/* brand */}
             <div>
               <span className="flex items-center gap-2">
-                <CompassMark size={24} className="text-ink-900" />
-                <span className="font-display text-[18px] font-black tracking-tight text-ink-900">ORCA</span>
+                <CompassMark size={46} className="shrink-0 text-ink-900" />
+                <span className="font-display text-[30px] font-black leading-none tracking-tight text-ink-900">ORCA</span>
               </span>
               <p className="mt-3 max-w-[230px] text-[12.5px] leading-relaxed text-ink-500">{t.footerTagline}</p>
               <span

@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 // Self-hosted fonts — the demo must not depend on a font CDN being reachable.
 import "@fontsource-variable/archivo";
+import "@fontsource-variable/bricolage-grotesque";
+import "@fontsource-variable/figtree";
 import "@fontsource-variable/fraunces";
 import "@fontsource-variable/fraunces/wght-italic.css";
 import "@fontsource-variable/noto-serif-devanagari";
@@ -17,6 +19,10 @@ import "./index.css";
 const mParam = new URLSearchParams(window.location.search).get("m");
 const isPhone =
   mParam === "1" || (mParam !== "0" && window.matchMedia("(max-width: 640px)").matches);
+
+// The light "ocean" theme is for the website only — the phone app keeps its
+// original look. Every ocean rule in index.css is scoped under html.ocean.
+if (!isPhone) document.documentElement.classList.add("ocean");
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -34,4 +40,3 @@ if ("serviceWorker" in navigator && (import.meta as any).env?.PROD) {
     });
   });
 }
-
