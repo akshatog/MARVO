@@ -12,8 +12,8 @@ from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Query
 
-from ..agents import (cyclone_agent, gis_agent, ocean_agent, risk_agent,
-                      route_agent, weather_agent)
+from ..agents import (cyclone_agent, gis_agent, ocean_agent, pfz_agent,
+                      risk_agent, route_agent, weather_agent)
 from ..data import demo_store
 from ..data.demo_store import IST, now_ist
 from ..data.geo import (RESTRICTED_ZONES, distance_from_shore_km, haversine_km,
@@ -119,7 +119,15 @@ def fishing_outlook(
     ambient_sst = ocean.data.get("sst_c")
 
     # ---- grounds within the radius, today -------------------------------
-    candidates = demo_store.pfz_zones(lat, lon, loc.name, now, radius_km=radius_km)
+    # Route through pfz_agent so LIVE mode fetches real INCOIS advisory data.
+    # The agent handles live → INCOIS scraper → chlorophyll enrichment → demo
+    # fallback internally; api/fishing.py must not hard-code demo_store here.
+    pfz_result = pfz_agent.run(loc, now, count=6)
+    candidates = pfz_result.data.get("zones", [])
+    if not candidates:
+        # agent returned empty (e.g., all zones filtered by restricted areas) —
+        # fall through to the demo store as last resort
+        candidates = demo_store.pfz_zones(lat, lon, loc.name, now, radius_km=radius_km)
     zones = _zone_payload(loc, candidates, ambient_sst, now.hour)
 
     # ---- best hours to be on the water ----------------------------------
@@ -191,7 +199,14 @@ def fishing_outlook(
         )
         dt = day_start.replace(hour=peak_hour)
         cond = demo_store.conditions(loc.name, dt)
-        day_candidates = demo_store.pfz_zones(lat, lon, loc.name, dt, radius_km=radius_km)
+        # For the multi-day forecast, use the pfz_agent for day 0 (already
+        # fetched above, reuse). For future days the demo store is the right
+        # source since INCOIS only publishes today's advisory — the forecast
+        # is always a projection, clearly labelled DEMO.
+        if offset == 0:
+            day_candidates = candidates
+        else:
+            day_candidates = demo_store.pfz_zones(lat, lon, loc.name, dt, radius_km=radius_km)
         day_zones = _zone_payload(loc, day_candidates, cond["sst"], peak_hour)
         best = day_zones[0] if day_zones else None
         prob = best["probability"] if best else 0
