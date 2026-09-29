@@ -1,9 +1,9 @@
 import { useState } from "react";
-import type { Evidence, Language, RiskAssessment } from "../types";
+import type { Localized, Evidence, Language, RiskAssessment } from "../types";
 import { LockGlyph } from "./glyphs";
 import RiskDial, { RISK_COLOR } from "./RiskDial";
 
-const VERDICT: Record<Language, Record<string, string>> = {
+const VERDICT: Localized<Record<string, string>> = {
   en: {
     LOW: "Conditions look safe",
     MODERATE: "Go with caution",
@@ -24,7 +24,7 @@ const VERDICT: Record<Language, Record<string, string>> = {
   },
 };
 
-const UI: Record<Language, Record<string, string>> = {
+const UI: Localized<Record<string, string>> = {
   en: {
     why: "Why — ranked contribution to the score",
     warning: "Official warning",

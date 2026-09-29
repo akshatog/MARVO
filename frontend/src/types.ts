@@ -1,5 +1,7 @@
 export type Language = "en" | "hi" | "mr" | "ta" | "te" | "bn" | "ml";
-export type SupportedLanguage = Language;  // all supported languages are now in Language
+export type SupportedLanguage = Language;
+/** Dictionaries must define en; other languages fall back to en when missing. */
+export type Localized<T> = { en: T } & Partial<Record<Language, T>>;  // all supported languages are now in Language
 
 export type DataMode = "LIVE" | "DEMO" | "CACHE";
 export type RiskCategory = "LOW" | "MODERATE" | "HIGH" | "EXTREME";
@@ -425,4 +427,3 @@ export interface Voyage {
   status: "ACTIVE" | "ENDED";
   last_decision?: DecisionState | null;
 }
-

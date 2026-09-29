@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import * as api from "../api";
-import type { Language } from "../types";
+import type { Localized, Language } from "../types";
 import { CourseArrow, FishGlyph, LockGlyph, WarnGlyph } from "./glyphs";
 import { PORTS } from "./LocationPicker";
 import QuickRiskPanel from "./QuickRiskPanel";
@@ -19,7 +19,7 @@ function PipeJoint() {
 }
 
 /** The engine room, in the fisher's three languages. */
-const L10N: Record<Language, Record<string, string>> = {
+const L10N: Localized<Record<string, string>> = {
   en: {
     engineRoom: "The engine room",
     configNote: "GET /api/config exposes every weight and threshold — nothing is hidden",
@@ -265,7 +265,7 @@ export default function SystemPanel({
 
   const latest = rows[0];
 
-  const providerText: Record<Language, { gives: string; note: string }[]> = {
+  const providerText: Localized<{ gives: string; note: string }[]> = {
     en: [
       { gives: "wave height · wave period · sea-surface temperature · currents", note: "keyless public API — verified working" },
       { gives: "wind · rain probability · visibility · air temperature", note: "keyless public API — verified working" },
@@ -298,7 +298,7 @@ export default function SystemPanel({
     { name: "Demo store", status: "ALWAYS ON", color: "#42596D", live: false, ...pText[4] },
   ];
 
-  const crewText: Record<Language, { phase: string; agents: string[]; note: string }[]> = {
+  const crewText: Localized<{ phase: string; agents: string[]; note: string }[]> = {
     en: [
       { phase: "Understand", agents: ["Intent"], note: "rule-based parsing — language, place, time. No LLM." },
       { phase: "Gather", agents: ["Weather", "Ocean", "PFZ", "Alerts", "GIS"], note: "independent specialists fan out concurrently" },
@@ -645,4 +645,4 @@ export default function SystemPanel({
       })()}
     </div>
   );
-}
+}

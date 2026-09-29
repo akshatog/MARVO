@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import * as api from "../api";
-import type { Language, Location, TimelinePoint } from "../types";
+import type { Localized, Language, Location, TimelinePoint } from "../types";
 import { RISK_COLOR } from "./RiskDial";
 
-const L: Record<Language, Record<string, string>> = {
+const L: Localized<Record<string, string>> = {
   en: {
     title: "When is it safe to go?",
     sub: "Risk hour by hour for the next 24 hours",

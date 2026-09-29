@@ -11,7 +11,7 @@ import {
   Workflow,
 } from "lucide-react";
 import * as api from "../api";
-import type { Language } from "../types";
+import type { Language, Localized } from "../types";
 import {
   CheckGlyph,
   CompassMark,
@@ -48,8 +48,7 @@ const AGENT_ICONS = [
   CheckGlyph,
 ];
 
-const L10N: Record<
-  Language,
+const L10N: Localized<
   {
     tag1: string;
     tag2a: string;
@@ -106,6 +105,7 @@ const L10N: Record<
     tag2b: "intelligence",
     tag2c: ".",
     sub: "ORCA brings together satellite, oceanographic, and weather data through collaborative AI agents to deliver clear, explainable insights and actionable recommendations for safer, smarter decisions at sea.",
+    kicker: "SIH26176 · ISRO · Smart India Hackathon 2026",
     navFeatures: "Features",
     navHow: "How it works",
     navTry: "Try it",

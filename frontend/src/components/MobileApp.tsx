@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import * as api from "../api";
 import { useVoiceRecorder } from "../hooks/useVoiceRecorder";
-import type { AlertEvent, FishingOutlook, Language, SupportedLanguage, Voyage, ZoneFeature } from "../types";
+import type { Localized, AlertEvent, FishingOutlook, Language, SupportedLanguage, Voyage, ZoneFeature } from "../types";
 import { RATING_COLOR } from "./FishingPanel";
 import AlertBanner from "./AlertBanner";
 import AlertsPanel from "./AlertsPanel";
@@ -44,7 +44,7 @@ type MTab = "today" | "map" | "ask";
 const SESSION = "phone";
 const DEFAULT_PORT = PORTS[0];
 
-const T: Record<Language, Record<string, string>> = {
+const T: Localized<Record<string, string>> = {
   en: {
     today: "Today",
     map: "Map",

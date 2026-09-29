@@ -2936,3 +2936,85 @@ html.ocean .hd-src {
     animation: none;
   }
 }
+
+/* ================= Today map: living-sea animation ================= */
+/* Soft light bands drifting across the water, under every marker. */
+.map-waves {
+  position: absolute;
+  inset: 0;
+  z-index: 440;
+  pointer-events: none;
+  overflow: hidden;
+  mix-blend-mode: soft-light;
+}
+.map-waves span {
+  position: absolute;
+  left: -50%;
+  width: 200%;
+  height: 34%;
+  background: repeating-linear-gradient(
+    100deg,
+    transparent 0 46px,
+    rgba(255, 255, 255, 0.5) 60px,
+    transparent 76px 150px
+  );
+  opacity: 0.55;
+  animation: wave-drift 16s linear infinite;
+}
+.map-waves span:nth-child(1) { top: 4%;  animation-duration: 18s; }
+.map-waves span:nth-child(2) { top: 36%; animation-duration: 24s; animation-direction: reverse; opacity: 0.4; }
+.map-waves span:nth-child(3) { top: 68%; animation-duration: 30s; opacity: 0.32; }
+@keyframes wave-drift {
+  to { transform: translateX(25%); }
+}
+
+/* Radar sweep around the boat */
+.radar-sweep {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient(from 0deg, transparent 0deg, transparent 300deg, rgba(42, 115, 145, 0.38) 360deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 14px, #000 15px, #000 70px, transparent 75px);
+  mask-image: radial-gradient(circle, transparent 14px, #000 15px, #000 70px, transparent 75px);
+  animation: radar-turn 3.6s linear infinite;
+}
+@keyframes radar-turn {
+  to { transform: rotate(360deg); }
+}
+
+/* Vessel that sails the recommended course */
+.sail-dot {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #1d7a50;
+  border: 2.5px solid #fbf7ed;
+  box-shadow: 0 2px 6px rgba(18, 33, 45, 0.45);
+}
+.sail-wake {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(29, 122, 80, 0.7);
+  animation: deck-ring 1.8s ease-out infinite;
+}
+
+/* Location pill: never let the label collapse to "Y…" */
+.loc-pill { min-width: 0; }
+.loc-pill .btn-line { padding-left: 0.6rem; padding-right: 0.6rem; }
+
+/* Sea-in-motion + legend: tighter on shorter maps */
+@media (max-height: 820px) {
+  .map-deck .map-vignette { opacity: 0.8; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-waves span,
+  .radar-sweep,
+  .sail-wake { animation: none; }
+}

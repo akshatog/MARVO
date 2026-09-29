@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useVoiceRecorder } from "../hooks/useVoiceRecorder";
 import type { AgentEvent } from "../api";
-import type { ChatMessage, Language } from "../types";
+import type { Localized, ChatMessage, Language } from "../types";
 import { BoatGlyph, CompassMark, CourseArrow, MicGlyph, SchoolGlyph, StopGlyph } from "./glyphs";
 
-const PLACEHOLDER: Record<Language, string> = {
+const PLACEHOLDER: Localized<string> = {
   en: "Ask ORCA — can I go fishing tomorrow at 6 AM?",
   hi: "ORCA se puchhen — kya main kal subah 6 baje ja sakta hun?",
   mr: "ORCA la vichara — mi udya sakali 6 vajata jau shakto ka?",
@@ -14,7 +14,7 @@ const PLACEHOLDER: Record<Language, string> = {
   ml: "ORCA യോട് ചോദിക്കുക — എനിക്ക് നാളെ രാവിലെ 6 മണിക്ക് മീൻ പിടിക്കാൻ പോകാമോ?",
 };
 
-const T: Record<Language, Record<string, string>> = {
+const T: Localized<Record<string, string>> = {
   en: {
     title: "Ask ORCA",
     you: "You",
@@ -48,7 +48,7 @@ const AGENT_ICON: Record<string, string> = {
   specialists: "Lightning",
 };
 
-const SPEECH_LOCALE: Record<Language, string> = {
+const SPEECH_LOCALE: Localized<string> = {
   en: "en-IN",
   hi: "hi-IN",
   mr: "mr-IN",
@@ -171,7 +171,7 @@ export default function ChatPanel({
   };
 
   const { state: voiceState, toggleRecording } = useVoiceRecorder({
-    language: SPEECH_LOCALE[language],
+    language: SPEECH_LOCALE[language] ?? SPEECH_LOCALE.en,
     onTranscript: (said) => {
       setText(said);
       submit(said);

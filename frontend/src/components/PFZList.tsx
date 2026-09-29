@@ -1,4 +1,4 @@
-import type { Language } from "../types";
+import type { Localized, Language } from "../types";
 import { SchoolGlyph } from "./glyphs";
 
 /** Only the fields this list actually renders — lets it accept either the
@@ -13,7 +13,7 @@ export interface ZoneLike {
   confidence: number;
 }
 
-const L: Record<Language, Record<string, string>> = {
+const L: Localized<Record<string, string>> = {
   en: {
     title: "Potential fishing zones",
     note: "Derived from sea-surface-temperature fronts and chlorophyll — a likely area, never a guarantee of fish.",

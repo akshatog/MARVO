@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import * as api from "../api";
 import { FlowLayer, type FlowMode } from "./FlowLayer";
 import type {
+  Localized,
   FishingArea,
   GeofenceAlert,
   Language,
@@ -23,13 +24,13 @@ const ZONE_COLOR: Record<string, string> = {
   info: "#2A7391",
 };
 
-const HINT: Record<Language, string> = {
+const HINT: Localized<string> = {
   en: "Drag the boat to check any position",
   hi: "किसी भी स्थान की जाँच के लिए नाव खींचें",
   mr: "कोणतेही ठिकाण तपासण्यासाठी होडी ओढा",
 };
 
-const LEGEND: Record<Language, Record<string, string>> = {
+const LEGEND: Localized<Record<string, string>> = {
   en: {
     symbols: "Symbols",
     veryGood: "Very good chance",
@@ -144,6 +145,8 @@ export default function MarineMap({
   const layerRef = useRef<L.LayerGroup | null>(null);
   const boatRef = useRef<L.Marker | null>(null);
   const flowRef = useRef<FlowLayer | null>(null);
+  const sailRaf = useRef(0);
+  const [legendOpen, setLegendOpen] = useState(() => typeof window === "undefined" || window.innerHeight >= 820);
   const [flowMode, setFlowMode] = useState<FlowMode>("wind");
   const [probe, setProbe] = useState<PositionCheck | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -194,6 +197,7 @@ export default function MarineMap({
     flowRef.current.setMode("wind");
     setTimeout(() => map.invalidateSize(), 120);
     return () => {
+      cancelAnimationFrame(sailRaf.current);
       flowRef.current?.destroy();
       flowRef.current = null;
       map.remove();
@@ -223,6 +227,7 @@ export default function MarineMap({
     const map = mapRef.current;
     const group = layerRef.current;
     if (!map || !group) return;
+    cancelAnimationFrame(sailRaf.current);
     group.clearLayers();
     boatRef.current = null;
     setProbe(null);
@@ -396,6 +401,46 @@ export default function MarineMap({
       }
     });
 
+    // a little vessel sails the recommended course, looping, so the chart feels alive
+    const recRoute = routes.find((r) => r.recommended && r.legs.length > 1);
+    if (recRoute && !(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)) {
+      const pts = recRoute.legs.map((l) => [l.latitude, l.longitude] as [number, number]);
+      const seg: number[] = [];
+      let total = 0;
+      for (let i = 1; i < pts.length; i++) {
+        const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+        seg.push(d);
+        total += d;
+      }
+      if (total > 0) {
+        const sailor = L.marker(pts[0], {
+          interactive: false,
+          zIndexOffset: 300,
+          icon: L.divIcon({
+            className: "",
+            iconSize: [16, 16],
+            iconAnchor: [8, 8],
+            html: `<div class="sail-dot"><span class="sail-wake"></span></div>`,
+          }),
+        }).addTo(group);
+        const started = performance.now();
+        const LOOP_MS = 14000;
+        const tick = (now: number) => {
+          const f = (((now - started) % LOOP_MS) / LOOP_MS) * total;
+          let acc = 0;
+          let i = 0;
+          while (i < seg.length - 1 && acc + seg[i] < f) acc += seg[i++];
+          const k = seg[i] ? Math.min(1, (f - acc) / seg[i]) : 0;
+          sailor.setLatLng([
+            pts[i][0] + (pts[i + 1][0] - pts[i][0]) * k,
+            pts[i][1] + (pts[i + 1][1] - pts[i][1]) * k,
+          ]);
+          sailRaf.current = requestAnimationFrame(tick);
+        };
+        sailRaf.current = requestAnimationFrame(tick);
+      }
+    }
+
     // fishing grounds as numbered buoys: paper face, rating-coloured ring,
     // rank set in the chart's serif, probability as a sounding beneath it.
     if (areas.length) {
@@ -499,6 +544,7 @@ export default function MarineMap({
           // Inline SVG rather than an emoji: emoji glyphs vary by OS and can
           // fail to render entirely on a projector/kiosk machine.
           html: `<div class="roll" style="position:relative;width:34px;height:34px;cursor:grab">
+                   <div class="radar-sweep" aria-hidden="true"></div>
                    <div style="position:absolute;inset:-9px;border-radius:50%;
                      border:2px solid rgba(42,115,145,.6);
                      animation:ping2 2s cubic-bezier(0,0,.2,1) infinite"></div>
@@ -600,6 +646,13 @@ export default function MarineMap({
         <div ref={containerRef} className="w-full" style={{ height: fill ? "100%" : mapHeight }} />
 
         {fill && <div className="map-vignette" aria-hidden />}
+        {fill && (
+          <div className="map-waves" aria-hidden>
+            <span />
+            <span />
+            <span />
+          </div>
+        )}
 
         {/* compass rose, printed on the water */}
         <CompassMark
@@ -630,10 +683,17 @@ export default function MarineMap({
         </div>
 
         {/* symbols legend, as a chart's key */}
-        <div className="pointer-events-none absolute bottom-3 left-3 z-[500] rounded-[2px] border border-ink-700/50 bg-paper-50/95 px-3 pb-2 pt-1.5 shadow-md">
-          <div className="mb-1 font-mono text-[8.5px] font-bold uppercase tracking-[0.16em] text-ink-400">
-            {(LEGEND[language] ?? LEGEND.en).symbols}
-          </div>
+        <div className={`absolute bottom-3 left-3 z-[500] rounded-[2px] border border-ink-700/50 bg-paper-50/95 px-3 pb-2 pt-1.5 shadow-md ${legendOpen ? "" : "!pb-1.5"}`}>
+          <button
+            type="button"
+            onClick={() => setLegendOpen((v) => !v)}
+            aria-expanded={legendOpen}
+            className="mb-1 flex w-full items-center justify-between gap-3 font-mono text-[8.5px] font-bold uppercase tracking-[0.16em] text-ink-400 hover:text-ink-800"
+          >
+            <span>{(LEGEND[language] ?? LEGEND.en).symbols}</span>
+            <span className={`transition-transform ${legendOpen ? "" : "rotate-180"}`}>▾</span>
+          </button>
+          <div className={legendOpen ? "" : "hidden"}>
           {[
             ["#1D7A50", (LEGEND[language] ?? LEGEND.en).veryGood],
             ["#B08000", (LEGEND[language] ?? LEGEND.en).some],
@@ -685,6 +745,7 @@ export default function MarineMap({
               <span>{(LEGEND[language] ?? LEGEND.en).sstWarm}</span>
             </div>
           )}
+          </div>
         </div>
 
         {/* drag hint */}
