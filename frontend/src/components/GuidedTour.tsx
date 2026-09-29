@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import type { Language } from "../types";
+import type { Localized, Language } from "../types";
 import { PauseGlyph, PlayGlyph } from "./glyphs";
 
-type L10n = Record<Language, string>;
+type L10n = Localized<string>;
 
 export interface TourStep {
   title: L10n;

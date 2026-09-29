@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
   ArrowUp,
   Compass as CompassIcon,
@@ -11,7 +11,7 @@ import {
   Workflow,
 } from "lucide-react";
 import * as api from "../api";
-import type { Language } from "../types";
+import type { Language, Localized } from "../types";
 import {
   CheckGlyph,
   CompassMark,
@@ -26,7 +26,11 @@ import {
   SchoolGlyph,
   SpeakerGlyph,
   WarnGlyph,
+  WaveGlyph,
+  WindGlyph,
 } from "./glyphs";
+import BrandLogo from "./BrandLogo";
+import { HeroDemo, HeroSky } from "./HeroScene";
 
 const FOOTER_PRODUCT_ICONS = [CompassIcon, MessageCircle, ShieldCheck, Settings2];
 const FOOTER_EXPLORE_ICONS = [Layers, Workflow, Users, Radar];
@@ -44,8 +48,7 @@ const AGENT_ICONS = [
   CheckGlyph,
 ];
 
-const L10N: Record<
-  Language,
+const L10N: Localized<
   {
     tag1: string;
     tag2a: string;
@@ -429,23 +432,53 @@ function prefersStill(): boolean {
   );
 }
 
+/** True once the element has scrolled into view (fail-safe: always true after a few seconds
+ *  or when motion is reduced, so content can never stay hidden). */
+function useInView<T extends HTMLElement>(delay = 0): [React.RefObject<T>, boolean] {
+  const ref = useRef<T>(null);
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || prefersStill() || typeof IntersectionObserver === "undefined") {
+      setShown(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.08, rootMargin: "0px 0px -6% 0px" },
+    );
+    io.observe(el);
+    const failsafe = window.setTimeout(() => setShown(true), 4500 + delay);
+    return () => {
+      io.disconnect();
+      window.clearTimeout(failsafe);
+    };
+  }, [delay]);
+  return [ref, shown];
+}
+
 function Reveal({
   className = "",
   children,
+  delay = 0,
+  from = "up",
 }: {
   delay?: number;
   className?: string;
+  from?: "up" | "left" | "right" | "zoom";
   children: ReactNode;
 }) {
+  const [ref, shown] = useInView<HTMLDivElement>(delay);
   return (
     <div
-      className={className}
-      style={{
-        opacity: 1,
-        transform: "none",
-        transition: "none",
-        animation: "none",
-      }}
+      ref={ref}
+      className={`${className} rv rv-${from} ${shown ? "rv-in" : ""}`}
+      style={{ "--rv-d": `${Math.min(delay, 420)}ms` } as CSSProperties}
     >
       {children}
     </div>
@@ -477,32 +510,6 @@ function useCountUp(target: number | null, ms = 1000): string {
   return target == null ? "—" : String(v);
 }
 
-function HeroArt({ children }: { children: ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [t, setT] = useState({ x: 0, y: 0 });
-  return (
-    <div
-      ref={ref}
-      onMouseMove={(e) => {
-        if (prefersStill()) return;
-        const r = ref.current?.getBoundingClientRect();
-        if (!r) return;
-        const px = (e.clientX - r.left) / r.width - 0.5;
-        const py = (e.clientY - r.top) / r.height - 0.5;
-        setT({ x: px * 9, y: py * 7 });
-      }}
-      onMouseLeave={() => setT({ x: 0, y: 0 })}
-      style={{
-        transform: `perspective(1000px) rotateX(${-t.y}deg) rotateY(${t.x}deg)`,
-        transition: "transform 0.4s cubic-bezier(0.2, 0.7, 0.3, 1)",
-        willChange: "transform",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
 function SectionHeading({
   id,
   kicker,
@@ -514,10 +521,11 @@ function SectionHeading({
   title: string;
   sub?: string;
 }) {
+  const [ref, shown] = useInView<HTMLDivElement>();
   return (
-    <div id={id} className="mt-16 max-w-[640px] scroll-mt-20">
+    <div ref={ref} id={id} className={`rv rv-left mt-16 max-w-[640px] scroll-mt-28 ${shown ? "rv-in" : ""}`}>
       <div className="flex items-center gap-2">
-        <span className="h-px w-6 bg-chart-500/70" />
+        <span className="sec-line h-px w-6 bg-chart-500/70" />
         <span className="label !text-chart-600">{kicker}</span>
       </div>
       <h2 className="mt-2 font-display text-[26px] font-black leading-tight tracking-tight text-ink-900 sm:text-[30px]">
@@ -581,53 +589,50 @@ export default function Landing({
   return (
     <>
         <nav className="fixed left-0 top-0 z-50 w-full border-b border-[var(--rule)] bg-paper-50/90 backdrop-blur-sm">
-          <div className="mx-auto grid max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-8 px-5 py-4">
-            <span className="flex shrink-0 items-center gap-2">
-              <CompassMark size={26} className="text-ink-900" />
-              <span className="font-display text-[19px] font-black tracking-tight text-ink-900">ORCA</span>
-            </span>
-            <div className="hidden items-center justify-center gap-9 md:flex">
+          <div className="mx-auto grid max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-8 px-5 py-3">
+            <BrandLogo className="lp-nav-logo shrink-0" />
+            <div className="hidden items-center justify-center gap-8 md:flex">
               <button
                 onClick={() => document.getElementById("lp-features")?.scrollIntoView({ behavior: "smooth" })}
-                className="nav-link relative font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 transition-colors after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1.5px] after:origin-center after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:text-ink-900 hover:after:scale-x-100 focus-visible:text-ink-900 focus-visible:after:scale-x-100"
+                className="nav-link relative font-sans text-[15px] font-semibold tracking-normal text-ink-500 transition-colors after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1.5px] after:origin-center after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:text-ink-900 hover:after:scale-x-100 focus-visible:text-ink-900 focus-visible:after:scale-x-100"
               >
                 {t.navFeatures}
               </button>
               <button
                 onClick={() => document.getElementById("lp-pipeline")?.scrollIntoView({ behavior: "smooth" })}
-                className="nav-link relative font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 transition-colors after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1.5px] after:origin-center after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:text-ink-900 hover:after:scale-x-100 focus-visible:text-ink-900 focus-visible:after:scale-x-100"
+                className="nav-link relative font-sans text-[15px] font-semibold tracking-normal text-ink-500 transition-colors after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1.5px] after:origin-center after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:text-ink-900 hover:after:scale-x-100 focus-visible:text-ink-900 focus-visible:after:scale-x-100"
               >
                 {t.navHow}
               </button>
               <button
                 onClick={() => onScenario("Is there a cyclone near Paradip? Can I go fishing?")}
-                className="nav-link relative font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 transition-colors after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1.5px] after:origin-center after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:text-ink-900 hover:after:scale-x-100 focus-visible:text-ink-900 focus-visible:after:scale-x-100"
+                className="nav-link relative font-sans text-[15px] font-semibold tracking-normal text-ink-500 transition-colors after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1.5px] after:origin-center after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:text-ink-900 hover:after:scale-x-100 focus-visible:text-ink-900 focus-visible:after:scale-x-100"
               >
                 {t.navTry}
               </button>
             </div>
-            <button onClick={() => onEnter("home")} className="btn-ink group shrink-0 justify-self-end">
+            <button onClick={() => onEnter("home")} className="btn-ink group shrink-0 justify-self-end !px-5 !py-2.5">
               {t.openOrca}{" "}
               <CourseArrow size={13} className="transition-transform group-hover:translate-x-1" />
             </button>
           </div>
         </nav>
 
-      <div className="mx-auto flex min-h-full max-w-[1240px] flex-col px-5 pb-5 pt-[88px]">
+      <div className="mx-auto flex min-h-full max-w-[1240px] flex-col px-5 pb-5 pt-[104px]">
       <div className="sea-drift" aria-hidden />
       <div className="fish-drift" aria-hidden />
 
-      <div className="flex min-h-[calc(100svh-70px)] flex-col justify-center py-6">
+      <HeroSky confidence={heroConfidence} className="flex min-h-[calc(100svh-104px)] flex-col justify-center pb-24 pt-6">
       {/* hero */}
-      <div className="mt-0 grid items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-x-20 xl:gap-x-24">
+      <div className="mt-0 grid items-center gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-x-12 xl:gap-x-16">
         <div>
           <Reveal delay={200}>
-            <p className="mt-5 max-w-[600px] font-display text-[40px] font-black leading-[1.1] tracking-tight text-ink-900 sm:text-[46px] lg:text-[52px]">
+            <p className="hero-title max-w-[620px] font-display text-[40px] font-black leading-[1.16] tracking-tight text-ink-900 sm:text-[46px] lg:text-[52px]">
               {t.tag1}
               <br />
               {t.tag2a}
               <br />
-              <span className="text-chart-600">{t.tag2b}</span>
+              <span className="hs-ul text-chart-600">{t.tag2b}</span>
               {t.tag2c}
             </p>
             <p className="mt-6 max-w-[520px] text-[16px] leading-relaxed text-ink-600 lg:text-[17px]">{t.sub}</p>
@@ -660,208 +665,8 @@ export default function Landing({
           </Reveal>
         </div>
 
-        <Reveal delay={260} className="mt-2 w-full justify-self-center lg:mt-0 lg:justify-self-end lg:pl-6 xl:pl-10">
-          <HeroArt>
-          <svg viewBox="0 0 440 300" className="w-full max-w-[480px] lg:max-w-[720px]" aria-hidden>
-            {/* ============ layer 0 — ocean / bathymetry (always present) ============ */}
-            <rect x="0" y="0" width="440" height="300" fill="#2A7391" opacity="0.06" />
-            <rect x="0" y="150" width="440" height="150" fill="#2A7391" opacity="0.05" />
-            {[60, 130, 200, 270].map((y) => (
-              <line key={y} x1="0" y1={y} x2="440" y2={y} stroke="#2A7391" strokeWidth="0.5" opacity="0.2" />
-            ))}
-            {[80, 180, 280, 380].map((x) => (
-              <line key={x} x1={x} y1="0" x2={x} y2="300" stroke="#2A7391" strokeWidth="0.5" opacity="0.2" />
-            ))}
-
-            {/* ============ layer 1 — weather (isobars, fades in) ============ */}
-            <g className="layer-weather" fill="none" stroke="#5D7386" strokeWidth="0.8">
-              <path d="M14 38 Q120 16 224 38 T424 36" opacity="0.35" />
-              <path d="M6 60 Q130 40 252 60 T430 56" opacity="0.28" />
-              <path d="M20 20 Q140 4 262 22 T420 16" opacity="0.22" />
-            </g>
-
-            {/* ============ layer 2 — satellite pass (dot grid, fades in) ============ */}
-            <g className="layer-satellite" fill="#12212D">
-              {[70, 150, 230, 310, 390].flatMap((x) =>
-                [48, 108, 168, 226].map((y) => (
-                  <circle key={`${x}-${y}`} cx={x} cy={y} r="1" opacity="0.3" />
-                ))
-              )}
-            </g>
-
-            <g fill="#1E5F7A" opacity="0.5">
-              <g className="svg-swim">
-                <path d="M96 205 C99 201 104 200.5 108 203.8 L114 201 C113 202.3 112.5 203.6 112.5 205 C112.5 206.4 113 207.7 114 209 L108 206.2 C104 209.5 99 209 96 205 Z" />
-              </g>
-              <g className="svg-swim" style={{ animationDelay: "0.9s" }}>
-                <path d="M126 220 C129 216 134 215.5 138 218.8 L144 216 C143 217.3 142.5 218.6 142.5 220 C142.5 221.4 143 222.7 144 224 L138 221.2 C134 224.5 129 224 126 220 Z" />
-              </g>
-              <g className="svg-swim" style={{ animationDelay: "1.7s" }}>
-                <path d="M104 236 C107 232 112 231.5 116 234.8 L122 232 C121 233.3 120.5 234.6 120.5 236 C120.5 237.4 121 238.7 122 240 L116 237.2 C112 240.5 107 240 104 236 Z" />
-              </g>
-            </g>
-            <g fill="#1D7A50" opacity="0.45">
-              <g className="svg-swim" style={{ animationDelay: "0.4s" }}>
-                <path d="M330 100 C333 96 338 95.5 342 98.8 L348 96 C347 97.3 346.5 98.6 346.5 100 C346.5 101.4 347 102.7 348 104 L342 101.2 C338 104.5 333 104 330 100 Z" />
-              </g>
-              <g className="svg-swim" style={{ animationDelay: "1.3s" }}>
-                <path d="M352 116 C355 112 360 111.5 364 114.8 L370 112 C369 113.3 368.5 114.6 368.5 116 C368.5 117.4 369 118.7 370 120 L364 117.2 C360 120.5 355 120 352 116 Z" />
-              </g>
-            </g>
-            {[
-              [40, 80], [120, 45], [330, 130], [70, 170], [250, 250], [380, 200],
-            ].map(([x, y], i) => (
-              <path
-                key={i}
-                d={`M${x} ${y} q4 -3.5 8 0 t8 0`}
-                fill="none"
-                stroke="#2A7391"
-                strokeWidth="1.1"
-                opacity="0.5"
-                strokeLinecap="round"
-              />
-            ))}
-            <text x="150" y="230" fontFamily="Georgia" fontStyle="italic" fontSize="11" fill="#2A7391" opacity="0.65">27</text>
-            <text x="300" y="90" fontFamily="Georgia" fontStyle="italic" fontSize="11" fill="#2A7391" opacity="0.65">44</text>
-
-            <path
-              className="cyclone-trajectory"
-              d="M250 20 C 240 44 220 66 206 92"
-              fill="none"
-              stroke="#AF2318"
-              strokeWidth="1.4"
-              opacity="0.55"
-              strokeLinecap="round"
-            />
-            <g transform="translate(250 16)" opacity="0.85" aria-hidden>
-              <circle r="11" fill="none" stroke="#AF2318" strokeWidth="1.3" strokeDasharray="3 3" className="storm-spin" />
-              <circle
-                r="6"
-                fill="none"
-                stroke="#AF2318"
-                strokeWidth="1.3"
-                strokeDasharray="2 3"
-                className="storm-spin"
-                style={{ animationDirection: "reverse", animationDuration: "3.4s" }}
-              />
-              <circle r="2" fill="#AF2318" />
-            </g>
-            <g>
-              <rect
-                className="risk-pulse"
-                x="150" y="95" width="105" height="62"
-                fill="url(#hatch-critical)" stroke="#AF2318" strokeWidth="1.4" strokeDasharray="7 4"
-              />
-              <text x="202" y="130" textAnchor="middle" fontFamily="'Spline Sans Mono Variable',monospace" fontSize="8.5" fill="#AF2318" letterSpacing="1.5">
-                NO ENTRY
-              </text>
-              <rect
-                className="risk-pulse--soft"
-                x="265" y="180" width="80" height="50"
-                fill="url(#hatch-warning)" stroke="#BF4E12" strokeWidth="1.2" strokeDasharray="7 4"
-              />
-            </g>
-            <line x1="60" y1="252" x2="366" y2="60" stroke="#5D7386" strokeWidth="1.6" strokeDasharray="2 6" opacity="0.6" />
-            <path
-              pathLength={100}
-              d="M60 252 C 105 240 120 205 138 178 C 155 152 130 120 160 84 C 185 55 260 40 320 46 C 342 48 356 52 366 60"
-              fill="none"
-              stroke="#1D7A50"
-              strokeWidth="3"
-              strokeDasharray="100"
-              strokeLinecap="round"
-              className="route-draw"
-            />
-            <path
-              className="route-flow"
-              d="M60 252 C 105 240 120 205 138 178 C 155 152 130 120 160 84 C 185 55 260 40 320 46 C 342 48 356 52 366 60"
-              fill="none"
-              stroke="#1D7A50"
-              strokeWidth="3"
-              strokeDasharray="11 8"
-              strokeLinecap="round"
-            />
-            <g aria-hidden>
-              <circle className="hero-sail-ring" r="7" fill="none" stroke="#1D7A50" strokeWidth="2" />
-              <circle className="hero-sail hero-sail--tail" r="4" fill="#1D7A50" />
-              <circle className="hero-sail hero-sail--tail2" r="5.5" fill="#1D7A50" />
-              <circle className="hero-sail hero-sail--head" r="7.5" fill="#FBF7ED" stroke="#1D7A50" strokeWidth="3" />
-            </g>
-            <g transform="translate(60 252)">
-              <g className="svg-bob">
-                <circle r="22" fill="none" stroke="#2A7391" strokeWidth="1.4" opacity="0.5" />
-                <circle r="15" fill="#12212D" stroke="#FBF7ED" strokeWidth="2.5" />
-                <path d="M0 -8 v8 M0 -6 l5.5 6 h-5.5 z" stroke="#FBF7ED" strokeWidth="1.6" fill="#FBF7ED" />
-                <path d="M-6 4 q3 2.4 6 0 t6 0" stroke="#FBF7ED" strokeWidth="1.4" fill="none" />
-              </g>
-            </g>
-            <g transform="translate(366 60)">
-              <circle className="svg-ping" r="17" fill="none" stroke="#1D7A50" strokeWidth="2" />
-              <g className="svg-bob" style={{ animationDelay: "1.2s" }}>
-                <circle r="17" fill="#FBF7ED" stroke="#1D7A50" strokeWidth="4" />
-                <text y="6" textAnchor="middle" fontFamily="'Fraunces Variable',Georgia,serif" fontWeight="800" fontSize="16" fill="#12212D">
-                  1
-                </text>
-              </g>
-            </g>
-            <g transform="translate(400 250)" opacity="0.75">
-              <circle r="24" fill="none" stroke="#12212D" strokeWidth="1.3" />
-              <text y="-27" textAnchor="middle" fontFamily="'Spline Sans Mono Variable',monospace" fontSize="8" fill="#12212D">
-                N
-              </text>
-              <g className="hero-compass-needle">
-                <path d="M0 -12 L2.6 0 L0 2 L-2.6 0 Z" fill="#12212D" />
-                <path d="M0 12 L2 0 L0 -2 L-2 0 Z" fill="#12212D" opacity="0.35" />
-              </g>
-              <circle r="1.6" fill="#12212D" />
-            </g>
-
-            <g
-              className="hero-verdict"
-              transform="translate(210 245)"
-            >
-              <circle
-                cx="0"
-                cy="0"
-                r="3.5"
-                fill="#1D7A50"
-              />
-
-              <text
-                x="10"
-                y="4"
-                fontFamily="'Spline Sans Mono Variable', monospace"
-                fontSize="8"
-                fontWeight="700"
-                fill="#12212D"
-                letterSpacing="1"
-              >
-                SAFE ROUTE
-              </text>
-
-              <text
-                x="10"
-                y="17"
-                fontFamily="'Spline Sans Mono Variable', monospace"
-                fontSize="6.5"
-                fontWeight="600"
-                fill="#5D7386"
-                letterSpacing="0.8"
-              >
-                {heroConfidence}% CONFIDENCE
-              </text>
-              <line
-                x1="10"
-                y1="23"
-                x2="115"
-                y2="23"
-                stroke="#1D7A50"
-                strokeWidth="1"
-                opacity="0.35"
-              />
-            </g>
-          </svg>
-          </HeroArt>
+        <Reveal delay={260} className="w-full justify-self-center lg:justify-self-end">
+          <HeroDemo language={language} />
         </Reveal>
       </div>
 
@@ -877,13 +682,13 @@ export default function Landing({
           <CourseArrow size={13} className="rotate-90" />
         </button>
       </Reveal>
-      </div>
+      </HeroSky>
       {/* ================= /HERO SCREEN ================= */}
 
       <div id="lp-more" />
 
       <Reveal delay={420}>
-        <div className="panel mt-12 grid grid-cols-2 sm:grid-cols-5">
+        <div className="stats-strip panel mt-12 grid grid-cols-2 sm:grid-cols-5">
           {stats.map((x, i) => (
             <div
               key={x.k}
@@ -907,22 +712,23 @@ export default function Landing({
       <SectionHeading id="lp-problem" kicker={t.problemKicker} title={t.problemTitle} />
       <Reveal delay={480}>
         <div className="mt-6 grid gap-4 lg:grid-cols-[1.15fr_0.85fr] lg:items-stretch">
-          <div className="panel p-5">
+          <div className="prob-a panel p-6">
+            <span className="prob-scan" aria-hidden />
             <p className="text-[14.5px] leading-relaxed text-ink-700">{t.problemBody}</p>
             <div className="mt-5 flex flex-wrap gap-2">
-              {t.problemTags.map((tag) => (
+              {t.problemTags.map((tag, ti) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1.5 rounded-[2px] border px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-ink-500"
-                  style={{ borderColor: "var(--rule)" }}
+                  className="prob-tag inline-flex items-center gap-1.5 rounded-[2px] border px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-ink-500"
+                  style={{ borderColor: "var(--rule)", "--i": ti } as CSSProperties}
                 >
-                  <WarnGlyph size={10} className="text-risk-high/70" />
+                  <WarnGlyph size={10} className="prob-warn text-risk-high/70" />
                   {tag}
                 </span>
               ))}
             </div>
           </div>
-          <div className="panel lift flex flex-col items-center justify-center gap-3 p-5 text-center">
+          <div className="prob-b panel lift flex flex-col items-center justify-center gap-3 p-5 text-center">
             <div className="grid w-full grid-cols-2 gap-2">
               {t.problemTags.map((tag) => (
                 <div
@@ -950,9 +756,9 @@ export default function Landing({
 
       {/* feature cards */}
       <SectionHeading kicker={t.featuresKicker} title={t.featuresTitle} />
-      <div id="lp-features" className="mt-5 scroll-mt-20 grid gap-4 md:grid-cols-3">
+      <div id="lp-features" className="mt-5 scroll-mt-28 grid gap-4 md:grid-cols-[1.2fr_1fr] md:grid-rows-2">
         {t.cards.map((c, i) => (
-          <Reveal key={cardTabs[i]} delay={520 + i * 110}>
+          <Reveal key={cardTabs[i]} delay={i * 120} from={i === 0 ? "left" : "right"} className={i === 0 ? "md:row-span-2" : ""}>
             <div className="panel rule-double lift group flex h-full flex-col">
               <div className="hd">
                 <span className="label flex items-center gap-2 transition-colors group-hover:!text-chart-600">
@@ -960,8 +766,8 @@ export default function Landing({
                   {i === 0 && <FishGlyph size={15} className="swim text-chart-500" />}
                 </span>
               </div>
-              <div className="flex-1 px-4 py-4">
-                <h3 className="font-display text-[19px] font-bold leading-snug text-ink-900">
+              <div className="relative flex-1 overflow-hidden px-4 py-4">
+                <h3 className={`font-display font-bold leading-snug text-ink-900 ${i === 0 ? "text-[26px]" : "text-[19px]"}`}>
                   {c.title}
                 </h3>
                 <ul className="mt-3 space-y-2">
@@ -972,6 +778,23 @@ export default function Landing({
                     </li>
                   ))}
                 </ul>
+                {i === 0 && (
+                  <>
+                    <div className="feat-radar" aria-hidden>
+                      <span className="fr-ring fr-ring-1" />
+                      <span className="fr-ring fr-ring-2" />
+                      <span className="fr-ring fr-ring-3" />
+                      <span className="fr-cross fr-cross-h" />
+                      <span className="fr-cross fr-cross-v" />
+                      <span className="fr-sweep" />
+                      <span className="fr-blip fr-blip-a"><i /><b>86</b></span>
+                      <span className="fr-blip fr-blip-b"><i /><b>72</b></span>
+                      <span className="fr-blip fr-blip-c"><i /><b>58</b></span>
+                      <span className="fr-me" />
+                    </div>
+                    <div className="feat-swell" aria-hidden />
+                  </>
+                )}
               </div>
               <div className="border-t px-4 py-3" style={{ borderColor: "var(--rule-faint)" }}>
                 <button onClick={() => onEnter(cardTabs[i])} className="btn-line group/open w-full justify-center">
@@ -990,8 +813,8 @@ export default function Landing({
         {t.agents.map((agent, i) => {
           const Icon = AGENT_ICONS[i % AGENT_ICONS.length];
           return (
-            <Reveal key={agent.name} delay={40 + i * 40}>
-              <div className="panel lift group flex h-full flex-col gap-3 p-4">
+            <Reveal key={agent.name} delay={40 + i * 40} className="h-full">
+              <div className="agent-card panel lift group flex h-full flex-col gap-3 p-4" style={{ "--i": i } as CSSProperties}>
                 <div className="flex items-center justify-between">
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[2px] bg-chart-100 text-chart-600 transition-colors duration-300 group-hover:bg-chart-600 group-hover:text-paper-50">
                     <Icon size={16} />
@@ -1015,9 +838,9 @@ export default function Landing({
 
       {/* how it decides — the differentiator */}
       <SectionHeading id="lp-pipeline" kicker={t.pipelineKicker} title={t.pipelineTitle} sub={t.pipelineSub} />
-      <Reveal delay={880}>
-        <div className="panel mt-6 overflow-hidden">
-          <div className="hd justify-end">
+      <Reveal delay={120}>
+        <div className="mt-6">
+          <div className="mb-4 flex justify-end">
             <button
               onClick={() => onEnter("system")}
               className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-chart-600 underline decoration-dashed underline-offset-4 transition-colors hover:text-ink-900"
@@ -1025,26 +848,15 @@ export default function Landing({
               {t.watchLive}
             </button>
           </div>
-          <div className="grid sm:grid-cols-4">
+          <div className="pipe-track relative grid gap-4 sm:grid-cols-4">
             {t.phases.map((p, i) => (
-              <div
-                key={p.t}
-                className={`group relative px-4 py-3.5 transition-colors hover:bg-chart-100/40 ${i > 0 ? "sm:border-l" : ""}`}
-                style={{ borderColor: "var(--rule-faint)" }}
-              >
+              <div key={p.t} className={`pipe-step pipe-step-${i} panel lift group relative px-4 pb-4 pt-10`}>
+                <span className="pipe-num">{i + 1}</span>
                 <div className="flex items-baseline gap-2">
-                  <span className="font-display text-[15px] font-bold text-ink-900">{p.t}</span>
-                  {i === 1 && (
-                    <span className="font-mono text-[9px] font-bold text-chart-700">∥ 5</span>
-                  )}
+                  <span className="font-display text-[17px] font-bold text-ink-900">{p.t}</span>
+                  {i === 1 && <span className="font-mono text-[9px] font-bold text-chart-700">∥ 5</span>}
                 </div>
-                <p className="mt-1 text-[11.5px] italic leading-snug text-ink-500">{p.n}</p>
-                {i < 3 && (
-                  <CourseArrow
-                    size={13}
-                    className="absolute -right-1.5 top-1/2 hidden -translate-y-1/2 text-ink-300 transition-all group-hover:translate-x-0.5 group-hover:text-chart-600 sm:block"
-                  />
-                )}
+                <p className="mt-1.5 text-[12px] italic leading-snug text-ink-500">{p.n}</p>
               </div>
             ))}
           </div>
@@ -1053,13 +865,13 @@ export default function Landing({
 
       {/* trust — why the numbers can be believed */}
       <SectionHeading id="lp-trust" kicker={t.trustKicker} title={t.trustTitle} />
-      <div className="mt-6 grid gap-4 md:grid-cols-3">
+      <div id="lp-trust-grid" className="mt-6 grid gap-4 md:grid-cols-3">
         {t.trustCards.map((card, i) => {
           const Icon = [LockGlyph, CheckGlyph, SpeakerGlyph][i];
           return (
-            <Reveal key={card.title} delay={60 + i * 100}>
-              <div className="panel lift flex h-full flex-col gap-3 p-4">
-                <span className="grid h-9 w-9 place-items-center rounded-[2px] bg-chart-100 text-chart-600">
+            <Reveal key={card.title} delay={i * 110} from="zoom" className="h-full">
+              <div className="trust-card panel lift flex h-full flex-col gap-3 p-4" style={{ "--i": i } as CSSProperties}>
+                <span className="tc-icon grid h-9 w-9 shrink-0 place-items-center rounded-[2px] bg-chart-100 text-chart-600">
                   <Icon size={16} />
                 </span>
                 <h3 className="font-display text-[15px] font-bold leading-snug text-ink-900">{card.title}</h3>
@@ -1072,12 +884,21 @@ export default function Landing({
 
       {/* closing CTA — one more push before the footer */}
       <Reveal delay={140}>
-        <div className="panel rule-double mt-10 flex flex-col items-center gap-4 px-6 py-10 text-center">
-          <h2 className="font-display text-[24px] font-black leading-tight text-ink-900 sm:text-[28px]">
+        <div className="cta-ocean panel relative mt-10 flex flex-col items-center gap-4 overflow-hidden px-6 py-14 text-center">
+          <span className="cta-spin" aria-hidden />
+          <span className="cta-fill" aria-hidden>
+            <span className="cta-beam" />
+            <span className="cta-flash" />
+          </span>
+          <span className="cta-bubble cta-bubble-1" aria-hidden />
+          <span className="cta-bubble cta-bubble-2" aria-hidden />
+          <span className="cta-bubble cta-bubble-3" aria-hidden />
+          <span className="cta-bubble cta-bubble-4" aria-hidden />
+          <h2 className="relative z-10 font-display text-[24px] font-black leading-tight text-ink-900 sm:text-[28px]">
             {t.closingTitle}
           </h2>
-          <p className="max-w-[440px] text-[13.5px] leading-relaxed text-ink-500">{t.closingSub}</p>
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+          <p className="relative z-10 max-w-[440px] text-[13.5px] leading-relaxed text-ink-500">{t.closingSub}</p>
+          <div className="relative z-10 mt-2 flex flex-wrap items-center justify-center gap-3">
             <button onClick={onTour} className="btn-line !px-5 !py-2.5">
               <PlayGlyph size={11} /> {t.ctaTour}
             </button>
@@ -1094,10 +915,7 @@ export default function Landing({
           <div className="grid gap-9 pb-8 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
             {/* brand */}
             <div>
-              <span className="flex items-center gap-2">
-                <CompassMark size={24} className="text-ink-900" />
-                <span className="font-display text-[18px] font-black tracking-tight text-ink-900">ORCA</span>
-              </span>
+              <BrandLogo />
               <p className="mt-3 max-w-[230px] text-[12.5px] leading-relaxed text-ink-500">{t.footerTagline}</p>
               <span
                 className="mt-4 inline-block rounded-[2px] border px-2 py-1 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-ink-400"

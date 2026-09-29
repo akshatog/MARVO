@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { CSSProperties } from "react";
-import type { CatchRating, FishingOutlook, Language } from "../types";
+import type { Localized, CatchRating, FishingOutlook, Language } from "../types";
 import { ChevronDownGlyph, ClockGlyph, CompassMark, FishGlyph, SchoolGlyph, WarnGlyph, WaveGlyph, WindGlyph } from "./glyphs";
 
 /** Bullets beyond this many are tucked behind "Show more" — the plain-
@@ -29,13 +29,13 @@ export const RATING_COLOR: Record<CatchRating, string> = {
   poor: "#9C5F44",
 };
 
-const RATING_WORD: Record<Language, Record<CatchRating, string>> = {
+const RATING_WORD: Localized<Record<CatchRating, string>> = {
   en: { very_good: "Very good", good: "Good", fair: "Some chance", poor: "Low chance" },
   hi: { very_good: "बहुत अच्छा", good: "अच्छा", fair: "कुछ उम्मीद", poor: "कम उम्मीद" },
   mr: { very_good: "खूप चांगली", good: "चांगली", fair: "थोडी शक्यता", poor: "कमी शक्यता" },
 };
 
-const T: Record<Language, Record<string, string>> = {
+const T: Localized<Record<string, string>> = {
   en: {
     advice: "What you should do",
     areas: "Best places to fish",

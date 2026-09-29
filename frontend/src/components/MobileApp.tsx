@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import * as api from "../api";
 import { useVoiceRecorder } from "../hooks/useVoiceRecorder";
-import type { AlertEvent, FishingOutlook, Language, SupportedLanguage, Voyage, ZoneFeature } from "../types";
+import type { Localized, AlertEvent, FishingOutlook, Language, SupportedLanguage, Voyage, ZoneFeature } from "../types";
 import { RATING_COLOR } from "./FishingPanel";
 import AlertBanner from "./AlertBanner";
 import AlertsPanel from "./AlertsPanel";
@@ -40,11 +40,26 @@ import { RISK_COLOR } from "./RiskDial";
  */
 
 type MTab = "today" | "map" | "ask";
+const TAB_ORDER: MTab[] = ["today", "map", "ask"];
+
+/** Slim title strip at the top of each page: coloured icon tile, page name,
+ *  and a rule that fades out to the right. Colours come from [data-tab]. */
+function TabTitle({ tab, label }: { tab: MTab; label: string }) {
+  const icon =
+    tab === "today" ? <BoatGlyph size={18} /> : tab === "map" ? <MapGlyph size={16} /> : <MicGlyph size={18} />;
+  return (
+    <div className="m-tabtitle" aria-hidden>
+      <span className="m-tabtitle-ico">{icon}</span>
+      <span className="m-tabtitle-name">{label}</span>
+      <span className="m-tabtitle-rule" />
+    </div>
+  );
+}
 
 const SESSION = "phone";
 const DEFAULT_PORT = PORTS[0];
 
-const T: Record<Language, Record<string, string>> = {
+const T: Localized<Record<string, string>> = {
   en: {
     today: "Today",
     map: "Map",
@@ -393,10 +408,6 @@ export default function MobileApp() {
     return () => document.removeEventListener("mousedown", onClick);
   }, [portMenuOpen]);
 
-  // Today tab opens in a short, simple summary; the fuller breakdown (risk
-  // timeline, ranked grounds, fuel/profit) is one tap away, not automatic.
-  const [showDetails, setShowDetails] = useState(false);
-
   const [activeAlert, setActiveAlert] = useState<AlertEvent | null>(null);
   const [activeVoyage, setActiveVoyage] = useState<Voyage | null>(null);
   const [voyageLoading, setVoyageLoading] = useState(false);
@@ -405,6 +416,21 @@ export default function MobileApp() {
     const tp = new URLSearchParams(window.location.search).get("tab");
     return tp === "map" || tp === "ask" ? tp : "today";
   });
+  // Which way the page slides in: right when moving to a tab further along
+  // the dock (Today → Map → Ask), left when moving back. Held in a ref so the
+  // class stays stable across re-renders and the entrance never replays.
+  const prevTabRef = useRef<MTab>(tab);
+  const slideRef = useRef<"r" | "l">("r");
+  if (prevTabRef.current !== tab) {
+    slideRef.current = TAB_ORDER.indexOf(tab) > TAB_ORDER.indexOf(prevTabRef.current) ? "r" : "l";
+    prevTabRef.current = tab;
+  }
+  const slideCls = slideRef.current === "r" ? "m-slide-r" : "m-slide-l";
+  // A new tab always opens at its top, so its title strip is never left
+  // half-hidden under the header by the previous tab's scroll position.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [tab]);
   const [place, setPlace] = useState<{ lat: number; lon: number; name: string } | null>(null);
   const [outlook, setOutlook] = useState<FishingOutlook | null>(null);
   const [zones, setZones] = useState<ZoneFeature[]>([]);
@@ -685,7 +711,7 @@ export default function MobileApp() {
           <>
             <CompassMark size={60} className="animate-stampIn text-ink-900" />
             <div className="animate-rise" style={{ animationDelay: "80ms" }}>
-              <div className="font-display text-[26px] font-black leading-tight text-ink-900">ORCA</div>
+              <div className="font-display m-wordmark text-[26px] font-black leading-tight text-ink-900">ORCA</div>
               <div className="mt-2 font-mono text-[12px] uppercase tracking-[0.14em] text-ink-500">
                 Choose your language · अपनी भाषा चुनें
               </div>
@@ -716,7 +742,7 @@ export default function MobileApp() {
           <div className="popin flex w-full max-w-[360px] flex-col items-center gap-4">
             <div className="flex items-center gap-2">
               <CompassMark size={26} className="text-ink-900 compass-needle" />
-              <span className="font-display text-[18px] font-black text-ink-900">ORCA</span>
+              <span className="font-display m-wordmark text-[18px] font-black text-ink-900">ORCA</span>
             </div>
 
             {!outlook ? (
@@ -729,8 +755,8 @@ export default function MobileApp() {
               </div>
             ) : (
               <div
-                className="panel rule-double relative flex w-full flex-col items-center overflow-hidden px-4 pb-4 pt-5 text-center"
-                style={{ background: `${color}14` }}
+                className="panel m-verdict rule-double relative flex w-full flex-col items-center overflow-hidden px-4 pb-4 pt-5 text-center"
+                style={{ ["--verdict" as string]: color }}
               >
                 <div className="font-mono text-[10.5px] text-chart-600">
                   {outlook.location.nearest_landing_centre}
@@ -766,8 +792,7 @@ export default function MobileApp() {
                     goToVoice();
                     setLandingDone(true);
                   }}
-                  className="mt-4 flex w-full items-center justify-center gap-3 rounded-[3px] bg-ink-900 py-4 font-mono text-[15px] font-bold uppercase tracking-[0.14em] text-paper-50 transition active:translate-y-px active:scale-[0.98]"
-                  style={{ boxShadow: "0 10px 22px -12px rgba(18,33,45,0.55)" }}
+                  className="m-cta mt-4 flex w-full items-center justify-center gap-3 rounded-[14px] bg-ink-900 py-4 font-mono text-[15px] font-bold uppercase tracking-[0.14em] text-paper-50 transition active:translate-y-px active:scale-[0.98]"
                 >
                   <MicGlyph size={20} />
                   {t.voiceCta}
@@ -789,7 +814,8 @@ export default function MobileApp() {
   }
 
   return (
-    <div className="flex min-h-full flex-col">
+    <div className="m-root flex min-h-full flex-col" data-tab={tab}>
+      <div className="m-aura" aria-hidden />
       <ChartDefs />
       <div className="sea-drift" aria-hidden />
       {debugInfo && (
@@ -801,11 +827,11 @@ export default function MobileApp() {
       {/* ---------------- slim header ---------------- */}
       <header
         className="sticky top-0 z-[600] flex items-center gap-2.5 border-b bg-paper-100/95 px-3 py-2.5 backdrop-blur-sm"
-        style={{ borderColor: "var(--rule)", boxShadow: "0 2px 10px -6px rgba(18,33,45,0.28)" }}
+        style={{ borderColor: "var(--rule)", boxShadow: "0 4px 14px -8px rgba(11,42,91,0.35)" }}
       >
         <CompassMark size={30} className="shrink-0 text-ink-900 compass-needle" />
         <div className="min-w-0">
-          <div className="font-display text-[17px] font-black leading-none text-ink-900">ORCA</div>
+          <div className="font-display m-wordmark text-[17px] font-black leading-none text-ink-900">ORCA</div>
           {place && outlook && (
             <div className="truncate font-mono text-[9px] text-chart-600">
               {outlook.location.nearest_landing_centre}
@@ -817,8 +843,8 @@ export default function MobileApp() {
         <div ref={langMenuRef} className="relative ml-auto shrink-0">
           <button
             onClick={() => setLangMenuOpen((v) => !v)}
-            className={`flex items-center gap-1.5 rounded-[3px] border px-2.5 py-1.5 font-mono text-[12px] font-bold transition active:scale-95 ${
-              langMenuOpen ? "border-ink-900 bg-ink-900 text-paper-50" : "border-ink-900/70 bg-paper-50 text-ink-900"
+            className={`flex items-center gap-1.5 rounded-[12px] border px-2.5 py-1.5 font-mono text-[12px] font-bold transition active:scale-95 ${
+              langMenuOpen ? "m-cta border-transparent bg-ink-900 text-paper-50" : "border-chart-300 bg-white/80 text-ink-900"
             }`}
           >
             {LANG_OPTIONS.find((o) => o.code === language)?.native ?? "EN"}
@@ -839,8 +865,8 @@ export default function MobileApp() {
                     pickLanguage(o.code);
                     setLangMenuOpen(false);
                   }}
-                  className={`flex w-full items-center justify-between gap-2 rounded-[2px] px-2.5 py-2 text-left font-mono text-[13px] font-semibold transition ${
-                    language === o.code ? "bg-ink-900 text-paper-50" : "text-ink-800 active:bg-paper-150"
+                  className={`flex w-full items-center justify-between gap-2 rounded-[10px] px-2.5 py-2 text-left font-mono text-[13px] font-semibold transition ${
+                    language === o.code ? "m-cta bg-ink-900 text-paper-50" : "text-ink-800 active:bg-paper-150"
                   }`}
                 >
                   {o.native}
@@ -866,7 +892,8 @@ export default function MobileApp() {
 
       {/* ================= TODAY ================= */}
       {tab === "today" && (
-        <main className="flex-1 space-y-3 px-3 pb-24 pt-3">
+        <main key="today" className={`${slideCls} flex-1 space-y-3 px-3 pb-28 pt-3`}>
+          <TabTitle tab="today" label={t.today} />
           {/* Voyage status & quick toggle */}
           <div className="panel animate-rise flex items-center justify-between gap-3 bg-paper-50 p-3">
             <div className="min-w-0">
@@ -889,7 +916,7 @@ export default function MobileApp() {
             <button
               onClick={handleToggleVoyage}
               disabled={voyageLoading || !place}
-              className={`shrink-0 rounded-[3px] px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-wide transition ${
+              className={`shrink-0 rounded-[12px] px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-wide transition ${
                 activeVoyage
                   ? "border border-risk-extreme/60 bg-risk-extreme/10 text-risk-extreme"
                   : "bg-chart-600 text-paper-50"
@@ -913,14 +940,14 @@ export default function MobileApp() {
             <>
               {/* the verdict — colour first, words second */}
               <div
-                className="panel rule-double animate-rise relative flex flex-col items-center overflow-hidden px-4 pb-4 pt-6 text-center"
-                style={{ background: `${color}14` }}
+                className="panel m-verdict rule-double animate-rise relative flex flex-col items-center overflow-hidden px-4 pb-4 pt-6 text-center"
+                style={{ ["--verdict" as string]: color }}
               >
                 {/* soft glow behind the ring — a little life behind the flat wash */}
                 <div
                   aria-hidden
                   className="pointer-events-none absolute left-1/2 top-8 h-44 w-44 -translate-x-1/2 rounded-full blur-2xl"
-                  style={{ background: `${color}33` }}
+                  style={{ background: `${color}26` }}
                 />
                 <div
                   className="popin relative grid h-32 w-32 place-items-center rounded-full border-[7px] bg-paper-50"
@@ -947,8 +974,7 @@ export default function MobileApp() {
                 {/* THE button — one tap, hear everything */}
                 <button
                   onClick={speakPlan}
-                  className="mt-4 flex w-full items-center justify-center gap-3 rounded-[3px] bg-ink-900 py-4 font-mono text-[17px] font-bold uppercase tracking-[0.14em] text-paper-50 transition active:translate-y-px active:scale-[0.98]"
-                  style={{ boxShadow: "0 10px 22px -12px rgba(18,33,45,0.55)" }}
+                  className="m-cta mt-4 flex w-full items-center justify-center gap-3 rounded-[14px] bg-ink-900 py-4 font-mono text-[17px] font-bold uppercase tracking-[0.14em] text-paper-50 transition active:translate-y-px active:scale-[0.98]"
                 >
                   {speaking ? <StopGlyph size={20} /> : <SpeakerGlyph size={24} />}
                   {speaking ? t.stop : t.listen}
@@ -957,7 +983,7 @@ export default function MobileApp() {
                 {/* voice — one tap, straight into listening, no extra nav */}
                 <button
                   onClick={goToVoice}
-                  className="mt-2.5 flex w-full items-center justify-center gap-3 rounded-[3px] border-[2.5px] bg-paper-50 py-3.5 font-mono text-[15px] font-bold uppercase tracking-[0.14em] transition active:translate-y-px active:scale-[0.98] active:bg-paper-150"
+                  className="mt-2.5 flex w-full items-center justify-center gap-3 rounded-[14px] border-[2.5px] bg-paper-50 py-3.5 font-mono text-[15px] font-bold uppercase tracking-[0.14em] transition active:translate-y-px active:scale-[0.98] active:bg-paper-150"
                   style={{ borderColor: color, color }}
                 >
                   <MicGlyph size={20} />
@@ -1001,20 +1027,8 @@ export default function MobileApp() {
                 )}
               </div>
 
-              {/* one tap to expand — everything below is optional depth */}
-              <button
-                onClick={() => setShowDetails((v) => !v)}
-                className="flex w-full items-center justify-center gap-1.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wide text-chart-600 transition active:scale-95"
-              >
-                {showDetails ? t.lessDetails : t.moreDetails}
-                <ChevronDownGlyph
-                  size={11}
-                  className={`transition-transform ${showDetails ? "rotate-180" : ""}`}
-                />
-              </button>
-
-              {showDetails && (
-                <div className="animate-rise space-y-3">
+              {/* full breakdown — always shown, no extra tap */}
+              <div className="animate-rise space-y-3">
                   {/* Live alerts from GET /api/alerts */}
                   {place && (
                     <AlertsPanel lat={place.lat} lon={place.lon} compact refreshMs={60000} />
@@ -1095,8 +1109,7 @@ export default function MobileApp() {
                       </div>
                     </div>
                   )}
-                </div>
-              )}
+              </div>
             </>
           )}
         </main>
@@ -1104,7 +1117,8 @@ export default function MobileApp() {
 
       {/* ================= MAP ================= */}
       {tab === "map" && (
-        <main className="animate-rise flex-1 px-2 pb-20 pt-2">
+        <main key="map" className={`${slideCls} flex-1 px-2 pb-28 pt-3`}>
+          <TabTitle tab="map" label={t.map} />
           {/* location + radius + legend, and live conditions — one card, not two stacked */}
           <div className="panel mb-2">
             <div className="flex items-center justify-between gap-2 px-3 py-2">
@@ -1136,7 +1150,7 @@ export default function MobileApp() {
                           setPlace({ lat: p.lat, lon: p.lon, name: p.name });
                           setPortMenuOpen(false);
                         }}
-                        className="flex w-full items-center justify-between gap-2 rounded-[2px] px-2.5 py-2 text-left font-mono text-[12.5px] font-semibold text-ink-800 transition active:bg-paper-150"
+                        className="flex w-full items-center justify-between gap-2 rounded-[10px] px-2.5 py-2 text-left font-mono text-[12.5px] font-semibold text-ink-800 transition active:bg-paper-150"
                       >
                         {p.name}
                         {outlook?.location.nearest_landing_centre === p.name && <CheckGlyph size={10} />}
@@ -1198,7 +1212,7 @@ export default function MobileApp() {
           {/* Geofence warning banner when near restricted zone */}
           {geofenceStatus !== "clear" && geofenceMsg && (
             <div
-              className={`animate-rise mb-2 flex items-center gap-2 rounded-[3px] px-3 py-2 text-[12.5px] font-semibold ${
+              className={`animate-rise mb-2 flex items-center gap-2 rounded-[12px] px-3 py-2 text-[12.5px] font-semibold ${
                 geofenceStatus === "critical"
                   ? "bg-risk-extreme/10 text-risk-extreme"
                   : "bg-risk-high/10 text-risk-high"
@@ -1279,7 +1293,8 @@ export default function MobileApp() {
 
       {/* ================= ASK ================= */}
       {tab === "ask" && (
-        <main className="animate-rise flex flex-1 flex-col items-center gap-4 px-4 pb-24 pt-6">
+        <main key="ask" className={`${slideCls} flex flex-1 flex-col items-center gap-4 px-4 pb-28 pt-3`}>
+          <TabTitle tab="ask" label={t.ask} />
           {/* the mic IS the interface */}
           <div className="relative grid place-items-center">
             {voiceState === "recording" && (
@@ -1296,13 +1311,13 @@ export default function MobileApp() {
                   ? "border-risk-extreme bg-risk-extreme text-paper-50"
                   : voiceState === "processing"
                   ? "border-chart-400 bg-chart-400 text-paper-50"
-                  : "border-ink-900 bg-paper-50 text-ink-900"
+                  : "m-mic border-ink-900 bg-paper-50 text-ink-900"
               }`}
               style={{
                 boxShadow:
                   voiceState === "recording"
                     ? "0 12px 30px -10px rgba(175,35,24,0.55)"
-                    : "0 12px 30px -14px rgba(18,33,45,0.5)",
+                    : "0 14px 30px -14px rgba(31,111,235,0.55)",
                 ...(voiceState === "recording" || voiceState === "processing"
                   ? { animation: "inkblink 1.1s ease-in-out infinite" }
                   : {}),
@@ -1316,7 +1331,7 @@ export default function MobileApp() {
           </div>
 
           {question && (
-            <div className="popin w-full rounded-[3px] bg-ink-900 px-4 py-3 text-[15px] text-paper-50">
+            <div className="m-cta popin w-full rounded-[16px] bg-ink-900 px-4 py-3 text-[15px] text-paper-50">
               {question}
             </div>
           )}
@@ -1363,41 +1378,40 @@ export default function MobileApp() {
         </main>
       )}
 
-      {/* ---------------- bottom nav: three doors, never deeper ---------------- */}
+      {/* ---------------- bottom dock: three doors, never deeper ----------------
+          A floating glass dock. One gradient pill slides under the active
+          tab and takes that tab's colour (Today blue · Map teal · Ask coral). */}
       <nav
-        className="fixed inset-x-0 bottom-0 z-[700] flex border-t bg-paper-50/95 p-1.5 backdrop-blur-sm"
-        style={{ borderColor: "var(--rule-strong)", boxShadow: "0 -6px 18px -14px rgba(18,33,45,0.4)" }}
+        className="m-nav fixed z-[700] border bg-paper-50/95 backdrop-blur-sm"
+        style={{ borderColor: "var(--rule-strong)" }}
+        aria-label="Sections"
       >
-        {(
-          [
-            ["today", <BoatGlyph key="b" size={24} />],
-            ["map", <MapGlyph key="m" size={20} />],
-            ["ask", <MicGlyph key="a" size={24} />],
-          ] as [MTab, JSX.Element][]
-        ).flatMap(([m, icon], i) => [
-          // a hairline rule between tabs — same divider style used elsewhere
-          // in the app (conditions strip, areas list), not a new motif
-          ...(i > 0
-            ? [
-                <span
-                  key={`${m}-div`}
-                  aria-hidden
-                  className="my-2 w-px shrink-0"
-                  style={{ background: "var(--rule-faint)" }}
-                />
-              ]
-            : []),
-          <button
-            key={m}
-            onClick={() => setTab(m)}
-            className={`mx-0.5 flex flex-1 flex-col items-center gap-1 rounded-[3px] py-2 transition-all duration-200 active:scale-95 ${
-              tab === m ? "-translate-y-0.5 bg-ink-900 text-paper-50 shadow-[0_6px_14px_-8px_rgba(18,33,45,0.6)]" : "text-ink-500"
-            }`}
-          >
-            {icon}
-            <span className="font-mono text-[10.5px] font-bold uppercase tracking-wide">{t[m]}</span>
-          </button>,
-        ])}
+        <div className="relative grid grid-cols-3">
+          <span
+            aria-hidden
+            className="m-pill"
+            style={{ transform: `translateX(${TAB_ORDER.indexOf(tab) * 100}%)` }}
+          />
+          {(
+            [
+              ["today", <BoatGlyph key="b" size={24} />],
+              ["map", <MapGlyph key="m" size={20} />],
+              ["ask", <MicGlyph key="a" size={24} />],
+            ] as [MTab, JSX.Element][]
+          ).map(([m, icon]) => (
+            <button
+              key={m}
+              onClick={() => setTab(m)}
+              aria-current={tab === m ? "page" : undefined}
+              className={`m-navbtn relative z-10 flex flex-col items-center gap-1 rounded-[16px] py-2 transition-colors duration-300 active:scale-95 ${
+                tab === m ? "m-navbtn-on text-paper-50" : "text-ink-500"
+              }`}
+            >
+              <span className="m-navico">{icon}</span>
+              <span className="font-mono text-[10.5px] font-bold uppercase tracking-wide">{t[m]}</span>
+            </button>
+          ))}
+        </div>
       </nav>
     </div>
   );

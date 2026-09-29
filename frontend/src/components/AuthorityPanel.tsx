@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import * as api from "../api";
-import type { AuthorityDashboard, Language } from "../types";
+import type { Localized, AuthorityDashboard, Language } from "../types";
 import { CrosshairGlyph, LockGlyph, WarnGlyph } from "./glyphs";
 import { RISK_COLOR } from "./RiskDial";
 
-const T: Record<Language, Record<string, string>> = {
+const T: Localized<Record<string, string>> = {
   en: {
     centres: "Landing centres",
     extreme: "Extreme risk",

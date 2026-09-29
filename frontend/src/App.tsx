@@ -22,6 +22,7 @@ import {
   WaveGlyph,
   WindGlyph,
 } from "./components/glyphs";
+import BrandLogo from "./components/BrandLogo";
 import GuidedTour, { TOUR } from "./components/GuidedTour";
 import Landing from "./components/Landing";
 import LocationPicker, { PORTS, type PickedLocation } from "./components/LocationPicker";
@@ -38,6 +39,7 @@ import VoyageTracker from "./components/VoyageTracker";
 import AlertBanner from "./components/AlertBanner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import type {
+  Localized,
   AlertEvent,
   ChatMessage,
   ChatResponse,
@@ -63,7 +65,7 @@ type Tab = AppTab | "landing";
 const DEFAULT_SCENARIOS: {
   id: string;
   n: string;
-  label: Record<Language, string>;
+  label: Localized<string>;
   ask: string;
   hint: string;
 }[] = [
@@ -84,7 +86,7 @@ const LANGUAGES: { code: SupportedLanguage; short: string; native: string }[] = 
   { code: "ml", short: "മല", native: "മലയാളം" },
 ];
 
-const TAB_LABEL: Record<Language, Record<AppTab, string>> = {
+const TAB_LABEL: Localized<Record<AppTab, string>> = {
   en: { home: "Today",  ask: "Ask ORCA",          authority: "Authority", system: "System",    ops: "Ops & Provenance" },
   hi: { home: "आज",    ask: "ORCA से पूछें",      authority: "प्रशासन",   system: "प्रणाली",  ops: "अभियान व साक्ष्य" },
   mr: { home: "आज",    ask: "ORCA ला विचारा",     authority: "प्रशासन",   system: "प्रणाली",  ops: "मोहीम व पुरावे" },
@@ -95,7 +97,7 @@ const TAB_LABEL: Record<Language, Record<AppTab, string>> = {
 };
 
 /** The app chrome, in the fisher's language. */
-const UI: Record<Language, Record<string, string>> = {
+const UI: Localized<Record<string, string>> = {
   en: {
     dataEdition: "Data edition",
     voice: "Voice",
@@ -193,6 +195,54 @@ export default function App() {
   const [tab, setTab] = useState<Tab>("landing");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [latest, setLatest] = useState<ChatResponse | null>(null);
+  const [resTab, setResTab] = useState<"risk" | "timeline" | "zones" | "routes" | "trace" | null>(null);
+  // Ask ORCA: height that makes map + chat end exactly at the bottom of the screen (no scrolling needed)
+  const askGridRef = useRef<HTMLDivElement | null>(null);
+  const [askFitH, setAskFitH] = useState(560);
+  // Today page: stretch the map so it ends exactly at the bottom of the screen (fills the gap under it, no more)
+  const homeGridRef = useRef<HTMLDivElement | null>(null);
+  const homePickerRef = useRef<HTMLDivElement | null>(null);
+  const [homeMapH, setHomeMapH] = useState<number | null>(null);
+  useEffect(() => {
+    if (tab !== "home") return;
+    const measure = () => {
+      const g = homeGridRef.current;
+      const p = homePickerRef.current;
+      if (!g || !p) return;
+      const mapTop = g.getBoundingClientRect().top + window.scrollY + p.offsetHeight + 12;
+      setHomeMapH(Math.max(320, Math.round(window.innerHeight - mapTop - 16)));
+    };
+    measure();
+    const t1 = window.setTimeout(measure, 150);
+    const t2 = window.setTimeout(measure, 600);
+    window.addEventListener("resize", measure);
+    const ro = typeof ResizeObserver !== "undefined" && homePickerRef.current ? new ResizeObserver(measure) : null;
+    if (ro && homePickerRef.current) ro.observe(homePickerRef.current);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      window.removeEventListener("resize", measure);
+      ro?.disconnect();
+    };
+  }, [tab]);
+  useEffect(() => {
+    if (tab !== "ask") return;
+    const measure = () => {
+      const el = askGridRef.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      setAskFitH(Math.max(420, Math.round(window.innerHeight - top - 16)));
+    };
+    measure();
+    const t1 = window.setTimeout(measure, 150);
+    const t2 = window.setTimeout(measure, 600);
+    window.addEventListener("resize", measure);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      window.removeEventListener("resize", measure);
+    };
+  }, [tab]);
   const [busy, setBusy] = useState(false);
   const [langChoice, setLangChoice] = useState<SupportedLanguage | null>(null);
   const [langOpen, setLangOpen] = useState(false);
@@ -477,6 +527,7 @@ export default function App() {
         // the agent names — backend hits demo data in ~1s which is too fast.
         setTimeout(() => {
           setLatest(res);
+          setResTab(null);
           setDetected(res.language);
           setMode(res.mode);
           setAgentEvents([]);
@@ -621,8 +672,27 @@ export default function App() {
     );
   }
 
+  const askTabs: { id: "risk" | "timeline" | "zones" | "routes" | "trace"; label: string; count?: number }[] = latest
+    ? [
+        { id: "risk" as const, label: "Risk" },
+        { id: "timeline" as const, label: "Timeline" },
+        ...(latest.pfz.length ? [{ id: "zones" as const, label: "Fishing zones", count: latest.pfz.length }] : []),
+        ...(latest.routes.length ? [{ id: "routes" as const, label: "Routes", count: latest.routes.length }] : []),
+        { id: "trace" as const, label: "How ORCA decided" },
+      ]
+    : [];
+  // Open on the tab that answers the question just asked
+  const defaultResTab = latest
+    ? latest.routes.length
+      ? "routes"
+      : latest.pfz.length && !latest.risk
+        ? "zones"
+        : "risk"
+    : "risk";
+  const activeResTab = resTab && askTabs.some((t) => t.id === resTab) ? resTab : defaultResTab;
+
   return (
-    <div className="mx-auto flex min-h-full max-w-[1580px] flex-col gap-4 p-4 lg:p-6">
+    <div className={`mx-auto flex min-h-full max-w-[1580px] flex-col gap-4 p-4 lg:p-6 `}>
       <ChartDefs />
       <div className="sea-drift" aria-hidden />
       <div className="fish-drift" aria-hidden />
@@ -636,15 +706,12 @@ export default function App() {
             title="Back to the front page"
             className="flex items-center gap-4 py-3.5 pl-5 pr-6 text-left"
           >
-            <CompassMark size={46} className="shrink-0 text-ink-900" />
-            <div>
-              <h1 className="font-display text-[30px] font-black leading-none tracking-tight text-ink-900">
-                ORCA
-              </h1>
-              <p className="mt-1 font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-chart-600">
-                Marine EcOsystem Reasoning · Collaborative Agents
-              </p>
-            </div>
+            <BrandLogo />
+            <p className="hidden border-l pl-4 font-mono text-[9px] font-semibold uppercase leading-relaxed tracking-[0.18em] text-chart-600 sm:block" style={{ borderColor: "var(--rule)" }}>
+              Marine EcOsystem Reasoning
+              <br />
+              Collaborative Agents
+            </p>
           </button>
 
           {/* title-block cells */}
@@ -793,27 +860,44 @@ export default function App() {
 
       {/* ================= HOME : location + today's plan ================= */}
       {tab === "home" && (
-        <div className="grid min-h-0 flex-1 items-start gap-4 lg:grid-cols-[1.35fr_minmax(370px,1fr)]">
-          <div className="space-y-4 lg:sticky lg:top-4 lg:self-start">
-            <LocationPicker current={place} language={uiLang} onPick={setPlace} />
+        <div ref={homeGridRef} className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(380px,1fr)] xl:grid-cols-[minmax(0,1fr)_minmax(420px,1fr)]">
+          {/* Left column: location bar sits ABOVE the map (never on it), map stays in view while the page scrolls */}
+          <div className="flex min-w-0 flex-col gap-3 lg:sticky lg:top-4">
+            <div ref={homePickerRef}>
+              <LocationPicker current={place} language={uiLang} onPick={setPlace} />
+            </div>
 
-            <MarineMap
-              origin={homeOrigin}
-              zones={zones}
-              pfz={[]}
-              areas={outlook?.areas ?? []}
-              radiusKm={outlook?.radius_km ?? RADIUS_KM}
-              routes={outlook?.routes ?? []}
-              geofence={[]}
-              language={uiLang}
-              onPickLocation={pickLocation}
-              focusRank={focusRank}
-              portFeatures={portFeatures}
-              pfzGeoJson={pfzGeoJson}
-            />
+            <div
+              className="deck-map isolate relative h-[52dvh] min-h-[380px] max-h-[560px] lg:h-[var(--home-map-h,clamp(320px,calc(100dvh-350px),720px))] lg:min-h-0 lg:max-h-none"
+              style={{ ["--glow" as string]: outlook ? RISK_COLOR[outlook.safety.category] : "#2a7391", ...(homeMapH ? { ["--home-map-h" as string]: `${homeMapH}px` } : {}) }}
+            >
+              <MarineMap
+                fill
+                origin={homeOrigin}
+                zones={zones}
+                pfz={[]}
+                areas={outlook?.areas ?? []}
+                radiusKm={outlook?.radius_km ?? RADIUS_KM}
+                routes={outlook?.routes ?? []}
+                geofence={[]}
+                language={uiLang}
+                onPickLocation={pickLocation}
+                focusRank={focusRank}
+                portFeatures={portFeatures}
+                pfzGeoJson={pfzGeoJson}
+              />
+            </div>
+          </div>
 
+          {/* Decision rail: verdict first, then numbers, warnings, fishing grounds */}
+          <div className="stagger-in min-w-0 space-y-4">
+            {place && (
+              <div className="verdict-glow" style={{ ["--glow" as string]: outlook ? RISK_COLOR[outlook.safety.category] : "#2a7391" }}>
+                <QuickRiskPanel lat={place.latitude} lon={place.longitude} />
+              </div>
+            )}
             {outlook && (
-              <div className="panel grid grid-cols-2 overflow-hidden sm:grid-cols-4">
+              <div className="panel popin grid grid-cols-2 overflow-hidden sm:grid-cols-4">
                 {/* Quick metric labels — each in the selected language */
                 (() => {
                   const _SAFETY: Record<Language, string> = { en: "Safety", hi: "सुरक्षा", mr: "सुरक्षा", ta: "பாதுகாப்பு", te: "భద్రత", bn: "নিরাপত্তা", ml: "സുരക്ഷ" };
@@ -884,9 +968,6 @@ export default function App() {
                 ))}
               </div>
             )}
-          </div>
-
-          <div className="stagger-in space-y-4">
             {loadingOutlook && !outlook && (
               <div className="panel flex flex-col items-center gap-3 p-8 text-center">
                 <span className="relative grid h-9 w-9 place-items-center text-chart-600">
@@ -909,13 +990,8 @@ export default function App() {
                 </span>
               </div>
             )}
-            {/* Live Alerts — calls GET /api/alerts */}
             {place && (
               <AlertsPanel lat={place.latitude} lon={place.longitude} compact />
-            )}
-            {/* Quick Risk Breakdown — calls GET /api/risk */}
-            {place && (
-              <QuickRiskPanel lat={place.latitude} lon={place.longitude} />
             )}
             {outlook && (
               <FishingPanel
@@ -957,8 +1033,9 @@ export default function App() {
             ))}
           </div>
 
-          <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[minmax(350px,1fr)_1.6fr]">
-            <div className="min-h-[540px] lg:h-[calc(100vh-280px)]">
+          <div ref={askGridRef} className="grid gap-4 lg:grid-cols-[minmax(350px,1fr)_1.6fr] lg:items-start">
+            {/* Chat: fixed size, scrolls inside itself, stays in view beside the results */}
+            <div className="lg:sticky lg:top-4" style={{ height: `min(${askFitH}px, calc(100dvh - 2rem))` }}>
               <ChatPanel
                 messages={messages}
                 busy={busy}
@@ -976,19 +1053,67 @@ export default function App() {
               />
             </div>
 
-            <div className="space-y-4 lg:h-[calc(100vh-280px)] lg:overflow-y-auto lg:pr-1">
-              {latest && <ConditionsStrip res={latest} language={latest.language} />}
+            {/* Map (fixed) with the results underneath */}
+            <div className="flex min-w-0 flex-col gap-4">
+              <div className="shrink-0" style={{ height: askFitH }}>
+                <MarineMap
+                  fitParent
+                  origin={latest?.intent.location ?? null}
+                  zones={zones}
+                  pfz={latest?.pfz ?? []}
+                  routes={latest?.routes ?? []}
+                  geofence={latest?.geofence ?? []}
+                  alerts={latest?.alerts ?? []}
+                  language={uiLang}
+                  portFeatures={portFeatures}
+                />
+              </div>
 
-              <MarineMap
-                origin={latest?.intent.location ?? null}
-                zones={zones}
-                pfz={latest?.pfz ?? []}
-                routes={latest?.routes ?? []}
-                geofence={latest?.geofence ?? []}
-                alerts={latest?.alerts ?? []}
-                language={uiLang}
-                portFeatures={portFeatures}
-              />
+              {/* Results: one tab at a time under the map, so nothing stacks into a long list */}
+              {latest && (
+                <div className="space-y-3">
+                  {latest.risk && (
+                    <div
+                      className="panel flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3"
+                      style={{ borderLeft: `4px solid ${RISK_COLOR[latest.risk.category]}` }}
+                    >
+                      <span
+                        className="font-display text-[26px] font-bold leading-none tabular-nums"
+                        style={{ color: RISK_COLOR[latest.risk.category] }}
+                      >
+                        {latest.risk.score}
+                        <span className="ml-0.5 text-[12px] font-semibold text-ink-400">/100</span>
+                      </span>
+                      <span className="font-display text-[16px] font-bold text-ink-900">
+                        {{ LOW: "Conditions look safe", MODERATE: "Go with caution", HIGH: "High risk — not recommended", EXTREME: "Extreme — do not go to sea" }[latest.risk.category]}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-ink-500">
+                        {latest.intent.location_text}
+                        {latest.risk.factors?.find((f) => f.contribution > 0)
+                          ? ` · main factor: ${latest.risk.factors.find((f) => f.contribution > 0)!.label}`
+                          : ""}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex flex-wrap gap-1.5" role="tablist">
+                    {askTabs.map((t) => (
+                      <button
+                        key={t.id}
+                        role="tab"
+                        aria-selected={activeResTab === t.id}
+                        onClick={() => setResTab(t.id)}
+                        className={`chip ${activeResTab === t.id ? "!bg-ink-900 !text-paper-50" : ""}`}
+                      >
+                        <span className="font-semibold">{t.label}</span>
+                        {t.count ? <span className="font-mono text-[10px] opacity-70">{t.count}</span> : null}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div key={activeResTab} className="space-y-4 animate-[fadeUp_.25s_ease-out]">
+                    {activeResTab === "risk" && (
+                      <>
+                        <ConditionsStrip res={latest} language={latest.language} />
 
               {latest?.risk && (
                 <RiskCard
@@ -998,11 +1123,8 @@ export default function App() {
                 />
               )}
 
-              {latest && (
-                <RiskTimeline location={latest.intent.location} language={latest.language} />
-              )}
-
-              {latest && latest.alerts.length > 0 && (
+              
+                        {latest && latest.alerts.length > 0 && (
                 <div className="panel hatch-danger overflow-hidden border-risk-extreme/60">
                   <div className="hd border-risk-extreme/25">
                     <span className="label flex items-center gap-2 !text-risk-extreme">
@@ -1028,9 +1150,27 @@ export default function App() {
                 </div>
               )}
 
-              {latest && <PFZList zones={latest.pfz} language={latest.language} />}
+              
+                      </>
+                    )}
+                    {activeResTab === "timeline" && (
+                      <>
+                        {latest && (
+                <RiskTimeline location={latest.intent.location} language={latest.language} />
+              )}
 
-              {latest && latest.routes.length > 0 && (
+              
+                      </>
+                    )}
+                    {activeResTab === "zones" && (
+                      <>
+                        {latest && <PFZList zones={latest.pfz} language={latest.language} />}
+
+                      </>
+                    )}
+                    {activeResTab === "routes" && (
+                      <>
+                        {latest && latest.routes.length > 0 && (
                 <div className="panel overflow-hidden">
                   <div className="hd">
                     <span className="label flex items-center gap-2">
@@ -1083,14 +1223,27 @@ export default function App() {
                 </div>
               )}
 
-              {latest && (
+              
+                      </>
+                    )}
+                    {activeResTab === "trace" && (
+                      <>
+                        {latest && (
                 <AgentTracePanel trace={latest.trace} elapsed={latest.elapsed_ms} language={latest.language} explanationSource={latest.explanation_source} />
               )}
 
-              {latest && (
+              
+                      </>
+                    )}
+                  </div>
+
+                  {latest && (
                 <p className="px-1 pb-2 font-mono text-[10.5px] leading-relaxed text-ink-400">
                   {latest.disclaimer}
                 </p>
+              )}
+
+                </div>
               )}
             </div>
           </div>

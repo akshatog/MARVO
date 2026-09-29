@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { Language } from "../types";
+import type { Localized, Language } from "../types";
 import { CrosshairGlyph } from "./glyphs";
 
 export interface PickedLocation {
@@ -23,7 +23,7 @@ export const PORTS: { name: string; state: string; lat: number; lon: number }[] 
   { name: "Port Blair", state: "Andaman & Nicobar", lat: 11.6234, lon: 92.7265 },
 ];
 
-const T: Record<Language, Record<string, string>> = {
+const T: Localized<Record<string, string>> = {
   en: {
     yourLocation: "Your location",
     useGps: "Use my location",
@@ -63,9 +63,12 @@ export default function LocationPicker({
   current,
   language = "en",
   onPick,
+  compact = false,
 }: {
   current: PickedLocation | null;
   language?: Language;
+  /** Floating glass pill that sits on top of the map. */
+  compact?: boolean;
   onPick: (loc: PickedLocation) => void;
 }) {
   const t = T[language] ?? T.en;
@@ -112,12 +115,20 @@ export default function LocationPicker({
     : PORTS;
 
   return (
-    <div ref={boxRef} className="panel relative z-[600] px-4 py-3">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+    <div
+      ref={boxRef}
+      className={compact ? "glass-pill loc-pill relative z-[600] px-3 py-1.5" : "panel relative z-[600] px-4 py-3"}
+    >
+      <div className={compact ? "flex flex-nowrap items-center gap-2" : "flex flex-wrap items-center gap-x-3 gap-y-2"}>
         <div className="min-w-0 flex-1">
-          <div className="label">{t.yourLocation}</div>
-          <div className="mt-0.5 flex items-baseline gap-2.5">
-            <span className="truncate font-display text-[18px] font-bold leading-tight text-ink-900">
+          {!compact && <div className="label">{t.yourLocation}</div>}
+          <div className="mt-0.5 flex min-w-0 items-baseline gap-2">
+            <span
+              title={current?.label}
+              className={`font-display font-bold leading-tight text-ink-900 ${
+                compact ? "min-w-[4.5rem] max-w-[11rem] truncate text-[15px]" : "truncate text-[18px]"
+              }`}
+            >
               {current?.label ?? "—"}
             </span>
             {current?.source === "gps" && (
@@ -126,21 +137,30 @@ export default function LocationPicker({
               </span>
             )}
             {current && (
-              <span className="shrink-0 font-mono text-[10.5px] tabular-nums text-ink-400">
+              <span className={`truncate font-mono text-[10.5px] tabular-nums text-ink-400 ${compact ? "hidden min-[1500px]:inline" : "shrink-0"}`}>
                 {current.latitude.toFixed(3)}°N, {current.longitude.toFixed(3)}°E
               </span>
             )}
           </div>
         </div>
 
-        <button onClick={useGps} disabled={status === "locating"} className="btn-line !py-1.5 disabled:opacity-55">
-          <CrosshairGlyph size={13} />
-          {status === "locating" ? t.locating : t.useGps}
+        <button
+          onClick={useGps}
+          disabled={status === "locating"}
+          title={t.useGps}
+          aria-label={t.useGps}
+          className="btn-line shrink-0 whitespace-nowrap !py-1.5 disabled:opacity-55"
+        >
+          <CrosshairGlyph size={13} className={status === "locating" ? "animate-spin" : ""} />
+          <span className={compact ? "hidden min-[1280px]:inline" : ""}>
+            {status === "locating" ? t.locating : t.useGps}
+          </span>
         </button>
 
         <button
           onClick={() => setOpen((v) => !v)}
-          className={`btn-line !py-1.5 ${open ? "!bg-ink-900 !text-paper-50" : ""}`}
+          aria-expanded={open}
+          className={`btn-line shrink-0 whitespace-nowrap !py-1.5 ${open ? "!bg-ink-900 !text-paper-50" : ""}`}
         >
           {t.pickPort}
           <span className={`inline-block transition-transform ${open ? "rotate-180" : ""}`}>▾</span>
@@ -152,11 +172,11 @@ export default function LocationPicker({
           {status === "denied" ? t.denied : t.unavailable}
         </p>
       )}
-      <p className="mt-1.5 text-[10.5px] italic text-ink-400">{t.tapMap}</p>
+      {!compact && <p className="mt-1.5 text-[10.5px] italic text-ink-400">{t.tapMap}</p>}
 
       {open && (
         <div
-          className="absolute left-3 right-3 top-full z-[700] mt-2 overflow-hidden rounded-[3px] border shadow-xl"
+          className="absolute left-0 right-0 top-full z-[700] mt-2 overflow-hidden rounded-[10px] border shadow-xl"
           style={{ borderColor: "var(--rule-strong)", background: "var(--paper-bright)" }}
         >
           <input

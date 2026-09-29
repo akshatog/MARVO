@@ -1,6 +1,6 @@
-import type { AgentTrace as Trace, Language } from "../types";
+import type { Localized, AgentTrace as Trace, Language } from "../types";
 
-const LABEL: Record<Language, Record<string, string>> = {
+const LABEL: Localized<Record<string, string>> = {
   en: {
     intent: "Intent", weather: "Weather", ocean: "Ocean", pfz: "Fishing zones",
     cyclone: "Alerts", gis: "GIS", risk: "Risk engine", route: "Route",
@@ -18,7 +18,7 @@ const LABEL: Record<Language, Record<string, string>> = {
   },
 };
 
-const T: Record<Language, Record<string, string>> = {
+const T: Localized<Record<string, string>> = {
   en: {
     crew: "Agent crew",
     agents: "agents",
