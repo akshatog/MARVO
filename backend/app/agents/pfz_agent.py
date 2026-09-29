@@ -17,8 +17,9 @@ from datetime import datetime
 from typing import List
 
 from ..data import demo_store
-from ..data.geo import RESTRICTED_ZONES, point_in_polygon
+from ..data.geo import RESTRICTED_ZONES, compass, point_in_polygon
 from ..schemas import AgentResult, Location, PFZZone
+from ..services import fishing as fishing_svc
 from .base import live_enabled, timed
 
 
@@ -44,21 +45,28 @@ def _blocking_zone(lat: float, lon: float):
 
 def _incois_to_pfz_zone(raw: dict, rank: int, stamp: str) -> dict:
     """Convert an INCOIS scraper zone dict to the PFZZone-compatible format."""
+    # bearing may come as a compass string (demo_store) or as bearing_deg float
+    # (INCOIS scraper). PFZZone.bearing expects a compass string.
+    raw_bearing = raw.get("bearing") or ""
+    if not raw_bearing:
+        deg = raw.get("bearing_deg")
+        raw_bearing = compass(float(deg)) if deg is not None else ""
     return {
-        "zone_id": raw.get("zone_id", f"INCOIS-{rank:02d}"),
-        "latitude": raw["latitude"],
-        "longitude": raw["longitude"],
-        "distance_km": raw.get("distance_km", 25.0),
-        "bearing_deg": raw.get("bearing_deg"),
-        "depth_m": raw.get("depth_m"),
-        "wave_height_m": raw.get("wave_height_m"),
-        "sst_c": raw.get("sst_c"),
+        "zone_id":          raw.get("zone_id", f"INCOIS-{rank:02d}"),
+        "latitude":         raw["latitude"],
+        "longitude":        raw["longitude"],
+        "distance_km":      raw.get("distance_km", 25.0),
+        "bearing":          raw_bearing,
+        "bearing_deg":      raw.get("bearing_deg"),
+        "depth_m":          raw.get("depth_m"),
+        "wave_height_m":    raw.get("wave_height_m"),
+        "sst_c":            raw.get("sst_c"),
         "chlorophyll_mg_m3": raw.get("chlorophyll_mg_m3"),
-        "confidence": raw.get("confidence", 0.90),
-        "source": raw.get("source", "INCOIS"),
-        "source_type": raw.get("source_type", "official_bulletin"),
-        "rank": rank,
-        "timestamp": stamp,
+        "confidence":       raw.get("confidence") or 0.90,   # 0.0 means 'unfilled'
+        "source":           raw.get("source", "INCOIS"),
+        "source_type":      raw.get("source_type", "official_bulletin"),
+        "rank":             rank,
+        "timestamp":        stamp,
     }
 
 
@@ -121,6 +129,26 @@ def run(location: Location, when: datetime, count: int = 3) -> AgentResult:
     zones: List[PFZZone] = []
     for rank, z in enumerate(kept, start=1):
         formatted = _incois_to_pfz_zone(z, rank, stamp)
+        # Compute HSI fishing probability so the confidence field is always
+        # meaningful — demo_store intentionally stores 0.0 as a sentinel meaning
+        # "to be filled". The /api/fishing endpoint fills it via _zone_payload;
+        # the /plan (LangGraph) path goes through this agent and must fill it here.
+        hour = int(stamp[11:13]) if len(stamp) >= 13 else 6
+        hsi = fishing_svc.probability(
+            chlorophyll=formatted.get("chlorophyll_mg_m3"),
+            sst=formatted.get("sst_c"),
+            ambient_sst=formatted.get("sst_c"),   # best available; fishing.py enriches with ocean_agent sst
+            wave_m=formatted.get("wave_height_m"),
+            hour=hour,
+        )
+        prob = hsi["probability"]                  # 0-100
+        formatted["confidence"] = round(prob / 100.0, 2)
+        formatted["rationale"] = (
+            f"Chl {formatted.get('chlorophyll_mg_m3')} mg/m\u00b3 "
+            f"at {formatted.get('sst_c')}\u00b0C, "
+            f"{round(formatted['distance_km'])} km {formatted['bearing']}. "
+            f"HSI likelihood {prob}%."
+        )
         zones.append(PFZZone(**{k: v for k, v in formatted.items() if k in PFZZone.model_fields}))
 
     return AgentResult(
