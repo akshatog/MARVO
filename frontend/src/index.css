@@ -3030,3 +3030,8 @@ html.ocean .hd-src {
   flex: 1 1 auto;
   min-height: 0;
 }
+/* Ask ORCA: result tab content eases in under the fixed map */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
