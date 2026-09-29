@@ -221,14 +221,14 @@ export function HeroDemo({ language = "en" }: { language?: string }) {
     setTyped(0);
     setLit(0);
 
-    const TYPE = 55;
-    chars.forEach((_, k) => at(600 + k * TYPE, () => setTyped(k + 1)));
-    const t1 = 600 + chars.length * TYPE + 450;
+    const TYPE = 40;
+    chars.forEach((_, k) => at(450 + k * TYPE, () => setTyped(k + 1)));
+    const t1 = 450 + chars.length * TYPE + 320;
     at(t1, () => setPhase("think"));
-    for (let k = 0; k < 10; k++) at(t1 + 150 + k * 170, () => setLit(k + 1));
-    const t2 = t1 + 150 + 10 * 170 + 350;
+    for (let k = 0; k < 10; k++) at(t1 + 110 + k * 120, () => setLit(k + 1));
+    const t2 = t1 + 110 + 10 * 120 + 250;
     at(t2, () => setPhase("verdict"));
-    at(t2 + 5600, () => setI((v) => (v + 1) % SCENES.length));
+    at(t2 + 4200, () => setI((v) => (v + 1) % SCENES.length));
     return () => timers.forEach((id) => window.clearTimeout(id));
   }, [i]);
 
@@ -246,7 +246,7 @@ export function HeroDemo({ language = "en" }: { language?: string }) {
     let raf = 0;
     const start = performance.now();
     const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / 1000);
+      const t = Math.min(1, (now - start) / 800);
       setN(Math.round(sc.score * (1 - Math.pow(1 - t, 3))));
       if (t < 1) raf = requestAnimationFrame(tick);
     };

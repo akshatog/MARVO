@@ -523,7 +523,7 @@ function SectionHeading({
 }) {
   const [ref, shown] = useInView<HTMLDivElement>();
   return (
-    <div ref={ref} id={id} className={`rv rv-left mt-16 max-w-[640px] scroll-mt-20 ${shown ? "rv-in" : ""}`}>
+    <div ref={ref} id={id} className={`rv rv-left mt-16 max-w-[640px] scroll-mt-28 ${shown ? "rv-in" : ""}`}>
       <div className="flex items-center gap-2">
         <span className="sec-line h-px w-6 bg-chart-500/70" />
         <span className="label !text-chart-600">{kicker}</span>
@@ -589,48 +589,45 @@ export default function Landing({
   return (
     <>
         <nav className="fixed left-0 top-0 z-50 w-full border-b border-[var(--rule)] bg-paper-50/90 backdrop-blur-sm">
-          <div className="mx-auto grid max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-8 px-5 py-2.5">
-            <BrandLogo className="shrink-0" />
-            <div className="hidden items-center justify-center gap-9 md:flex">
+          <div className="mx-auto grid max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-8 px-5 py-3">
+            <BrandLogo className="lp-nav-logo shrink-0" />
+            <div className="hidden items-center justify-center gap-8 md:flex">
               <button
                 onClick={() => document.getElementById("lp-features")?.scrollIntoView({ behavior: "smooth" })}
-                className="nav-link relative font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 transition-colors after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1.5px] after:origin-center after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:text-ink-900 hover:after:scale-x-100 focus-visible:text-ink-900 focus-visible:after:scale-x-100"
+                className="nav-link relative font-sans text-[15px] font-semibold tracking-normal text-ink-500 transition-colors after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1.5px] after:origin-center after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:text-ink-900 hover:after:scale-x-100 focus-visible:text-ink-900 focus-visible:after:scale-x-100"
               >
                 {t.navFeatures}
               </button>
               <button
                 onClick={() => document.getElementById("lp-pipeline")?.scrollIntoView({ behavior: "smooth" })}
-                className="nav-link relative font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 transition-colors after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1.5px] after:origin-center after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:text-ink-900 hover:after:scale-x-100 focus-visible:text-ink-900 focus-visible:after:scale-x-100"
+                className="nav-link relative font-sans text-[15px] font-semibold tracking-normal text-ink-500 transition-colors after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1.5px] after:origin-center after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:text-ink-900 hover:after:scale-x-100 focus-visible:text-ink-900 focus-visible:after:scale-x-100"
               >
                 {t.navHow}
               </button>
               <button
                 onClick={() => onScenario("Is there a cyclone near Paradip? Can I go fishing?")}
-                className="nav-link relative font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500 transition-colors after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1.5px] after:origin-center after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:text-ink-900 hover:after:scale-x-100 focus-visible:text-ink-900 focus-visible:after:scale-x-100"
+                className="nav-link relative font-sans text-[15px] font-semibold tracking-normal text-ink-500 transition-colors after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1.5px] after:origin-center after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:text-ink-900 hover:after:scale-x-100 focus-visible:text-ink-900 focus-visible:after:scale-x-100"
               >
                 {t.navTry}
               </button>
             </div>
-            <button onClick={() => onEnter("home")} className="btn-ink group shrink-0 justify-self-end">
+            <button onClick={() => onEnter("home")} className="btn-ink group shrink-0 justify-self-end !px-5 !py-2.5">
               {t.openOrca}{" "}
               <CourseArrow size={13} className="transition-transform group-hover:translate-x-1" />
             </button>
           </div>
         </nav>
 
-      <div className="mx-auto flex min-h-full max-w-[1240px] flex-col px-5 pb-5 pt-[100px]">
+      <div className="mx-auto flex min-h-full max-w-[1240px] flex-col px-5 pb-5 pt-[104px]">
       <div className="sea-drift" aria-hidden />
       <div className="fish-drift" aria-hidden />
 
-      <HeroSky confidence={heroConfidence} className="flex min-h-[calc(100svh-84px)] flex-col justify-center pb-24 pt-6">
+      <HeroSky confidence={heroConfidence} className="flex min-h-[calc(100svh-104px)] flex-col justify-center pb-24 pt-6">
       {/* hero */}
       <div className="mt-0 grid items-center gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-x-12 xl:gap-x-16">
         <div>
           <Reveal delay={200}>
-            <span className="hs-kicker">
-              <i /> {t.kicker}
-            </span>
-            <p className="hero-title mt-5 max-w-[620px] font-display text-[40px] font-black leading-[1.16] tracking-tight text-ink-900 sm:text-[46px] lg:text-[52px]">
+            <p className="hero-title max-w-[620px] font-display text-[40px] font-black leading-[1.16] tracking-tight text-ink-900 sm:text-[46px] lg:text-[52px]">
               {t.tag1}
               <br />
               {t.tag2a}
@@ -759,7 +756,7 @@ export default function Landing({
 
       {/* feature cards */}
       <SectionHeading kicker={t.featuresKicker} title={t.featuresTitle} />
-      <div id="lp-features" className="mt-5 scroll-mt-20 grid gap-4 md:grid-cols-[1.2fr_1fr] md:grid-rows-2">
+      <div id="lp-features" className="mt-5 scroll-mt-28 grid gap-4 md:grid-cols-[1.2fr_1fr] md:grid-rows-2">
         {t.cards.map((c, i) => (
           <Reveal key={cardTabs[i]} delay={i * 120} from={i === 0 ? "left" : "right"} className={i === 0 ? "md:row-span-2" : ""}>
             <div className="panel rule-double lift group flex h-full flex-col">
