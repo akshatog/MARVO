@@ -1,8 +1,31 @@
-import { defineConfig } from "vite";
+import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react";
+import fs from "fs";
+import path from "path";
+
+// Inline Vite plugin: stamps dist/sw.js with a build timestamp on every
+// production build so the PWA service worker cache auto-invalidates.
+// Developers never need to manually bump the cache version string again.
+function swCacheStamp(): Plugin {
+  return {
+    name: "sw-cache-stamp",
+    apply: "build",
+    closeBundle() {
+      const swDist = path.resolve(__dirname, "dist", "sw.js");
+      if (!fs.existsSync(swDist)) return;
+      const version = `orca-2.0-cache-${Date.now()}`;
+      const updated = fs.readFileSync(swDist, "utf-8").replace(
+        "__SW_CACHE_VERSION__",
+        version,
+      );
+      fs.writeFileSync(swDist, updated);
+      console.log(`[sw-cache-stamp] Cache version → ${version}`);
+    },
+  };
+}
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), swCacheStamp()],
   server: {
     host: true,
     allowedHosts: true,
