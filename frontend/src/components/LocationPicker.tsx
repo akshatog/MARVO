@@ -63,9 +63,12 @@ export default function LocationPicker({
   current,
   language = "en",
   onPick,
+  compact = false,
 }: {
   current: PickedLocation | null;
   language?: Language;
+  /** Floating glass pill that sits on top of the map. */
+  compact?: boolean;
   onPick: (loc: PickedLocation) => void;
 }) {
   const t = T[language] ?? T.en;
@@ -112,10 +115,10 @@ export default function LocationPicker({
     : PORTS;
 
   return (
-    <div ref={boxRef} className="panel relative z-[600] px-4 py-3">
+    <div ref={boxRef} className={compact ? "glass-pill relative z-[600] px-3.5 py-2" : "panel relative z-[600] px-4 py-3"}>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <div className="min-w-0 flex-1">
-          <div className="label">{t.yourLocation}</div>
+          {!compact && <div className="label">{t.yourLocation}</div>}
           <div className="mt-0.5 flex items-baseline gap-2.5">
             <span className="truncate font-display text-[18px] font-bold leading-tight text-ink-900">
               {current?.label ?? "—"}
@@ -152,7 +155,7 @@ export default function LocationPicker({
           {status === "denied" ? t.denied : t.unavailable}
         </p>
       )}
-      <p className="mt-1.5 text-[10.5px] italic text-ink-400">{t.tapMap}</p>
+      {!compact && <p className="mt-1.5 text-[10.5px] italic text-ink-400">{t.tapMap}</p>}
 
       {open && (
         <div

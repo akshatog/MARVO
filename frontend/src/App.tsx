@@ -791,11 +791,14 @@ export default function App() {
 
       {/* ================= HOME : location + today's plan ================= */}
       {tab === "home" && (
-        <div className="grid min-h-0 flex-1 items-start gap-4 lg:grid-cols-[1.35fr_minmax(370px,1fr)]">
-          <div className="space-y-4 lg:sticky lg:top-4 lg:self-start">
-            <LocationPicker current={place} language={uiLang} onPick={setPlace} />
-
+        <div className="grid gap-4 lg:h-[max(560px,calc(100dvh-210px))] lg:grid-cols-[minmax(0,1.7fr)_minmax(360px,1fr)]">
+          {/* Map deck: the whole chart is visible without scrolling; controls float on it */}
+          <div
+            className="deck-map relative h-[62dvh] min-h-[420px] lg:h-full"
+            style={{ ["--glow" as string]: outlook ? RISK_COLOR[outlook.safety.category] : "#2a7391" }}
+          >
             <MarineMap
+              fill
               origin={homeOrigin}
               zones={zones}
               pfz={[]}
@@ -809,9 +812,20 @@ export default function App() {
               portFeatures={portFeatures}
               pfzGeoJson={pfzGeoJson}
             />
+            <div className="absolute left-[64px] right-[84px] top-[18px] z-[650] max-w-[560px]">
+              <LocationPicker compact current={place} language={uiLang} onPick={setPlace} />
+            </div>
+          </div>
 
+          {/* Decision rail: verdict first, then numbers, warnings, fishing grounds */}
+          <div className="stagger-in scroll-slim space-y-4 lg:h-full lg:overflow-y-auto lg:pr-1">
+            {place && (
+              <div className="verdict-glow" style={{ ["--glow" as string]: outlook ? RISK_COLOR[outlook.safety.category] : "#2a7391" }}>
+                <QuickRiskPanel lat={place.latitude} lon={place.longitude} />
+              </div>
+            )}
             {outlook && (
-              <div className="panel grid grid-cols-2 overflow-hidden sm:grid-cols-4">
+              <div className="panel popin grid grid-cols-2 overflow-hidden sm:grid-cols-4">
                 {/* Quick metric labels — each in the selected language */
                 (() => {
                   const _SAFETY: Record<Language, string> = { en: "Safety", hi: "सुरक्षा", mr: "सुरक्षा", ta: "பாதுகாப்பு", te: "భద్రత", bn: "নিরাপত্তা", ml: "സുരക്ഷ" };
@@ -882,9 +896,6 @@ export default function App() {
                 ))}
               </div>
             )}
-          </div>
-
-          <div className="stagger-in space-y-4">
             {loadingOutlook && !outlook && (
               <div className="panel flex flex-col items-center gap-3 p-8 text-center">
                 <span className="relative grid h-9 w-9 place-items-center text-chart-600">
@@ -907,13 +918,8 @@ export default function App() {
                 </span>
               </div>
             )}
-            {/* Live Alerts — calls GET /api/alerts */}
             {place && (
               <AlertsPanel lat={place.latitude} lon={place.longitude} compact />
-            )}
-            {/* Quick Risk Breakdown — calls GET /api/risk */}
-            {place && (
-              <QuickRiskPanel lat={place.latitude} lon={place.longitude} />
             )}
             {outlook && (
               <FishingPanel
