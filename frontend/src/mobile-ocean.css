@@ -1,0 +1,321 @@
+/* ==================================================================
+   ORCA — phone app, light OCEAN theme finishing
+   ------------------------------------------------------------------
+   The phone now wears the same html.ocean theme as the website (see
+   main.tsx). Everything shared — palette tokens, .panel, .chip, .field,
+   waves, map, scrollbars — comes from index.css. This file only holds
+   what is specific to the phone, all scoped under html.phone:
+     · the hand-rolled controls in MobileApp.tsx (.m-cta, .m-nav, .m-wordmark)
+     · keeping safety text solid (the site's flowing-gradient headings
+       are for marketing copy, not for a "Do not go out today" verdict)
+     · iOS-safe page background
+   ================================================================== */
+
+html.phone {
+  --m-grad: linear-gradient(120deg, #0b2a5b 0%, #1f6feb 60%, #12b5c8 100%);
+}
+
+/* iOS Safari ignores background-attachment:fixed on body and can tile the
+   gradient, so paint it once on <html>, no-repeat, with a matching end colour. */
+html.ocean.phone {
+  background: linear-gradient(180deg, #f8fcff 0%, #e4f2ff 55%, #d3e9fc 100%) no-repeat fixed;
+  background-size: 100% 100%;
+  background-color: #d3e9fc;
+}
+html.ocean.phone body {
+  background: transparent;
+}
+/* the drifting sky / sun / aqua glow is sized for a desktop viewport — scale it up */
+html.ocean.phone body::before {
+  background-image:
+    radial-gradient(85vw 85vw at 0% 0%, rgba(160, 208, 255, 0.55), transparent 70%),
+    radial-gradient(70vw 70vw at 100% 12%, rgba(255, 214, 140, 0.45), transparent 70%),
+    radial-gradient(90vw 90vw at 55% 100%, rgba(150, 236, 236, 0.5), transparent 70%);
+  background-position: 0% 0%, 100% 12%, 55% 100%;
+}
+
+/* ---------------- text ---------------- */
+/* Verdicts, scores, area names: solid navy. Legibility beats decoration
+   on anything a fisher makes a go / no-go call from. */
+html.ocean.phone :is(h1, h2, h3, h4, p, span, div).font-display.text-ink-900 {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: rgb(var(--c-ink-900));
+  animation: none;
+  padding: 0;
+}
+/* …but the ORCA wordmark keeps the flowing ocean gradient from the website. */
+html.ocean.phone :is(div, span).font-display.text-ink-900.m-wordmark {
+  background-image: linear-gradient(100deg, #0b2a5b 0%, #1f6feb 45%, #12b5c8 75%, #0b2a5b 100%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: oceanflow 10s linear infinite;
+  padding: 0.14em 0.08em 0.18em;
+}
+
+/* ---------------- controls ---------------- */
+/* Primary action: same navy → ocean → aqua sweep as the website's .btn-ink.
+   Used by Listen, Ask-by-voice, the question bubble and the active tab. */
+html.ocean.phone .m-cta {
+  color: #fff;
+  background-color: #0b2a5b;
+  background-image: var(--m-grad);
+  background-size: 200% 100%;
+  box-shadow: 0 10px 22px -12px rgba(31, 111, 235, 0.8);
+  transition: background-position 0.5s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+html.ocean.phone .m-cta:active {
+  background-position: 100% 0;
+}
+
+/* Selected language tile: .panel's white ocean background otherwise wins over
+   bg-ink-900 and leaves white text on a white tile. */
+html.ocean.phone .panel.bg-ink-900 {
+  background-color: #0b2a5b;
+  background-image: var(--m-grad);
+  border-color: transparent;
+}
+
+/* Dropdown menus (language, location) float over other controls — the site's
+   translucent .panel lets those show through, so make them opaque. */
+html.ocean.phone .panel.absolute {
+  background: #f7fbff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* Header: frosted, same tint as the sheet behind it. */
+html.ocean.phone header.sticky {
+  background: rgba(234, 244, 255, 0.86);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.ocean.phone .m-wordmark,
+  html.ocean.phone .m-cta { animation: none !important; transition: none; }
+}
+
+
+/* ==================================================================
+   v2 — TABS THAT FEEL LIKE DIFFERENT PLACES
+   Each tab owns a colour pair. The pair is registered with @property so
+   it MORPHS when you switch tabs instead of snapping.
+     Today → ocean blue → aqua      Map → teal → sea-green
+     Ask   → coral → sun
+   ================================================================== */
+@property --tab-a { syntax: "<color>"; inherits: true; initial-value: #1f6feb; }
+@property --tab-b { syntax: "<color>"; inherits: true; initial-value: #12b5c8; }
+
+html.phone .m-root {
+  --tab-a: #1f6feb;
+  --tab-b: #12b5c8;
+  transition: --tab-a 0.55s ease, --tab-b 0.55s ease;
+}
+html.phone .m-root[data-tab="map"] { --tab-a: #0e9e8a; --tab-b: #35c98f; }
+html.phone .m-root[data-tab="ask"] { --tab-a: #f26b4e; --tab-b: #ffb640; }
+
+/* a wash of the tab colour at the top of the screen + a low glow at the foot */
+html.phone .m-aura {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 42% at 50% 0%, color-mix(in srgb, var(--tab-a) 20%, transparent), transparent 72%),
+    radial-gradient(90% 30% at 50% 100%, color-mix(in srgb, var(--tab-b) 16%, transparent), transparent 75%);
+}
+
+/* header: the tab colour runs along its lower edge and flows slowly */
+html.ocean.phone header.sticky {
+  border-bottom: 0;
+  position: sticky;
+}
+html.ocean.phone header.sticky::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--tab-a), var(--tab-b), var(--tab-a));
+  background-size: 200% 100%;
+  animation: shimmerx 6s linear infinite;
+}
+
+/* ---------------- page entrance: slide from the side you tapped ----------------
+   Transform-only on purpose (see tailwind.config.js): content carries safety
+   data and must never be left invisible if animations don't run. */
+@keyframes m-in-r { from { transform: translateX(34px); } to { transform: none; } }
+@keyframes m-in-l { from { transform: translateX(-34px); } to { transform: none; } }
+html.phone .m-slide-r { animation: m-in-r 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+html.phone .m-slide-l { animation: m-in-l 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+/* ---------------- page title strip ---------------- */
+html.phone .m-tabtitle {
+  width: 100%;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 2px 10px;
+}
+html.phone .m-tabtitle-ico {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--tab-a), var(--tab-b));
+  box-shadow: 0 8px 16px -8px var(--tab-a);
+}
+html.phone .m-tabtitle-name {
+  font: 800 12px "Figtree Variable", system-ui, sans-serif;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--tab-a);
+}
+html.phone .m-tabtitle-rule {
+  flex: 1;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--tab-a), color-mix(in srgb, var(--tab-b) 40%, transparent), transparent);
+}
+
+/* ---------------- cards you can actually see ----------------
+   The shared ocean .panel border is a 22% wash — fine on a big desktop
+   canvas, too faint on a phone. Stronger outline, a crisp white inner
+   edge and a real shadow so every card reads as its own sheet. */
+html.ocean.phone .panel {
+  border-color: color-mix(in srgb, var(--tab-a) 34%, #9fc4ee);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.85),
+    0 2px 4px rgba(11, 42, 91, 0.08),
+    0 18px 28px -18px rgba(11, 42, 91, 0.55);
+}
+html.ocean.phone .panel .hd,
+html.ocean.phone .panel > .hd:first-child {
+  border-bottom: 1px solid color-mix(in srgb, var(--tab-a) 30%, #bcd5ef);
+  background: linear-gradient(100deg, color-mix(in srgb, var(--tab-a) 14%, #fff), rgba(255, 255, 255, 0.55) 75%);
+}
+html.ocean.phone .chart-sheet {
+  border: 1px solid color-mix(in srgb, var(--tab-a) 40%, #9fc4ee);
+}
+/* small caps labels inside cards pick up the tab colour */
+html.ocean.phone main .label { color: color-mix(in srgb, var(--tab-a) 70%, #37609a); }
+
+/* ---------------- verdict card ----------------
+   Cool white → foam base always. The risk colour (--verdict, set inline)
+   appears only as the top band, the ring and a soft halo, so an amber
+   "be careful" day no longer turns the whole card cream. */
+html.ocean.phone .m-verdict {
+  background: linear-gradient(165deg, #ffffff 0%, #f1f8ff 55%, #e2f0ff 100%);
+  border-color: color-mix(in srgb, var(--verdict) 38%, #9fc4ee);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.9),
+    0 2px 4px rgba(11, 42, 91, 0.08),
+    0 22px 34px -20px color-mix(in srgb, var(--verdict) 55%, rgba(11, 42, 91, 0.6));
+}
+html.ocean.phone .m-verdict.rule-double::before {
+  height: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--verdict),
+    color-mix(in srgb, var(--verdict) 45%, #12b5c8),
+    var(--verdict)
+  );
+  background-size: 200% 100%;
+}
+
+/* ---------------- Ask: the mic gets a gradient ring + breathing halo ---------------- */
+html.ocean.phone .m-mic {
+  border-color: transparent;
+  background:
+    linear-gradient(#fff, #f3f9ff) padding-box,
+    linear-gradient(135deg, var(--tab-a), var(--tab-b)) border-box;
+  color: var(--tab-a);
+}
+html.ocean.phone .m-mic::after {
+  content: "";
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--tab-a) 45%, transparent);
+  animation: m-halo 2.8s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes m-halo {
+  0% { transform: scale(0.86); opacity: 0.9; }
+  100% { transform: scale(1.22); opacity: 0; }
+}
+
+/* ---------------- bottom dock ---------------- */
+html.ocean.phone .m-nav {
+  left: 12px;
+  right: 12px;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  padding: 6px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  border-color: color-mix(in srgb, var(--tab-a) 30%, #bcd5ef);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 2px 6px rgba(11, 42, 91, 0.1),
+    0 22px 40px -14px rgba(11, 42, 91, 0.6);
+}
+/* the sliding pill: exactly one third wide, glides on a spring-ish curve */
+html.ocean.phone .m-pill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 33.3334%;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--tab-a), var(--tab-b));
+  box-shadow:
+    0 12px 22px -10px var(--tab-a),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  transition: transform 0.5s cubic-bezier(0.3, 1.25, 0.4, 1);
+  overflow: hidden;
+}
+/* a slow light sweep across the pill */
+html.ocean.phone .m-pill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.5) 50%, transparent 70%);
+  background-size: 250% 100%;
+  animation: m-sheen 3.6s ease-in-out infinite;
+}
+@keyframes m-sheen {
+  0% { background-position: 120% 0; }
+  60%, 100% { background-position: -120% 0; }
+}
+html.ocean.phone .m-navbtn { background: transparent; }
+html.ocean.phone .m-navbtn:not(.m-navbtn-on) { color: #4f6c93; }
+html.ocean.phone .m-navico { display: inline-flex; transition: transform 0.4s cubic-bezier(0.3, 1.5, 0.4, 1); }
+html.ocean.phone .m-navbtn-on .m-navico { transform: translateY(-2px) scale(1.12); }
+/* focus: an inset white ring inside the pill, not the site's sun-coloured outline */
+html.ocean.phone .m-navbtn:focus-visible {
+  outline: 2px solid var(--tab-a);
+  outline-offset: 1px;
+}
+html.ocean.phone .m-navbtn-on:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.phone .m-slide-r,
+  html.phone .m-slide-l,
+  html.ocean.phone .m-pill::after,
+  html.ocean.phone .m-mic::after,
+  html.ocean.phone header.sticky::after { animation: none !important; }
+  html.ocean.phone .m-pill { transition: none; }
+}
