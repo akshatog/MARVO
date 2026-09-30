@@ -231,7 +231,7 @@ def _noaa_http() -> httpx.Client:
         with _noaa_client_lock:
             if _noaa_client is None:
                 _noaa_client = httpx.Client(
-                    timeout=15.0,
+                    timeout=5.0,
                     follow_redirects=True,
                     headers={"User-Agent": "MARVO/2.0 (NOAA CoastWatch ERDDAP client)"},
                 )

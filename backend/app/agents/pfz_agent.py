@@ -106,7 +106,7 @@ def run(location: Location, when: datetime, count: int = 3) -> AgentResult:
                     if needs_chl:
                         with ThreadPoolExecutor(max_workers=len(needs_chl)) as ex:
                             fmap = {ex.submit(fetch_chlorophyll_erddap, z["latitude"], z["longitude"]): z for z in needs_chl}
-                            for fut in _as_completed(fmap, timeout=15):
+                            for fut in _as_completed(fmap, timeout=5):
                                 z = fmap[fut]
                                 chl = fut.result()
                                 if chl is not None:
@@ -141,7 +141,7 @@ def run(location: Location, when: datetime, count: int = 3) -> AgentResult:
                 enriched_count = 0
                 with ThreadPoolExecutor(max_workers=len(candidates)) as ex:
                     futures = {ex.submit(_enrich, z): z for z in candidates}
-                    for fut in as_completed(futures, timeout=18):
+                    for fut in as_completed(futures, timeout=6):
                         z = fut.result()
                         if z.get("source") == "INCOIS-ERDDAP":
                             enriched_count += 1
