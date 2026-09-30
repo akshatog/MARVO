@@ -102,6 +102,32 @@ def job_fetch_mosdac() -> None:
         log.warning("[Scheduler] MOSDAC warmup failed: %s", e)
 
 
+def job_keep_alive() -> None:
+    """Self-ping to prevent Render free tier from spinning down after 15 min inactivity.
+
+    Render sets the RENDER env var automatically on all deployed services and
+    injects RENDER_EXTERNAL_URL with the public https URL. This job only fires
+    on Render — it is a no-op locally so it doesn't pollute dev logs.
+    """
+    import os
+    import urllib.request
+
+    if not os.getenv("RENDER"):
+        return  # not on Render — skip silently
+
+    base_url = os.getenv("RENDER_EXTERNAL_URL", "").rstrip("/")
+    if not base_url:
+        log.debug("[KeepAlive] RENDER_EXTERNAL_URL not set — skipping ping")
+        return
+
+    url = f"{base_url}/api/health"
+    try:
+        with urllib.request.urlopen(url, timeout=10) as resp:
+            log.info("[KeepAlive] Ping %s → HTTP %d", url, resp.status)
+    except Exception as exc:
+        log.warning("[KeepAlive] Self-ping failed: %s", exc)
+
+
 def start_scheduler(run_warmup: bool = False) -> BackgroundScheduler:
     """Initialize and start the tiered background scheduler."""
     global _scheduler
@@ -116,9 +142,13 @@ def start_scheduler(run_warmup: bool = False) -> BackgroundScheduler:
     _scheduler.add_job(job_fetch_imd_advisory, "interval", hours=1, id="fetch_imd_advisory", replace_existing=True)
     _scheduler.add_job(job_fetch_incois_pfz, "interval", hours=6, id="fetch_incois_pfz", replace_existing=True)
     _scheduler.add_job(job_fetch_mosdac, "interval", hours=6, id="fetch_mosdac_cache", replace_existing=True)
+    # Keep-alive: prevents Render free tier from spinning down after 15 min inactivity.
+    # Fires every 10 min; job_keep_alive() itself is a no-op when not on Render.
+    _scheduler.add_job(job_keep_alive, "interval", minutes=10, id="keep_alive_ping", replace_existing=True)
 
     _scheduler.start()
-    log.info("ORCA 2.0 Tiered Scheduler started with 5 background cadence jobs.")
+    log.info("ORCA 2.0 Tiered Scheduler started with 6 background cadence jobs (incl. keep-alive).")
+
 
     if run_warmup:
         import threading

@@ -291,7 +291,39 @@ export default function App() {
         if (state) {
           setPlanEvidence(state.evidence || []);
           setPlanTrace(state.trace || []);
-          setPlanConflicts(state.conflict_log || []);
+          // Map backend conflict_log format → ConflictLogPanel's ConflictRecord format.
+          // Backend emits: { metric, winner: {source, value, authority_level, confidence}, overridden: [...], rationale }
+          // Frontend expects: { metric, winner_source, winner_authority, contending_sources, reason, candidates }
+          const rawConflicts = (state.conflict_log || []).filter(
+            (c: any) => c && !c.__reconciled__ && c.metric
+          );
+          const mapped = rawConflicts.map((c: any) => ({
+            metric: c.metric,
+            winner_source: c.winner?.source ?? "unknown",
+            winner_authority: c.winner?.authority_level ?? "unknown",
+            contending_sources: [
+              c.winner?.source,
+              ...(c.overridden ?? []).map((o: any) => o.source),
+            ].filter(Boolean),
+            reason: c.rationale ?? "",
+            candidates: [
+              {
+                source: c.winner?.source ?? "?",
+                value: typeof c.winner?.value === "object"
+                  ? JSON.stringify(c.winner.value).slice(0, 60) + "…"
+                  : String(c.winner?.value ?? ""),
+                authority: c.winner?.authority_level,
+              },
+              ...(c.overridden ?? []).map((o: any) => ({
+                source: o.source ?? "?",
+                value: typeof o.value === "object"
+                  ? JSON.stringify(o.value).slice(0, 60) + "…"
+                  : String(o.value ?? ""),
+                authority: o.authority_level,
+              })),
+            ],
+          }));
+          setPlanConflicts(mapped);
         } else {
           const tr = await api.fetchTrace(reqId).catch(() => []);
           setPlanTrace(tr);

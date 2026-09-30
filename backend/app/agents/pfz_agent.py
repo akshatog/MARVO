@@ -96,17 +96,23 @@ def run(location: Location, when: datetime, count: int = 3) -> AgentResult:
                 source = "INCOIS"
                 mode = "LIVE"
                 data_quality = "official_advisory"
-                # Enrich with real chlorophyll from INCOIS ERDDAP when the
+                # Enrich with real chlorophyll from INCOIS ERDDAP/NOAA when the
                 # TextData tables don't include it (they almost never do).
+                # Run in parallel — one request per zone.
                 try:
                     from ..data.incois_erddap import fetch_chlorophyll_erddap
-                    for z in raw:
-                        if z.get("chlorophyll_mg_m3") is None:
-                            chl = fetch_chlorophyll_erddap(z["latitude"], z["longitude"])
-                            if chl is not None:
-                                z["chlorophyll_mg_m3"] = chl
+                    from concurrent.futures import ThreadPoolExecutor, as_completed as _as_completed
+                    needs_chl = [z for z in raw if z.get("chlorophyll_mg_m3") is None]
+                    if needs_chl:
+                        with ThreadPoolExecutor(max_workers=len(needs_chl)) as ex:
+                            fmap = {ex.submit(fetch_chlorophyll_erddap, z["latitude"], z["longitude"]): z for z in needs_chl}
+                            for fut in _as_completed(fmap, timeout=15):
+                                z = fmap[fut]
+                                chl = fut.result()
+                                if chl is not None:
+                                    z["chlorophyll_mg_m3"] = chl
                 except Exception:
-                    pass  # enrichment failure never breaks the advisory flow
+                    pass  # enrichment failure never blocks advisory flow
         except Exception:
             pass
 
@@ -114,25 +120,34 @@ def run(location: Location, when: datetime, count: int = 3) -> AgentResult:
         # INCOIS TextData is down (returns HTTP 500 as it often does during
         # maintenance). Use the fishing-ground geometric layout from demo_store
         # as candidate positions, but fetch REAL chlorophyll for each point
-        # from the INCOIS ERDDAP satellite API. The positions are approximate
-        # (modelled shelf geometry) but the oceanographic values are real.
+        # from the NOAA CoastWatch ERDDAP satellite API in PARALLEL so latency
+        # is one round-trip (~3 s) not N round-trips (~18 s).
         if not raw:
             try:
                 from ..data.incois_erddap import fetch_chlorophyll_erddap
+                from concurrent.futures import ThreadPoolExecutor, as_completed
                 candidates = demo_store.pfz_zones(
                     location.latitude, location.longitude,
                     location.name, when, count=count * 2,
                 )
-                enriched_count = 0
-                for z in candidates:
+                # Fire all NOAA requests at the same time
+                def _enrich(z: dict) -> dict:
                     chl = fetch_chlorophyll_erddap(z["latitude"], z["longitude"])
                     if chl is not None:
                         z["chlorophyll_mg_m3"] = chl
                         z["source"] = "INCOIS-ERDDAP"
-                        enriched_count += 1
+                    return z
+
+                enriched_count = 0
+                with ThreadPoolExecutor(max_workers=len(candidates)) as ex:
+                    futures = {ex.submit(_enrich, z): z for z in candidates}
+                    for fut in as_completed(futures, timeout=18):
+                        z = fut.result()
+                        if z.get("source") == "INCOIS-ERDDAP":
+                            enriched_count += 1
+
                 if enriched_count > 0:
                     # At least some zones have real satellite chlorophyll.
-                    # This is meaningfully better than pure synthetic data.
                     raw = candidates
                     source = "INCOIS-ERDDAP"
                     mode = "LIVE"

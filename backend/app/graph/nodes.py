@@ -152,15 +152,25 @@ def pfz_node(state) -> Dict[str, Any]:
     evidences = agent_result_to_evidence_list(res)
     
     zones = res.data.get("zones", [])
+    data_quality = res.data.get("data_quality", "synthetic")
     now = datetime.now(timezone.utc)
+
+    # Map data_quality tier → (source_label, authority_level, confidence)
+    _auth_map = {
+        "official_advisory":  ("INCOIS",           "official_advisory", 0.92),
+        "satellite_enriched": ("NOAA-CoastWatch",  "external_forecast", 0.72),
+        "synthetic":          ("ORCA-Demo",        "heuristic",         0.40),
+    }
+    ev_source, ev_auth, ev_conf = _auth_map.get(data_quality, _auth_map["synthetic"])
+
     for z in zones:
         evidences.append(
             make_evidence(
                 metric="pfz_zone",
                 value=z,
-                source="INCOIS",
-                confidence=0.92,
-                authority_level="official_forecast",
+                source=ev_source,
+                confidence=ev_conf,
+                authority_level=ev_auth,
                 mode=get_data_mode(),
                 observed_at=now,
             )
@@ -544,6 +554,12 @@ def route_node(state) -> Dict[str, Any]:
         "estimated_catch_kg": catch_kg,
         "estimated_revenue_inr": round(trip_revenue, 0),
         "net_trip_value_inr": round(trip_value, 0),
+        "economic_viability": "viable" if trip_value > 0 else "not_viable",
+        "viability_note": (
+            f"Estimated revenue ₹{round(trip_revenue):,} > cost ₹{round(trip_cost):,} — trip is profitable."
+            if trip_value > 0
+            else f"Cost ₹{round(trip_cost):,} exceeds estimated revenue ₹{round(trip_revenue):,} at current {target_potential}-potential chlorophyll. Trip not economically viable without better fishing conditions."
+        ),
         "basis": [
             f"Round-trip distance: {distance_km * 2:.1f} km @ {fuel_rate} L/km",
             f"Fuel: ₹{fuel_price}/L diesel benchmark",
@@ -563,9 +579,10 @@ def route_node(state) -> Dict[str, Any]:
         decision = decision.model_copy(update={"route": route_payload, "trip_economics": economics})
 
     latency = int((time.perf_counter() - start) * 1000)
+    viability_label = "viable" if trip_value > 0 else "not economically viable"
     return {
         "decision": decision,
-        "trace": [_trace_entry("route", "ok", latency, f"Route: {distance_km}km, Trip value: ₹{trip_value:,.0f}")],
+        "trace": [_trace_entry("route", "ok", latency, f"Route: {distance_km}km, Trip {viability_label} (₹{trip_value:,.0f} net)")],
     }
 
 

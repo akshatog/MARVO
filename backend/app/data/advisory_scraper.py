@@ -469,25 +469,36 @@ def scrape_incois_pfz(
             log.warning("INCOIS custom URL fetch failed: %s", exc)
         return _last_pfz_fetch[1]
 
-    # ── Primary: fetch all 8 sector endpoints ──────────────────────────────
+    # ── Primary: fetch all 8 sector endpoints IN PARALLEL ─────────────────
+    # Sequential fetching with 8s timeout per sector = up to 64s worst case.
+    # With parallel fetches, total time = single slowest sector (~4s).
     all_zones: List[Dict[str, Any]] = []
-    with httpx.Client(timeout=8.0) as client:
-        for sector_id, sector_url in INCOIS_SECTOR_URLS.items():
-            try:
-                r = client.get(sector_url, follow_redirects=True)
-                if r.status_code == 200:
-                    sector_zones = _parse_incois_sector_table(r.text, sector_id)
-                    all_zones.extend(sector_zones)
-                    log.debug("[INCOIS] %s → %d zone(s)", sector_id, len(sector_zones))
-                else:
-                    log.warning("[INCOIS] %s returned HTTP %s", sector_id, r.status_code)
-            except Exception as exc:
-                log.warning("[INCOIS] Failed fetching %s: %s", sector_id, exc)
+
+    def _fetch_sector(args: tuple) -> List[Dict[str, Any]]:
+        sector_id, sector_url = args
+        try:
+            r = httpx.get(sector_url, timeout=2.0, follow_redirects=True)
+            if r.status_code == 200:
+                parsed = _parse_incois_sector_table(r.text, sector_id)
+                log.debug("[INCOIS] %s → %d zone(s)", sector_id, len(parsed))
+                return parsed
+            else:
+                log.warning("[INCOIS] %s returned HTTP %s", sector_id, r.status_code)
+        except Exception as exc:
+            log.warning("[INCOIS] Failed fetching %s: %s", sector_id, exc)
+        return []
+
+    from concurrent.futures import ThreadPoolExecutor, as_completed as _cw_as_completed
+    with ThreadPoolExecutor(max_workers=len(INCOIS_SECTOR_URLS)) as pool:
+        futures = {pool.submit(_fetch_sector, item): item[0] for item in INCOIS_SECTOR_URLS.items()}
+        for fut in _cw_as_completed(futures, timeout=6):
+            all_zones.extend(fut.result())
 
     log.info("[INCOIS PFZ] Fetched %d total zones across all sectors", len(all_zones))
     with _lock:
         _last_pfz_fetch = (now + PFZ_TTL, all_zones)
     return all_zones
+
 
 
 def _parse_pfz_text_fallback(text: str) -> List[Dict[str, Any]]:
