@@ -109,11 +109,39 @@ def run(location: Location, when: datetime) -> AgentResult:
         # Secondary: GDACS if IMD CAP returned nothing for this location
         if not alerts:
             try:
+                import math as _math
                 from ..data.live_client import fetch_gdacs
                 gdacs_entries = fetch_gdacs()
-                for entry in gdacs_entries:
-                    # GDACS entries don't have fine-grained area_desc — keep all
-                    # (they are already filtered to Indian Ocean events in live_client)
+
+                # Only marine/coastal-relevant GDACS event types
+                _MARINE_EVENTS = {"tc", "cyclone", "storm surge", "tsunami", "eq", "earthquake"}
+
+                def _gdacs_relevant(entry: Dict) -> bool:
+                    """True if this GDACS entry is marine-relevant and near the query location."""
+                    title = (entry.get("title") or "").lower()
+                    etype = (entry.get("event_type") or "").lower()
+                    # Exclude inland events: floods, droughts, landslides, volcanoes
+                    if any(kw in title for kw in ("flood", "drought", "landslide", "volcano", "eruption")):
+                        return False
+                    # Must be a marine/seismic event type
+                    if etype and not any(m in etype for m in _MARINE_EVENTS):
+                        return False
+                    # Must be within 800 km of the queried harbor
+                    elat = entry.get("lat")
+                    elon = entry.get("lon")
+                    if elat is None or elon is None:
+                        return True  # no coords → keep (conservative)
+                    dlat = _math.radians(float(elat) - location.latitude)
+                    dlon = _math.radians(float(elon) - location.longitude)
+                    a = (_math.sin(dlat / 2) ** 2 +
+                         _math.cos(_math.radians(location.latitude)) *
+                         _math.cos(_math.radians(float(elat))) *
+                         _math.sin(dlon / 2) ** 2)
+                    dist_km = 6371 * 2 * _math.asin(_math.sqrt(a))
+                    return dist_km <= 800.0
+
+                relevant_gdacs = [e for e in gdacs_entries if _gdacs_relevant(e)]
+                for entry in relevant_gdacs:
                     alerts.append({
                         "severity": "severe" if entry.get("alert_level", "").lower() in ("red", "orange") else "moderate",
                         "official": True,
@@ -124,7 +152,7 @@ def run(location: Location, when: datetime) -> AgentResult:
                         "source": "GDACS",
                         "timestamp": stamp,
                     })
-                if gdacs_entries:
+                if relevant_gdacs:
                     source = "GDACS"
                     mode = "LIVE"
             except Exception:

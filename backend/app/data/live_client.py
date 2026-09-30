@@ -151,32 +151,47 @@ def fetch_marine(lat: float, lon: float, when: datetime) -> Optional[Dict]:
     Returns None only if both tiers fail.
     """
     # ── Tier 1: MOSDAC THREDDS ───────────────────────────────────────────────
-    try:
-        from .mosdac_thredds import fetch_waves_mosdac, fetch_currents_mosdac
-        mosdac_waves = fetch_waves_mosdac(lat, lon, when)
-        if mosdac_waves:
-            # Supplement with OSF_CIRC for SST and ocean currents
+    # MOSDAC (mosdac.gov.in) is an ISRO server that is often slow or returns
+    # HTTP 500 with long retry loops. It is only attempted when explicitly
+    # enabled via MARVO_MOSDAC_ENABLED=1 in the environment.
+    if os.getenv("MARVO_MOSDAC_ENABLED", "0") == "1":
+        try:
+            from concurrent.futures import ThreadPoolExecutor, TimeoutError as _FTimeout
+            from .mosdac_thredds import fetch_waves_mosdac, fetch_currents_mosdac
+
+            def _mosdac_fetch():
+                waves = fetch_waves_mosdac(lat, lon, when)
+                if waves:
+                    try:
+                        circ = fetch_currents_mosdac(lat, lon, when)
+                        if circ:
+                            waves["sst_c"] = circ.get("sst_c")
+                            spd = circ.get("current_speed_cms")
+                            waves["current_speed_ms"] = (
+                                round(spd / 100.0, 3) if spd is not None else None
+                            )
+                            u = circ.get("current_u_cms") or 0.0
+                            v = circ.get("current_v_cms") or 0.0
+                            if u or v:
+                                import math as _math
+                                waves["current_direction_deg"] = round(
+                                    _math.degrees(_math.atan2(u, v)) % 360, 1
+                                )
+                    except Exception:
+                        pass
+                return waves
+
+            _ex = ThreadPoolExecutor(max_workers=1)
+            _fut = _ex.submit(_mosdac_fetch)
             try:
-                circ = fetch_currents_mosdac(lat, lon, when)
-                if circ:
-                    mosdac_waves["sst_c"] = circ.get("sst_c")
-                    # Convert cm/s to m/s for schema compatibility
-                    spd = circ.get("current_speed_cms")
-                    mosdac_waves["current_speed_ms"] = (
-                        round(spd / 100.0, 3) if spd is not None else None
-                    )
-                    u = circ.get("current_u_cms") or 0.0
-                    v = circ.get("current_v_cms") or 0.0
-                    if u or v:
-                        import math as _math
-                        mosdac_waves["current_direction_deg"] = round(
-                            _math.degrees(_math.atan2(u, v)) % 360, 1
-                        )
-            except Exception:
-                pass  # waves without currents is still useful
-            return mosdac_waves
-    except Exception:
-        pass
+                mosdac_waves = _fut.result(timeout=4.0)
+                _ex.shutdown(wait=False)
+                if mosdac_waves:
+                    return mosdac_waves
+            except _FTimeout:
+                _ex.shutdown(wait=False)
+        except Exception:
+            pass
 
     # ── Tier 2: Open-Meteo Marine (fallback) ─────────────────────────────────
     h = _series("marine", MARINE_URL,

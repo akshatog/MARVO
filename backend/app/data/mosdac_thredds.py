@@ -78,7 +78,7 @@ def _http() -> httpx.Client:
         with _client_lock:
             if _client is None:
                 _client = httpx.Client(
-                    timeout=15.0,
+                    timeout=4.0,
                     follow_redirects=True,
                     headers={
                         "User-Agent": (

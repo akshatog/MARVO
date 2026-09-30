@@ -61,6 +61,10 @@ _MARINE_KEYWORDS = {
     "high seas", "port", "warning",
 }
 
+# RSS categories that are purely land/rainfall — not marine alerts.
+# Items in these categories are excluded even if their title contains a marine keyword.
+_NON_MARINE_CATEGORIES = {"met", "meteorological", "rainfall", "flood", "landslide"}
+
 # CAP severity → MARVO severity mapping
 _CAP_SEVERITY_MAP = {
     "extreme": "severe",
@@ -159,6 +163,10 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> str:
 
 def _is_marine_cap(title: str, description: str, category: str) -> bool:
     """Return True if this CAP item is relevant to marine/coastal operations."""
+    # Exclude pure land/rainfall categories regardless of title keywords
+    cat_lower = category.lower()
+    if any(excl in cat_lower for excl in _NON_MARINE_CATEGORIES):
+        return False
     text = f"{title} {description} {category}".lower()
     return any(kw in text for kw in _MARINE_KEYWORDS)
 
@@ -245,19 +253,19 @@ def scrape_imd_cap_rss(force: bool = False) -> List[Dict[str, Any]]:
 
                 if link:
                     detail = _fetch_cap_item_xml(link, client)
-                    if detail:
+                    if detail and detail.get("severity") and detail.get("area_desc") is not None:
+                        # Only keep alerts where the CAP XML body had real content
+                        alerts.append(detail)
+                    elif detail:
+                        # CAP XML body had some fields but missing key ones — use as low-severity hint only
+                        log.debug("[IMD CAP] Partial CAP body for %s — downgrading to low severity", link)
+                        detail["severity"] = "low"
+                        detail["official"] = False  # cannot verify without full CAP body
                         alerts.append(detail)
                     else:
-                        # Minimal alert from RSS title alone
-                        alerts.append({
-                            "severity": "moderate",
-                            "official": True,
-                            "headline": title,
-                            "area_desc": desc[:200],
-                            "onset": None,
-                            "expires": None,
-                            "source": "IMD_CAP_RSS",
-                        })
+                        # CAP XML unreachable / completely empty — skip it entirely
+                        # (RSS title alone is not enough to trigger a safety override)
+                        log.debug("[IMD CAP] Skipping RSS-only item (no CAP body): %s", title)
     except Exception as exc:
         log.warning("IMD CAP RSS fetch failed: %s", exc)
 
@@ -501,7 +509,7 @@ def scrape_incois_pfz(
     def _fetch_sector(args: tuple) -> List[Dict[str, Any]]:
         sector_id, sector_url = args
         try:
-            r = httpx.get(sector_url, timeout=2.0, follow_redirects=True)
+            r = httpx.get(sector_url, timeout=3.0, follow_redirects=True, verify=False)
             if r.status_code == 200:
                 parsed = _parse_incois_sector_table(r.text, sector_id)
                 log.debug("[INCOIS] %s → %d zone(s)", sector_id, len(parsed))

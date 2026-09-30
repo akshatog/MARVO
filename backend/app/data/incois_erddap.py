@@ -53,8 +53,9 @@ def _http() -> httpx.Client:
         with _client_lock:
             if _client is None:
                 _client = httpx.Client(
-                    timeout=12.0,
+                    timeout=4.0,
                     follow_redirects=True,
+                    verify=False,  # INCOIS uses a self-signed/internal TLS cert
                     headers={
                         "User-Agent": (
                             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
