@@ -1,0 +1,47 @@
+﻿version: "3.9"
+
+services:
+  orca:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Switch to LIVE for real INCOIS/Open-Meteo data
+      ORCA_DATA_MODE: DEMO
+      ORCA_USE_LLM: "0"          # set to 1 + add GROQ_API_KEY for LLM features
+      # GROQ_API_KEY: ""         # uncomment + fill for AI explanations
+      # SARVAM_API_KEY: ""       # uncomment + fill for Hindi/Marathi voice
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  # ── Dev mode: hot-reload backend + Vite HMR ──────────────────────────────
+  # Run with:  docker compose --profile dev up
+  orca-dev-backend:
+    profiles: [dev]
+    image: python:3.10-slim
+    working_dir: /app/backend
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app/backend
+      - ./frontend/dist:/app/frontend/dist
+    environment:
+      ORCA_DATA_MODE: DEMO
+      ORCA_USE_LLM: "0"
+      PYTHONIOENCODING: utf-8
+
+  orca-dev-frontend:
+    profiles: [dev]
+    image: node:20-slim
+    working_dir: /app/frontend
+    command: sh -c "npm install --no-audit && npm run dev -- --host"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app/frontend

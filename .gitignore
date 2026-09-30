@@ -32,7 +32,6 @@ Thumbs.db
 ORCA_TRUTH.md
 REPOSITORY_AUDIT.md
 AGENT.md
-HANDOFF.md
 render.py
 ORCA_Complete_Content.md
 ORCA_Complete_Content_Beautiful.html
@@ -44,10 +43,6 @@ ORCA_Complete_Content_Beautiful.html
 # Postman workspace files — tool-specific, not source code.
 .postman/
 postman/
-
-# External audit artefacts — findings captured in docs/
-ORCA_AUDIT/
-Ppt SS/
 
 # Cache directories
 /data/
