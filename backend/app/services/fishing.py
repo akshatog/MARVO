@@ -7,7 +7,8 @@ something, when should I go, and how long should I stay* — rather than only
 Scoring uses the peer-reviewed **Habitat Suitability Index (HSI) geometric
 mean** methodology established in published fisheries science:
 
-    HSI = (SI_chl^w_chl × SI_sst^w_sst × SI_front^w_front
+    HSI = (SI_chl^w_chl × SI_sst^w_sst × 
+    SI_front^w_front
            × SI_sea^w_sea × SI_time^w_time) ^ (1 / Σw)
 
 This is the standard formulation used by INCOIS, CMFRI, and documented in:

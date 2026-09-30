@@ -28,16 +28,24 @@ Thumbs.db
 .env
 .env.local
 
-# ORCA specifics
+# ORCA specifics — internal dev notes (kept locally, not for public repo)
 ORCA_TRUTH.md
 REPOSITORY_AUDIT.md
+AGENT.md
+HANDOFF.md
+render.py
+ORCA_Complete_Content.md
+ORCA_Complete_Content_Beautiful.html
+
+# Root-level npm files (app npm is in /frontend)
+/package.json
+/package-lock.json
 
 # Postman workspace files — tool-specific, not source code.
-# Keep them locally for API testing but don't pollute the repo history.
 .postman/
 postman/
 
-# External audit artefacts — findings captured in docs/AUDIT_AND_STATUS.md
+# External audit artefacts — findings captured in docs/
 ORCA_AUDIT/
 Ppt SS/
 
@@ -46,3 +54,15 @@ Ppt SS/
 
 # Git worktrees (isolated feature branches)
 .worktrees/
+
+# Internal development docs — kept locally for reference, not for submission.
+# The public technical docs (00-05) are in docs/ but tracked separately.
+docs/06_team_and_assignments.md
+docs/07_stack_and_models.md
+docs/08_implementation_phases.md
+docs/09_testing_and_edge_cases.md
+docs/AUDIT_AND_STATUS.md
+docs/BACKEND_REALITY.md
+docs/DECISIONS.md
+docs/LIVE_DATA_IMPLEMENTATION_PLAN.md
+docs/PROGRESS.md
