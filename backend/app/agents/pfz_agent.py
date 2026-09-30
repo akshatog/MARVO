@@ -7,9 +7,16 @@ signature of nutrient upwelling where forage species, and therefore catch,
 concentrate. ORCA reproduces that reasoning and ranks candidate zones. It never
 claims to see fish.
 
-LIVE mode: fetches real INCOIS TextData sector endpoints (SEC001–SEC008) via
-           advisory_scraper.scrape_incois_pfz() and maps them to PFZZone objects.
-DEMO mode: uses demo_store as before.
+Data tiers (in order of preference):
+  TIER 1 — INCOIS TextData (SEC001-SEC008): official pre-computed advisory
+            locations. Source = "INCOIS". Mode = "LIVE".
+  TIER 2 — INCOIS ERDDAP satellite (when TextData is down): geometric zone
+            candidates from the fishing-ground layout, enriched with REAL
+            satellite chlorophyll from the INCOIS ERDDAP API.
+            Source = "INCOIS-ERDDAP". Mode = "LIVE".
+  TIER 3 — Fully synthetic fallback (when all live APIs are unreachable):
+            demo_store geometry + synthetic oceanographic values.
+            Source = "DEMO". Mode = "DEMO".
 """
 from __future__ import annotations
 
@@ -52,21 +59,21 @@ def _incois_to_pfz_zone(raw: dict, rank: int, stamp: str) -> dict:
         deg = raw.get("bearing_deg")
         raw_bearing = compass(float(deg)) if deg is not None else ""
     return {
-        "zone_id":          raw.get("zone_id", f"INCOIS-{rank:02d}"),
-        "latitude":         raw["latitude"],
-        "longitude":        raw["longitude"],
-        "distance_km":      raw.get("distance_km", 25.0),
-        "bearing":          raw_bearing,
-        "bearing_deg":      raw.get("bearing_deg"),
-        "depth_m":          raw.get("depth_m"),
-        "wave_height_m":    raw.get("wave_height_m"),
-        "sst_c":            raw.get("sst_c"),
+        "zone_id":           raw.get("zone_id", f"INCOIS-{rank:02d}"),
+        "latitude":          raw["latitude"],
+        "longitude":         raw["longitude"],
+        "distance_km":       raw.get("distance_km", 25.0),
+        "bearing":           raw_bearing,
+        "bearing_deg":       raw.get("bearing_deg"),
+        "depth_m":           raw.get("depth_m"),
+        "wave_height_m":     raw.get("wave_height_m"),
+        "sst_c":             raw.get("sst_c"),
         "chlorophyll_mg_m3": raw.get("chlorophyll_mg_m3"),
-        "confidence":       raw.get("confidence") or 0.90,   # 0.0 means 'unfilled'
-        "source":           raw.get("source", "INCOIS"),
-        "source_type":      raw.get("source_type", "official_bulletin"),
-        "rank":             rank,
-        "timestamp":        stamp,
+        "confidence":        raw.get("confidence") or 0.90,   # 0.0 means 'unfilled'
+        "source":            raw.get("source", "INCOIS"),
+        "source_type":       raw.get("source_type", "official_bulletin"),
+        "rank":              rank,
+        "timestamp":         stamp,
     }
 
 
@@ -75,9 +82,12 @@ def run(location: Location, when: datetime, count: int = 3) -> AgentResult:
     stamp = when.isoformat(timespec="seconds")
     source = "DEMO"
     mode = "DEMO"
+    data_quality = "synthetic"      # escalated as tiers succeed
     raw: List[dict] = []
 
     if live_enabled():
+        # -- TIER 1: INCOIS TextData SEC001-SEC008 ----------------------------
+        # Official pre-computed advisory zone positions. Best data available.
         try:
             from ..data.advisory_scraper import scrape_incois_pfz
             live_zones = scrape_incois_pfz()
@@ -85,15 +95,14 @@ def run(location: Location, when: datetime, count: int = 3) -> AgentResult:
                 raw = live_zones
                 source = "INCOIS"
                 mode = "LIVE"
-                # Enrich zones with real chlorophyll from INCOIS ERDDAP when
-                # the TextData tables don't include it (they almost never do).
+                data_quality = "official_advisory"
+                # Enrich with real chlorophyll from INCOIS ERDDAP when the
+                # TextData tables don't include it (they almost never do).
                 try:
                     from ..data.incois_erddap import fetch_chlorophyll_erddap
                     for z in raw:
                         if z.get("chlorophyll_mg_m3") is None:
-                            chl = fetch_chlorophyll_erddap(
-                                z["latitude"], z["longitude"]
-                            )
+                            chl = fetch_chlorophyll_erddap(z["latitude"], z["longitude"])
                             if chl is not None:
                                 z["chlorophyll_mg_m3"] = chl
                 except Exception:
@@ -101,13 +110,47 @@ def run(location: Location, when: datetime, count: int = 3) -> AgentResult:
         except Exception:
             pass
 
-    # Fall back to demo store if live returned nothing
+        # -- TIER 2: INCOIS ERDDAP satellite enrichment -----------------------
+        # INCOIS TextData is down (returns HTTP 500 as it often does during
+        # maintenance). Use the fishing-ground geometric layout from demo_store
+        # as candidate positions, but fetch REAL chlorophyll for each point
+        # from the INCOIS ERDDAP satellite API. The positions are approximate
+        # (modelled shelf geometry) but the oceanographic values are real.
+        if not raw:
+            try:
+                from ..data.incois_erddap import fetch_chlorophyll_erddap
+                candidates = demo_store.pfz_zones(
+                    location.latitude, location.longitude,
+                    location.name, when, count=count * 2,
+                )
+                enriched_count = 0
+                for z in candidates:
+                    chl = fetch_chlorophyll_erddap(z["latitude"], z["longitude"])
+                    if chl is not None:
+                        z["chlorophyll_mg_m3"] = chl
+                        z["source"] = "INCOIS-ERDDAP"
+                        enriched_count += 1
+                if enriched_count > 0:
+                    # At least some zones have real satellite chlorophyll.
+                    # This is meaningfully better than pure synthetic data.
+                    raw = candidates
+                    source = "INCOIS-ERDDAP"
+                    mode = "LIVE"
+                    data_quality = "satellite_enriched"
+            except Exception:
+                pass  # ERDDAP also down -> fall through to Tier 3
+
+    # -- TIER 3: Fully synthetic fallback -------------------------------------
+    # All live APIs unreachable. Use demo_store geometry + synthetic values.
+    # Clearly labelled so the frontend can display the appropriate caveat.
     if not raw:
         raw = demo_store.pfz_zones(
-            location.latitude, location.longitude, location.name, when, count=count * 2
+            location.latitude, location.longitude,
+            location.name, when, count=count * 2,
         )
         source = "DEMO"
         mode = "DEMO"
+        data_quality = "synthetic"
 
     # SAFETY FILTER: never recommend a fishing zone inside a restricted area.
     kept, excluded = [], []
@@ -115,9 +158,9 @@ def run(location: Location, when: datetime, count: int = 3) -> AgentResult:
         blocker = _blocking_zone(z["latitude"], z["longitude"])
         if blocker:
             excluded.append({
-                "latitude": z["latitude"],
+                "latitude":  z["latitude"],
                 "longitude": z["longitude"],
-                "reason": blocker["name"],
+                "reason":    blocker["name"],
                 "zone_type": blocker["zone_type"],
             })
         else:
@@ -130,14 +173,14 @@ def run(location: Location, when: datetime, count: int = 3) -> AgentResult:
     for rank, z in enumerate(kept, start=1):
         formatted = _incois_to_pfz_zone(z, rank, stamp)
         # Compute HSI fishing probability so the confidence field is always
-        # meaningful — demo_store intentionally stores 0.0 as a sentinel meaning
-        # "to be filled". The /api/fishing endpoint fills it via _zone_payload;
-        # the /plan (LangGraph) path goes through this agent and must fill it here.
+        # meaningful. demo_store sets confidence=0.0 as a sentinel ("fill me
+        # in"). The /api/fishing endpoint fills it via _zone_payload; the /plan
+        # (LangGraph) path goes through this agent and must fill it here.
         hour = int(stamp[11:13]) if len(stamp) >= 13 else 6
         hsi = fishing_svc.probability(
             chlorophyll=formatted.get("chlorophyll_mg_m3"),
             sst=formatted.get("sst_c"),
-            ambient_sst=formatted.get("sst_c"),   # best available; fishing.py enriches with ocean_agent sst
+            ambient_sst=formatted.get("sst_c"),   # fishing.py enriches with ocean_agent sst
             wave_m=formatted.get("wave_height_m"),
             hour=hour,
         )
@@ -151,14 +194,25 @@ def run(location: Location, when: datetime, count: int = 3) -> AgentResult:
         )
         zones.append(PFZZone(**{k: v for k, v in formatted.items() if k in PFZZone.model_fields}))
 
+    # Human-readable data quality note surfaced to the frontend / explanation agent.
+    quality_note = {
+        "official_advisory":  "Official INCOIS PFZ advisory — from today's satellite pass.",
+        "satellite_enriched": "INCOIS TextData unavailable. Zone positions estimated; "
+                              "chlorophyll from INCOIS ERDDAP satellite (real data).",
+        "synthetic":          "INCOIS advisories unavailable. Zones are estimated from "
+                              "modelled shelf geometry — treat as indicative only.",
+    }.get(data_quality, "")
+
     return AgentResult(
         agent="pfz",
         ok=True,
         location=location,
         data={
-            "zones": [z.model_dump() for z in zones],
+            "zones":          [z.model_dump() for z in zones],
             "excluded_zones": excluded,
             "excluded_count": len(excluded),
+            "data_quality":   data_quality,
+            "quality_note":   quality_note,
             "method": "SST front + chlorophyll concentration ranking (INCOIS methodology)",
             "safety_filter": "Candidate zones inside restricted maritime areas are removed.",
             "caveat": "Potential zone — indicates likelihood of fish aggregation, not a guarantee.",

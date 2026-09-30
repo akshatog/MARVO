@@ -205,36 +205,138 @@ def griddap_box(
 
 # ── High-level public API ──────────────────────────────────────────────────────
 
-def fetch_chlorophyll_erddap(lat: float, lon: float) -> Optional[float]:
-    """Fetch chlorophyll-a (mg/m³) at a point from INCOIS ERDDAP.
+# ── NOAA CoastWatch ERDDAP ────────────────────────────────────────────────────
+# Base URL: https://coastwatch.noaa.gov/erddap  (NOAA NESDIS, very high uptime)
+# Used as a reliable fallback when INCOIS ERDDAP is unavailable.
+#
+# Dataset: noaacwNPPN20VIIRSDINEOFDaily
+#   - DINEOF gap-filling means NO cloud gaps — always has a value
+#   - Daily composite, global 9km
+#   - VIIRS (NOAA-20 + Suomi-NPP), 2018-present
+#   - Variable: chlor_a (mg/m³)
+#   - Has altitude dimension → must include [(0.0)] in query
 
-    Uses the IRS-P4 OCM chlorophyll dataset (archival, daily composite).
-    Falls back to None on any failure so the caller can use MOSDAC or
-    Open-Meteo SST as a proxy.
+NOAA_CW_BASE = "https://coastwatch.noaa.gov/erddap"
+NOAA_CW_DATASET = "noaacwNPPN20VIIRSDINEOFDaily"
+NOAA_CW_VARIABLE = "chlor_a"
 
-    Returns a float in mg/m³ or None.
+_noaa_client: Optional[httpx.Client] = None
+_noaa_client_lock = threading.Lock()
+
+
+def _noaa_http() -> httpx.Client:
+    global _noaa_client
+    if _noaa_client is None:
+        with _noaa_client_lock:
+            if _noaa_client is None:
+                _noaa_client = httpx.Client(
+                    timeout=15.0,
+                    follow_redirects=True,
+                    headers={"User-Agent": "ORCA/2.0 (NOAA CoastWatch ERDDAP client)"},
+                )
+    return _noaa_client
+
+
+def fetch_chlorophyll_noaa_coastwatch(lat: float, lon: float) -> Optional[float]:
+    """Fetch chlorophyll-a (mg/m³) from NOAA CoastWatch ERDDAP.
+
+    Uses the DINEOF gap-filled VIIRS product (noaacwNPPN20VIIRSDINEOFDaily).
+    DINEOF gap-filling interpolates through cloud cover so this dataset always
+    has a value — unlike raw L3 products which return NaN under clouds.
+
+    Falls back to None on any failure.
     """
+    # Small box around the point; the dataset is 9km so 0.1 deg gives ~2-3 cells
+    delta = 0.12
+    south = round(lat - delta, 4)
+    north = round(lat + delta, 4)
+    west = round(lon - delta, 4)
+    east = round(lon + delta, 4)
+
+    # altitude dimension is always 0.0 (sea surface)
+    query = (
+        f"{NOAA_CW_VARIABLE}%5B(last)%5D%5B(0.0)%5D"
+        f"%5B({south}):1:({north})%5D"
+        f"%5B({west}):1:({east})%5D"
+    )
+    url = f"{NOAA_CW_BASE}/griddap/{NOAA_CW_DATASET}.csv?{query}"
+
+    cached = _cache_get(url)
+    if cached is not None:
+        return cached if isinstance(cached, float) else None
+
+    try:
+        resp = _noaa_http().get(url)
+        if resp.status_code != 200:
+            log.debug("[NOAA CW] HTTP %s for chlorophyll", resp.status_code)
+            _cache_set(url, None, _TTL_FAIL)
+            return None
+
+        rows = _parse_erddap_csv(resp.text)
+        values = [
+            float(r[NOAA_CW_VARIABLE])
+            for r in rows
+            if r.get(NOAA_CW_VARIABLE) is not None
+            and isinstance(r[NOAA_CW_VARIABLE], (int, float))
+            and 0 < float(r[NOAA_CW_VARIABLE]) < 200
+        ]
+        if not values:
+            _cache_set(url, None, _TTL_FAIL)
+            return None
+
+        # Median is more robust than mean for coastal NaN-mixed grids
+        values.sort()
+        median = values[len(values) // 2]
+        result = round(median, 4)
+        log.debug("[NOAA CW] chlorophyll @ (%.3f, %.3f) = %.4f mg/m³", lat, lon, result)
+        _cache_set(url, result, _TTL_OK)
+        return result
+
+    except Exception as exc:
+        log.debug("[NOAA CW] Request failed: %s", exc)
+        _cache_set(url, None, _TTL_FAIL)
+        return None
+
+
+# ── High-level public API ──────────────────────────────────────────────────────
+
+def fetch_chlorophyll_erddap(lat: float, lon: float) -> Optional[float]:
+    """Fetch chlorophyll-a (mg/m³) at a point. Cascades through data sources.
+
+    Priority cascade:
+      1. INCOIS ERDDAP — IRS-P4 OCM (Indian satellite, authoritative for INCOIS PFZ)
+      2. INCOIS ERDDAP — Oceansat-2 OCM (secondary Indian satellite)
+      3. NOAA CoastWatch — DINEOF gap-filled VIIRS (reliable US fallback, always has data)
+
+    Returns a float in mg/m³ or None if all sources fail.
+    """
+    # -- Source 1: INCOIS IRS-P4 OCM ----------------------------------------
     rows = griddap_point(
         dataset_id="IRS_chlorophyll_datasets",
         variable="chlor_a",
         lat=lat,
         lon=lon,
     )
-    if not rows:
-        # Try Oceansat-2 as secondary fallback within INCOIS ERDDAP
-        rows = griddap_point(
-            dataset_id="incois_oceansat2_datasets",
-            variable="chlor_a",
-            lat=lat,
-            lon=lon,
-        )
-    if not rows:
-        return None
-
-    val = rows[0].get("chlor_a")
+    val = rows[0].get("chlor_a") if rows else None
     if val is not None and isinstance(val, (int, float)) and 0 < val < 200:
         return round(float(val), 4)
-    return None
+
+    # -- Source 2: INCOIS Oceansat-2 -----------------------------------------
+    rows2 = griddap_point(
+        dataset_id="incois_oceansat2_datasets",
+        variable="chlor_a",
+        lat=lat,
+        lon=lon,
+    )
+    val2 = rows2[0].get("chlor_a") if rows2 else None
+    if val2 is not None and isinstance(val2, (int, float)) and 0 < val2 < 200:
+        return round(float(val2), 4)
+
+    # -- Source 3: NOAA CoastWatch DINEOF (reliable fallback) ----------------
+    log.debug("[INCOIS ERDDAP] Both INCOIS datasets failed — trying NOAA CoastWatch")
+    return fetch_chlorophyll_noaa_coastwatch(lat, lon)
+
+
 
 
 def fetch_sst_erddap(lat: float, lon: float) -> Optional[float]:
