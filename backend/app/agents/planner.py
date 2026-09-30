@@ -141,8 +141,13 @@ def handle(req: ChatRequest) -> ChatResponse:
 
     # ---- node 4: pfz list / route ---------------------------------------
     pfz_zones: List[PFZZone] = []
+    pfz_meta: dict = {}
     if "pfz" in results and results["pfz"].ok:
         pfz_zones = [PFZZone(**z) for z in results["pfz"].data.get("zones", [])]
+        pfz_meta = {
+            "data_quality": results["pfz"].data.get("data_quality"),
+            "quality_note": results["pfz"].data.get("quality_note")
+        }
 
     routes: List[RouteOption] = []
     if "route" in needs and pfz_zones:
@@ -176,6 +181,7 @@ def handle(req: ChatRequest) -> ChatResponse:
         intent=intent,
         risk=risk,
         pfz=pfz_zones,
+        pfz_meta=pfz_meta,
         routes=routes,
         geofence=geofence,
         alerts=cyclone_d.get("alerts", []),

@@ -1164,7 +1164,7 @@ export default function App() {
                     )}
                     {activeResTab === "zones" && (
                       <>
-                        {latest && <PFZList zones={latest.pfz} language={latest.language} />}
+                        {latest && <PFZList zones={latest.pfz} meta={latest.pfz_meta} language={latest.language} />}
 
                       </>
                     )}

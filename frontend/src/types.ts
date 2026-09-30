@@ -134,6 +134,7 @@ export interface ChatResponse {
   intent: Intent;
   risk: RiskAssessment | null;
   pfz: PFZZone[];
+  pfz_meta: { data_quality?: string; quality_note?: string };
   routes: RouteOption[];
   geofence: GeofenceAlert[];
   alerts: MarineAlert[];

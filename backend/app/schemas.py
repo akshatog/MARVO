@@ -193,6 +193,7 @@ class ChatResponse(BaseModel):
     intent: Intent
     risk: Optional[RiskAssessment] = None
     pfz: List[PFZZone] = Field(default_factory=list)
+    pfz_meta: Dict[str, Any] = Field(default_factory=dict)
     routes: List[RouteOption] = Field(default_factory=list)
     geofence: List[GeofenceAlert] = Field(default_factory=list)
     alerts: List[Dict[str, Any]] = Field(default_factory=list)

@@ -148,8 +148,13 @@ def _stream(req: ChatRequest):
 
     # node 4: pfz + route
     pfz_zones = []
+    pfz_meta = {}
     if "pfz" in agents and agents["pfz"].ok:
         pfz_zones = [PFZZone(**z) for z in agents["pfz"].data.get("zones", [])]
+        pfz_meta = {
+            "data_quality": agents["pfz"].data.get("data_quality"),
+            "quality_note": agents["pfz"].data.get("quality_note")
+        }
 
     routes = []
     if "route" in needs and pfz_zones:
@@ -194,6 +199,7 @@ def _stream(req: ChatRequest):
         language=intent.language,
         answer=expl_res.data.get("answer", ""),
         intent=intent, risk=risk, pfz=pfz_zones, routes=routes, geofence=geofence,
+        pfz_meta=pfz_meta,
         alerts=cyclone_d.get("alerts", []),
         evidence=evidence, trace=trace,
         suggestions=expl_res.data.get("suggestions", []),

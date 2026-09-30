@@ -36,9 +36,11 @@ const L: Localized<Record<string, string>> = {
 
 export default function PFZList({
   zones,
+  meta,
   language = "en",
 }: {
   zones: ZoneLike[];
+  meta?: { data_quality?: string; quality_note?: string };
   language?: Language;
 }) {
   if (!zones.length) return null;
@@ -46,11 +48,23 @@ export default function PFZList({
 
   return (
     <div className="panel overflow-hidden">
-      <div className="hd">
+      <div className="hd flex items-center justify-between">
         <span className="label flex items-center gap-2">
           {t.title}
           <SchoolGlyph size={26} className="swim text-chart-500" />
         </span>
+        {meta?.data_quality && (
+          <span 
+            className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-[2px]"
+            style={{
+              backgroundColor: meta.data_quality === "official_advisory" ? "#E6F4EA" : meta.data_quality === "satellite_enriched" ? "#E8F0FE" : "#FCE8E6",
+              color: meta.data_quality === "official_advisory" ? "#137333" : meta.data_quality === "satellite_enriched" ? "#1967D2" : "#C5221F",
+            }}
+            title={meta.quality_note}
+          >
+            {meta.data_quality.replace("_", " ")}
+          </span>
+        )}
       </div>
       <div className="space-y-2 px-4 py-3.5">
         {zones.map((z) => {
