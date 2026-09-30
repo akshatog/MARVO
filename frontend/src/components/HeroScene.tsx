@@ -1,7 +1,7 @@
+import marvoLogo from "../marvo_logo.jpg";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
   CheckGlyph,
-  CompassMark,
   CourseArrow,
   CrosshairGlyph,
   FishGlyph,
@@ -180,7 +180,6 @@ const AGENT_ICONS = [
   WarnGlyph,
   FishGlyph,
   CourseArrow,
-  CompassMark,
   LockGlyph,
   SpeakerGlyph,
   MicGlyph,

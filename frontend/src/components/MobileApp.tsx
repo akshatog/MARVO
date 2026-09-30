@@ -6,12 +6,12 @@ import { RATING_COLOR } from "./FishingPanel";
 import AlertBanner from "./AlertBanner";
 import AlertsPanel from "./AlertsPanel";
 import RiskTimeline from "./RiskTimeline";
+import marvoLogo from "../marvo_logo.jpg";
 import {
   BoatGlyph,
   ChartDefs,
   CheckGlyph,
   ChevronDownGlyph,
-  CompassMark,
   CrosshairGlyph,
   FishGlyph,
   MapGlyph,
@@ -709,7 +709,7 @@ export default function MobileApp() {
         {!langChosen ? (
           // --- step 1: pick a language ---
           <>
-            <CompassMark size={60} className="animate-stampIn text-ink-900" />
+            <img src={marvoLogo} alt="MARVO" className="animate-stampIn" style={{ width: 60, height: 60, objectFit: "contain", borderRadius: 10 }} />
             <div className="animate-rise" style={{ animationDelay: "80ms" }}>
               <div className="font-display m-wordmark text-[26px] font-black leading-tight text-ink-900">MARVO</div>
               <div className="mt-2 font-mono text-[12px] uppercase tracking-[0.14em] text-ink-500">
@@ -741,16 +741,13 @@ export default function MobileApp() {
           // --- step 2: same screen, now show a simplified live status + voice shortcut ---
           <div className="popin flex w-full max-w-[360px] flex-col items-center gap-4">
             <div className="flex items-center gap-2">
-              <CompassMark size={26} className="text-ink-900 compass-needle" />
+              <img src={marvoLogo} alt="MARVO" style={{ width: 26, height: 26, objectFit: "contain", borderRadius: 6 }} />
               <span className="font-display m-wordmark text-[18px] font-black text-ink-900">MARVO</span>
             </div>
 
             {!outlook ? (
               <div className="panel flex flex-col items-center gap-3 p-8 text-center">
-                <CompassMark
-                  size={44}
-                  className="animate-[spin_5s_linear_infinite] text-ink-300 opacity-80"
-                />
+                <img src={marvoLogo} alt="" style={{ width: 44, height: 44, objectFit: "contain", borderRadius: 8, opacity: 0.4 }} className="animate-[spin_5s_linear_infinite]" />
                 <span className="text-[14px] italic text-ink-400">{t.reading}</span>
               </div>
             ) : (
@@ -829,7 +826,7 @@ export default function MobileApp() {
         className="sticky top-0 z-[600] flex items-center gap-2.5 border-b bg-paper-100/95 px-3 py-2.5 backdrop-blur-sm"
         style={{ borderColor: "var(--rule)", boxShadow: "0 4px 14px -8px rgba(11,42,91,0.35)" }}
       >
-        <CompassMark size={30} className="shrink-0 text-ink-900 compass-needle" />
+        <img src={marvoLogo} alt="MARVO" style={{ width: 30, height: 30, objectFit: "contain", borderRadius: 7 }} className="shrink-0" />
         <div className="min-w-0">
           <div className="font-display m-wordmark text-[17px] font-black leading-none text-ink-900">MARVO</div>
           {place && outlook && (
@@ -928,10 +925,7 @@ export default function MobileApp() {
 
           {!outlook && (
             <div className="panel flex flex-col items-center gap-3 p-10 text-center">
-              <CompassMark
-                size={56}
-                className="animate-[spin_5s_linear_infinite] text-ink-300 opacity-80"
-              />
+              <img src={marvoLogo} alt="" style={{ width: 56, height: 56, objectFit: "contain", borderRadius: 10, opacity: 0.4 }} className="animate-[spin_5s_linear_infinite]" />
               <span className="text-[15px] italic text-ink-400">{t.reading}</span>
             </div>
           )}

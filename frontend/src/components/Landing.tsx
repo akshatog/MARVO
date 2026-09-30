@@ -14,7 +14,6 @@ import * as api from "../api";
 import type { Language, Localized } from "../types";
 import {
   CheckGlyph,
-  CompassMark,
   CourseArrow,
   CrosshairGlyph,
   FishGlyph,
@@ -29,6 +28,7 @@ import {
   WaveGlyph,
   WindGlyph,
 } from "./glyphs";
+import marvoLogo from "../marvo_logo.jpg";
 import BrandLogo from "./BrandLogo";
 import { HeroDemo, HeroSky } from "./HeroScene";
 
@@ -41,7 +41,6 @@ const AGENT_ICONS = [
   WarnGlyph,
   FishGlyph,
   CourseArrow,
-  CompassMark,
   LockGlyph,
   SpeakerGlyph,
   MicGlyph,
