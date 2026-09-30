@@ -29,8 +29,8 @@ COPY backend/ ./backend/
 COPY --from=frontend-build /app/frontend/dist ./frontend/dist/
 
 # Default environment — override with -e flags or docker-compose
-ENV MARVO_DATA_MODE=DEMO
-ENV MARVO_USE_LLM=0
+ENV MARVO_DATA_MODE=LIVE
+ENV MARVO_USE_LLM=1
 ENV PYTHONIOENCODING=utf-8
 
 EXPOSE 8000
