@@ -261,9 +261,31 @@ def scrape_imd_cap_rss(force: bool = False) -> List[Dict[str, Any]]:
     except Exception as exc:
         log.warning("IMD CAP RSS fetch failed: %s", exc)
 
+    # ── Filter out expired alerts ─────────────────────────────────────────
+    now_dt = datetime.now(timezone.utc)
+    active_alerts = []
+    for a in alerts:
+        expires_str = a.get("expires")
+        if expires_str:
+            try:
+                from datetime import datetime as _dt
+                exp = _dt.fromisoformat(expires_str.replace("Z", "+00:00"))
+                if exp.tzinfo is None:
+                    from datetime import timezone as _tz
+                    exp = exp.replace(tzinfo=_tz.utc)
+                if exp < now_dt:
+                    log.info("[IMD CAP] Skipping expired alert (exp=%s): %s",
+                             expires_str, a.get("headline", "")[:80])
+                    continue
+            except Exception:
+                pass  # if we can't parse expiry, keep the alert (fail safe)
+        active_alerts.append(a)
+
+    alerts = active_alerts
     with _lock:
         _last_imd_fetch = (now + IMD_TTL, alerts)  # type: ignore[assignment]
-    log.info("[IMD CAP] Fetched %d marine/coastal alerts from RSS feed", len(alerts))
+    log.info("[IMD CAP] Fetched %d marine/coastal alerts from RSS feed (%d active after expiry filter)",
+             len(alerts) + (len(alerts) - len(active_alerts)), len(alerts))
     return alerts
 
 
