@@ -14,13 +14,13 @@ def tear_down():
     stop_scheduler()
 
 
-def test_scheduler_registers_all_five_tiered_jobs():
+def test_scheduler_registers_all_tiered_jobs():
     sched = start_scheduler(run_warmup=False)
     assert sched.running is True
 
     status = get_scheduler_status()
     assert status["status"] == "running"
-    assert status["job_count"] == 5
+    assert status["job_count"] == 6  # 5 data jobs + 1 keep-alive
 
     registered_ids = {j["id"] for j in status["jobs"]}
     expected_ids = {
@@ -28,7 +28,8 @@ def test_scheduler_registers_all_five_tiered_jobs():
         "fetch_open_meteo_cache",
         "fetch_imd_advisory",
         "fetch_incois_pfz",
-        "fetch_mosdac_cache",    # replaced fetch_stormglass_cache
+        "fetch_mosdac_cache",
+        "keep_alive_ping",
     }
     assert registered_ids == expected_ids
 

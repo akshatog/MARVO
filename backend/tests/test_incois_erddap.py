@@ -140,26 +140,35 @@ class TestFetchChlorophyllErddap:
         assert result == pytest.approx(0.4821, rel=1e-3)
 
     def test_returns_none_when_erddap_empty(self):
-        with patch("app.data.incois_erddap.griddap_point") as mock_gp:
-            mock_gp.return_value = []
+        # griddap_point is called up to 3 times (IRS-P4, Oceansat-2, then NOAA fallback).
+        # We must mock ALL three paths — using side_effect to return [] for each
+        # griddap_point call and also stub the NOAA fallback so no network hits occur.
+        with patch("app.data.incois_erddap.griddap_point", side_effect=[[], []]) as _mock_gp, \
+             patch("app.data.incois_erddap.fetch_chlorophyll_noaa_coastwatch", return_value=None):
             result = fetch_chlorophyll_erddap(13.08, 80.35)
         assert result is None
 
     def test_returns_none_when_nan(self):
-        with patch("app.data.incois_erddap.griddap_point") as mock_gp:
-            mock_gp.return_value = [{"chlor_a": None, "_units": {}}]
+        # griddap_point cascades through 2 datasets + NOAA fallback — mock all paths.
+        with patch("app.data.incois_erddap.griddap_point",
+                   side_effect=[[{"chlor_a": None, "_units": {}}], []]), \
+             patch("app.data.incois_erddap.fetch_chlorophyll_noaa_coastwatch", return_value=None):
             result = fetch_chlorophyll_erddap(13.08, 80.35)
         assert result is None
 
     def test_rejects_implausible_high_value(self):
-        with patch("app.data.incois_erddap.griddap_point") as mock_gp:
-            mock_gp.return_value = [{"chlor_a": 999.0, "_units": {}}]
+        # Both INCOIS datasets return 999 (implausible); NOAA fallback also stubbed None.
+        with patch("app.data.incois_erddap.griddap_point",
+                   side_effect=[[{"chlor_a": 999.0, "_units": {}}], [{"chlor_a": 999.0, "_units": {}}]]), \
+             patch("app.data.incois_erddap.fetch_chlorophyll_noaa_coastwatch", return_value=None):
             result = fetch_chlorophyll_erddap(13.08, 80.35)
         assert result is None
 
     def test_rejects_negative_value(self):
-        with patch("app.data.incois_erddap.griddap_point") as mock_gp:
-            mock_gp.return_value = [{"chlor_a": -0.5, "_units": {}}]
+        # Both INCOIS datasets return negative (invalid); NOAA fallback stubbed None.
+        with patch("app.data.incois_erddap.griddap_point",
+                   side_effect=[[{"chlor_a": -0.5, "_units": {}}], [{"chlor_a": -0.5, "_units": {}}]]), \
+             patch("app.data.incois_erddap.fetch_chlorophyll_noaa_coastwatch", return_value=None):
             result = fetch_chlorophyll_erddap(13.08, 80.35)
         assert result is None
 

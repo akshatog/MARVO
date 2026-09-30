@@ -173,7 +173,9 @@ def _fetch_cap_item_xml(item_link: str, client: httpx.Client) -> Optional[Dict[s
         ns = {"cap": "urn:oasis:names:tc:emergency:cap:1.2"}
 
         def find(tag: str) -> str:
-            el = root.find(f"cap:info/cap:{tag}", ns) or root.find(f"cap:{tag}", ns)
+            el = root.find(f"cap:info/cap:{tag}", ns)
+            if el is None:
+                el = root.find(f"cap:{tag}", ns)
             return (el.text or "").strip() if el is not None else ""
 
         severity_raw = find("severity").lower()
