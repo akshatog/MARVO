@@ -1,4 +1,4 @@
-﻿# ── Stage 1: Build the React frontend ────────────────────────────────────────
+# ── Stage 1: Build the React frontend ────────────────────────────────────────
 FROM node:20-slim AS frontend-build
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
@@ -13,9 +13,9 @@ LABEL org.opencontainers.image.description="Marine Agentic Reasoning and Voyage 
 
 WORKDIR /app
 
-# System deps (needed by h5py / scipy for MOSDAC satellite parsing)
+# System deps (only what's actually needed at runtime)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libhdf5-dev libgomp1 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Python deps
@@ -34,4 +34,4 @@ ENV MARVO_USE_LLM=0
 ENV PYTHONIOENCODING=utf-8
 
 EXPOSE 8000
-CMD ["sh", "-c", "cd backend && uvicorn app.main:app --host 0.0.0.0 --port "]
+CMD ["sh", "-c", "cd backend && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
