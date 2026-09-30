@@ -5,7 +5,7 @@ Root: https://mosdac.gov.in/live_data  (unauthenticated)
 Three access paths exist; this module implements the two cheapest:
   * NCSS point  -> CSV time series at one lat/lon. Used for every
     "conditions at my location" answer.  Returns < 1 KB vs. a 3.8 GB file.
-  * dataset.xml -> read the true validity window of a dataset so ORCA
+  * dataset.xml -> read the true validity window of a dataset so MARVO
     can label stale cycles and fall back gracefully.
 
 OPeNDAP ASCII (grid windows for front-detection maps) is a future addition
@@ -84,7 +84,7 @@ def _http() -> httpx.Client:
                         "User-Agent": (
                             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                             "AppleWebKit/537.36 (KHTML, like Gecko) "
-                            "Chrome/126.0.0.0 Safari/537.36 ORCA/2.0"
+                            "Chrome/126.0.0.0 Safari/537.36 MARVO/2.0"
                         ),
                         "Accept-Language": "en-IN,en;q=0.9",
                     },
@@ -362,7 +362,7 @@ def ncss_point_nearest_wet(
     """Like ncss_point but spirals outward if the query point is land-masked.
 
     Coastal fishing locations frequently fall on a masked cell of the 10 km
-    ocean model. Returning no data there would be useless, so ORCA moves to the
+    ocean model. Returning no data there would be useless, so MARVO moves to the
     nearest wet cell and tells the user how far it moved.
 
     Returns (rows, actual_lat, actual_lon, distance_moved_km).

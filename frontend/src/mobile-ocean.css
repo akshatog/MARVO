@@ -1,5 +1,5 @@
 /* ==================================================================
-   ORCA — phone app, light OCEAN theme finishing
+   MARVO — phone app, light OCEAN theme finishing
    ------------------------------------------------------------------
    The phone now wears the same html.ocean theme as the website (see
    main.tsx). Everything shared — palette tokens, .panel, .chip, .field,
@@ -44,7 +44,7 @@ html.ocean.phone :is(h1, h2, h3, h4, p, span, div).font-display.text-ink-900 {
   animation: none;
   padding: 0;
 }
-/* …but the ORCA wordmark keeps the flowing ocean gradient from the website. */
+/* …but the MARVO wordmark keeps the flowing ocean gradient from the website. */
 html.ocean.phone :is(div, span).font-display.text-ink-900.m-wordmark {
   background-image: linear-gradient(100deg, #0b2a5b 0%, #1f6feb 45%, #12b5c8 75%, #0b2a5b 100%);
   background-size: 300% 100%;

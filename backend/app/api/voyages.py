@@ -1,4 +1,4 @@
-"""ORCA 2.0 Active Voyage Tracking and Real-Time Alert Endpoints.
+"""MARVO 2.0 Active Voyage Tracking and Real-Time Alert Endpoints.
 
 Endpoints:
 - POST /voyages/start: Register and track an active voyage.
@@ -26,7 +26,7 @@ from ..services.alert_engine import on_evidence_change, trigger_manual_alert
 
 log = logging.getLogger(__name__)
 
-router = APIRouter(tags=["ORCA 2.0 Voyage & Alert Monitor"])
+router = APIRouter(tags=["MARVO 2.0 Voyage & Alert Monitor"])
 
 
 class StartVoyageRequest(BaseModel):

@@ -50,7 +50,7 @@ def run(location: Location, when: datetime, *, weather: Optional[Dict], ocean: O
         location=location,
         data=assessment.model_dump(),
         risk=assessment.score / 100.0,
-        source="ORCA",
+        source="MARVO",
         timestamp=stamp,
         confidence=0.8,
         mode=mode,  # type: ignore[arg-type]

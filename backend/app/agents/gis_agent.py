@@ -50,7 +50,7 @@ def run(location: Location, when: datetime) -> AgentResult:
             "geofence_alerts": [a.model_dump() for a in alerts],
             "layer_note": "Illustrative demo geofences — not official maritime boundaries.",
         },
-        source="ORCA_GIS",
+        source="MARVO_GIS",
         timestamp=stamp,
         confidence=0.9,
         mode="DEMO",

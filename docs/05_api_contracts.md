@@ -1,12 +1,12 @@
-# ORCA — API Contracts
+# MARVO — API Contracts
 
 Every endpoint below is what the system exposes. The old `/api/chat` path remains
-for backward compatibility with the existing frontend. The new ORCA 2.0 endpoints
+for backward compatibility with the existing frontend. The new MARVO 2.0 endpoints
 (`/plan`, `/trace`, `/voyages`, `/alerts`) are the canonical API going forward.
 
 ---
 
-## ORCA 2.0 API (new endpoints)
+## MARVO 2.0 API (new endpoints)
 
 ### `POST /plan`
 The primary decision endpoint. Replaces `/api/chat` for new consumers.
@@ -18,7 +18,7 @@ Request:
 Response: full `DecisionState` (see `02_schemas.md`).
 
 ### `GET /trace/{request_id}`
-Returns the `ORCAState.trace` list for that request — powers the research
+Returns the `MARVOState.trace` list for that request — powers the research
 web's agent-trace view. Each entry:
 ```json
 {"node_name": "weather", "input_summary": "...", "output_summary": "...", "timestamp": "..."}

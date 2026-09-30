@@ -1,4 +1,4 @@
-"""ORCA 2.0 LangGraph StateGraph Compilation and Execution.
+"""MARVO 2.0 LangGraph StateGraph Compilation and Execution.
 
 Topology:
 intent → [weather, ocean, pfz, cyclone, gis] → evidence_store → conflict_resolver → constraint_engine → route → explanation
@@ -11,8 +11,8 @@ from typing import Optional
 
 from langgraph.graph import END, START, StateGraph
 
-from ..schemas import ORCAState
-from .state import ORCAGraphState
+from ..schemas import MARVOState
+from .state import MARVOGraphState
 from .nodes import (
     conflict_resolver_node,
     constraint_engine_node,
@@ -33,8 +33,8 @@ _COMPILED_GRAPH = None
 
 
 def build_graph():
-    """Build and compile the ORCA 2.0 LangGraph pipeline."""
-    builder = StateGraph(ORCAGraphState)
+    """Build and compile the MARVO 2.0 LangGraph pipeline."""
+    builder = StateGraph(MARVOGraphState)
 
     # Register nodes
     builder.add_node("intent", intent_node)
@@ -102,10 +102,10 @@ def run_plan(
     language: str = "en",
     location: Optional[dict] = None,
     request_id: Optional[str] = None,
-) -> ORCAState:
-    """Execute the full ORCA 2.0 graph for a user query."""
+) -> MARVOState:
+    """Execute the full MARVO 2.0 graph for a user query."""
     req_id = request_id or f"req-{uuid.uuid4().hex[:8]}"
-    initial_state = ORCAGraphState(
+    initial_state = MARVOGraphState(
         request_id=req_id,
         intent="operational",
         raw_query=query,
@@ -122,7 +122,7 @@ def run_plan(
     final_output = graph.invoke(initial_state)
     
     if isinstance(final_output, dict):
-        return ORCAState(
+        return MARVOState(
             request_id=final_output.get("request_id", req_id),
             intent=final_output.get("intent", "operational"),
             raw_query=final_output.get("raw_query", query),
@@ -134,6 +134,6 @@ def run_plan(
             decision=final_output.get("decision"),
             trace=final_output.get("trace", []),
         )
-    elif hasattr(final_output, "to_orca_state"):
-        return final_output.to_orca_state()
+    elif hasattr(final_output, "to_marvo_state"):
+        return final_output.to_marvo_state()
     return final_output

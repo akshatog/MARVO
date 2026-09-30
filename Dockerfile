@@ -8,8 +8,8 @@ RUN npm run build
 
 # ── Stage 2: Production image ─────────────────────────────────────────────────
 FROM python:3.10-slim
-LABEL org.opencontainers.image.title="ORCA 2.0"
-LABEL org.opencontainers.image.description="Marine EcOsystem Reasoning with Collaborative Agents — SIH26176"
+LABEL org.opencontainers.image.title="MARVO 2.0"
+LABEL org.opencontainers.image.description="Marine Agentic Reasoning and Voyage Optimizer — SIH26176"
 
 WORKDIR /app
 
@@ -29,8 +29,8 @@ COPY backend/ ./backend/
 COPY --from=frontend-build /app/frontend/dist ./frontend/dist/
 
 # Default environment — override with -e flags or docker-compose
-ENV ORCA_DATA_MODE=DEMO
-ENV ORCA_USE_LLM=0
+ENV MARVO_DATA_MODE=DEMO
+ENV MARVO_USE_LLM=0
 ENV PYTHONIOENCODING=utf-8
 
 EXPOSE 8000

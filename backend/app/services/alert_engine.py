@@ -1,4 +1,4 @@
-"""Alert engine for ORCA 2.0 active voyage monitoring.
+"""Alert engine for MARVO 2.0 active voyage monitoring.
 
 Monitors incoming real-time evidence and official advisories against active voyages.
 When marine conditions deteriorate (e.g. SAFE -> CAUTION or SAFE -> UNSAFE),

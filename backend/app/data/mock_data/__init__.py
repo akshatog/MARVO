@@ -1,4 +1,4 @@
-"""Centralized mock data package for ORCA 2.0.
+"""Centralized mock data package for MARVO 2.0.
 Exports standard fixtures and all edge cases wrapped in Evidence_v2.
 """
 from .fixtures import (

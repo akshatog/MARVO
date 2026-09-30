@@ -132,7 +132,7 @@ export default function MarineMap({
   heightPx?: number;
   /** Fill the parent's height (desktop Today deck) instead of a fixed pixel height. */
   fill?: boolean;
-  /** Chart-sheet look, but stretch to the parent's height (Ask ORCA pinned map). */
+  /** Chart-sheet look, but stretch to the parent's height (Ask MARVO pinned map). */
   fitParent?: boolean;
   language?: Language;
   /** Tap anywhere on the water to move the fisher's position. */
@@ -237,7 +237,7 @@ export default function MarineMap({
 
     const bounds: L.LatLngExpression[] = [];
 
-    // search radius — shows exactly how far ORCA looked for grounds
+    // search radius — shows exactly how far MARVO looked for grounds
     if (origin && radiusKm) {
       L.circle([origin.latitude, origin.longitude], {
         radius: radiusKm * 1000,

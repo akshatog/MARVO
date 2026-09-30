@@ -6,7 +6,7 @@
 
 type G = { size?: number; className?: string };
 
-/** The ORCA mark: a compass rose whose needle is a dorsal fin breaking the waterline. */
+/** The MARVO mark: an M-shaped wave with a compass rose — ocean navigation intelligence. */
 export function CompassMark({ size = 44, className = "" }: G) {
   return (
     <svg

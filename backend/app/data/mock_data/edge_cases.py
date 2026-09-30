@@ -1,7 +1,7 @@
 """Edge cases explicitly modeled from docs/09_testing_and_edge_cases.md.
 
 Every case outputs valid Evidence_v2 objects to exercise safety, conflict,
-and fallback logic across the ORCA 2.0 pipeline.
+and fallback logic across the MARVO 2.0 pipeline.
 """
 from datetime import datetime, timedelta, timezone
 from typing import Dict, List

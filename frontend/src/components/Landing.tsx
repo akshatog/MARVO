@@ -63,7 +63,7 @@ const L10N: Localized<
     ctaOpen: string;
     ctaPhone: string;
     ctaTry: string;
-    openOrca: string;
+    openMarvo: string;
     openWord: string;
     watchLive: string;
     pipelineTitle: string;
@@ -104,19 +104,19 @@ const L10N: Localized<
     tag2a: "Navigate with ",
     tag2b: "intelligence",
     tag2c: ".",
-    sub: "ORCA brings together satellite, oceanographic, and weather data through collaborative AI agents to deliver clear, explainable insights and actionable recommendations for safer, smarter decisions at sea.",
+    sub: "MARVO brings together satellite, oceanographic, and weather data through collaborative AI agents to deliver clear, explainable insights and actionable recommendations for safer, smarter decisions at sea.",
     kicker: "SIH26176 · ISRO · Smart India Hackathon 2026",
     navFeatures: "Features",
     navHow: "How it works",
     navTry: "Try it",
     ctaTour: "Watch the guided tour",
-    ctaOpen: "Open the ORCA app",
+    ctaOpen: "Open the MARVO app",
     ctaPhone: "Phone version",
     ctaTry: "Try a scenario → cyclone near Paradip",
-    openOrca: "Open ORCA",
+    openMarvo: "Open MARVO",
     openWord: "Open",
     watchLive: "watch it run live →",
-    featuresKicker: "What ORCA does",
+    featuresKicker: "What MARVO does",
     featuresTitle: "Three doors, one engine",
     problemKicker: "The problem",
     problemTitle: "Data everywhere. An answer nowhere.",
@@ -139,7 +139,7 @@ const L10N: Localized<
       { name: "Route Agent", line: "Runs A* on a cost-weighted grid, rejects routes through restricted zones" },
       { name: "Explanation Agent", line: "Attaches a source, timestamp, and confidence to every number" },
     ],
-    pipelineTitle: "How ORCA decides",
+    pipelineTitle: "How MARVO decides",
     pipelineKicker: "The differentiator",
     pipelineSub: "Four moves, every time — nothing skipped, nothing hidden.",
     trustKicker: "Trust & transparency",
@@ -180,7 +180,7 @@ const L10N: Localized<
         ],
       },
       {
-        kicker: "Ask ORCA",
+        kicker: "Ask MARVO",
         title: "Your language, spoken or typed",
         lines: [
           "English · हिंदी · मराठी — detected, never configured",
@@ -205,26 +205,26 @@ const L10N: Localized<
       { t: "Explain", n: "plain words, with sources, spoken back" },
     ],
     footer:
-      "Demo / simulated data is always labelled · ORCA is decision support — never a replacement for an official advisory",
+      "Demo / simulated data is always labelled · MARVO is decision support — never a replacement for an official advisory",
   },
   hi: {
     tag1: "समुद्री डेटा को फ़ैसलों में बदलें।",
     tag2a: "बुद्धिमत्ता के साथ ",
     tag2b: "नेविगेट करें",
     tag2c: "।",
-    sub: "ORCA उपग्रह, समुद्री और मौसम डेटा को सहयोगी AI एजेंटों के ज़रिए जोड़कर, समुद्र में सुरक्षित और समझदार फ़ैसलों के लिए स्पष्ट, समझाने योग्य जानकारी और सुझाव देता है।",
+    sub: "MARVO उपग्रह, समुद्री और मौसम डेटा को सहयोगी AI एजेंटों के ज़रिए जोड़कर, समुद्र में सुरक्षित और समझदार फ़ैसलों के लिए स्पष्ट, समझाने योग्य जानकारी और सुझाव देता है।",
     kicker: "SIH26176 · ISRO · स्मार्ट इंडिया हैकाथॉन 2026",
     navFeatures: "विशेषताएँ",
     navHow: "यह कैसे काम करता है",
     navTry: "आज़माएँ",
     ctaTour: "गाइडेड टूर देखें",
-    ctaOpen: "ORCA ऐप खोलें",
+    ctaOpen: "MARVO ऐप खोलें",
     ctaPhone: "फ़ोन संस्करण",
     ctaTry: "एक परिदृश्य आज़माएँ → पारादीप के पास चक्रवात",
-    openOrca: "ORCA खोलें",
+    openMarvo: "MARVO खोलें",
     openWord: "खोलें",
     watchLive: "इसे चलते हुए देखें →",
-    featuresKicker: "ORCA क्या करता है",
+    featuresKicker: "MARVO क्या करता है",
     featuresTitle: "तीन दरवाज़े, एक इंजन",
     problemKicker: "समस्या",
     problemTitle: "डेटा हर जगह। जवाब कहीं नहीं।",
@@ -247,7 +247,7 @@ const L10N: Localized<
       { name: "रूट एजेंट", line: "कॉस्ट-वेटेड ग्रिड पर A* चलाता है, प्रतिबंधित क्षेत्रों से बचाता है" },
       { name: "व्याख्या एजेंट", line: "हर अंक के साथ स्रोत, समय और भरोसे का स्तर जोड़ता है" },
     ],
-    pipelineTitle: "ORCA फ़ैसला कैसे करता है",
+    pipelineTitle: "MARVO फ़ैसला कैसे करता है",
     pipelineKicker: "क्या अलग है",
     pipelineSub: "हर बार चार क़दम — कुछ छूटता नहीं, कुछ छुपता नहीं।",
     trustKicker: "भरोसा और पारदर्शिता",
@@ -288,7 +288,7 @@ const L10N: Localized<
         ],
       },
       {
-        kicker: "ORCA से पूछें",
+        kicker: "MARVO से पूछें",
         title: "आपकी भाषा, बोलकर या लिखकर",
         lines: [
           "English · हिंदी · मराठी — ख़ुद पहचानता है, कोई सेटिंग नहीं",
@@ -313,26 +313,26 @@ const L10N: Localized<
       { t: "समझाओ", n: "सीधी भाषा, स्रोतों के साथ, बोलकर भी" },
     ],
     footer:
-      "नक़ली/डेमो डेटा पर हमेशा लेबल · ORCA निर्णय-सहायक है — आधिकारिक सलाह का विकल्प कभी नहीं",
+      "नक़ली/डेमो डेटा पर हमेशा लेबल · MARVO निर्णय-सहायक है — आधिकारिक सलाह का विकल्प कभी नहीं",
   },
   mr: {
     tag1: "सागरी डेटाला निर्णयांमध्ये बदला.",
     tag2a: "बुद्धिमत्तेसह ",
     tag2b: "मार्गक्रमण करा",
     tag2c: ".",
-    sub: "ORCA उपग्रह, सागरी आणि हवामान डेटा सहयोगी AI एजंट्सद्वारे एकत्र आणून, समुद्रातील सुरक्षित आणि हुशार निर्णयांसाठी स्पष्ट, स्पष्टीकरणासह माहिती आणि शिफारसी देते.",
+    sub: "MARVO उपग्रह, सागरी आणि हवामान डेटा सहयोगी AI एजंट्सद्वारे एकत्र आणून, समुद्रातील सुरक्षित आणि हुशार निर्णयांसाठी स्पष्ट, स्पष्टीकरणासह माहिती आणि शिफारसी देते.",
     kicker: "SIH26176 · ISRO · स्मार्ट इंडिया हॅकेथॉन 2026",
     navFeatures: "वैशिष्ट्ये",
     navHow: "हे कसे कार्य करते",
     navTry: "वापरून पाहा",
     ctaTour: "गाइडेड टूर पाहा",
-    ctaOpen: "ORCA अ‍ॅप उघडा",
+    ctaOpen: "MARVO अ‍ॅप उघडा",
     ctaPhone: "फोन आवृत्ती",
     ctaTry: "एक परिस्थिती वापरून पाहा → पारादीपजवळ चक्रीवादळ",
-    openOrca: "ORCA उघडा",
+    openMarvo: "MARVO उघडा",
     openWord: "उघडा",
     watchLive: "हे चालताना पाहा →",
-    featuresKicker: "ORCA काय करते",
+    featuresKicker: "MARVO काय करते",
     featuresTitle: "तीन दरवाजे, एक इंजिन",
     problemKicker: "समस्या",
     problemTitle: "डेटा सगळीकडे. उत्तर कुठेच नाही.",
@@ -355,7 +355,7 @@ const L10N: Localized<
       { name: "रूट एजंट", line: "कॉस्ट-वेटेड ग्रिडवर A* चालवतो, प्रतिबंधित क्षेत्रे टाळतो" },
       { name: "स्पष्टीकरण एजंट", line: "प्रत्येक आकड्यासोबत स्रोत, वेळ आणि विश्वासार्हता जोडतो" },
     ],
-    pipelineTitle: "ORCA निर्णय कसा घेते",
+    pipelineTitle: "MARVO निर्णय कसा घेते",
     pipelineKicker: "वेगळेपण",
     pipelineSub: "प्रत्येक वेळी चार पावले — काहीही वगळले जात नाही, काहीही लपवले जात नाही.",
     trustKicker: "विश्वास व पारदर्शकता",
@@ -396,7 +396,7 @@ const L10N: Localized<
         ],
       },
       {
-        kicker: "ORCA ला विचारा",
+        kicker: "MARVO ला विचारा",
         title: "तुमची भाषा, बोलून किंवा लिहून",
         lines: [
           "English · हिंदी · मराठी — स्वतः ओळखते, सेटिंग नाही",
@@ -421,7 +421,7 @@ const L10N: Localized<
       { t: "समजावा", n: "सोपी भाषा, स्रोतांसह, बोलूनही" },
     ],
     footer:
-      "नमुना/डेमो डेटावर नेहमी लेबल · ORCA निर्णय-सहाय्यक आहे — अधिकृत सल्ल्याचा पर्याय कधीही नाही",
+      "नमुना/डेमो डेटावर नेहमी लेबल · MARVO निर्णय-सहाय्यक आहे — अधिकृत सल्ल्याचा पर्याय कधीही नाही",
   },
 };
 
@@ -612,7 +612,7 @@ export default function Landing({
               </button>
             </div>
             <button onClick={() => onEnter("home")} className="btn-ink group shrink-0 justify-self-end !px-5 !py-2.5">
-              {t.openOrca}{" "}
+              {t.openMarvo}{" "}
               <CourseArrow size={13} className="transition-transform group-hover:translate-x-1" />
             </button>
           </div>
@@ -708,7 +708,7 @@ export default function Landing({
         </div>
       </Reveal>
 
-      {/* problem — why ORCA needs to exist at all */}
+      {/* problem — why MARVO needs to exist at all */}
       <SectionHeading id="lp-problem" kicker={t.problemKicker} title={t.problemTitle} />
       <Reveal delay={480}>
         <div className="mt-6 grid gap-4 lg:grid-cols-[1.15fr_0.85fr] lg:items-stretch">
@@ -996,7 +996,7 @@ export default function Landing({
                 </li>
                 <li>
                   <a
-                    href="https://github.com/akshatog/ORCA"
+                    href="https://github.com/akshatog/MARVO"
                     target="_blank"
                     rel="noreferrer"
                     className="group flex items-center gap-2 text-[12.5px] text-ink-500 transition-colors hover:text-chart-600"
@@ -1035,12 +1035,12 @@ export default function Landing({
                 ))}
               </span>
               <a
-                href="https://github.com/akshatog/ORCA"
+                href="https://github.com/akshatog/MARVO"
                 target="_blank"
                 rel="noreferrer"
                 className="font-mono text-[9.5px] uppercase tracking-[0.14em] text-chart-600 transition-colors hover:text-ink-900"
               >
-                https://github.com/akshatog/ORCA
+                https://github.com/akshatog/MARVO
               </a>
             </div>
           </div>
@@ -1048,7 +1048,7 @@ export default function Landing({
           {/* copyright strip + back to top */}
           <div className="relative flex items-center justify-center pb-4 pt-4">
             <span className="text-center font-mono text-[9px] uppercase tracking-[0.16em] text-ink-500">
-              © {new Date().getFullYear()} ORCA · Built for {t.kicker}
+              © {new Date().getFullYear()} MARVO · Built for {t.kicker}
             </span>
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}

@@ -1,4 +1,4 @@
-# ORCA 2.0 Trip Economics Configuration
+# MARVO 2.0 Trip Economics Configuration
 # Governs fuel cost calculations, catch revenue estimates, and trip economics.
 # Separation rule: Trip economics is informational and NEVER overrides safety decisions.
 

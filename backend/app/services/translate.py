@@ -1,4 +1,4 @@
-"""Machine translation service for ORCA 2.0 using Sarvam Mayura.
+"""Machine translation service for MARVO 2.0 using Sarvam Mayura.
 
 Supports translation between English and Indian regional languages (Tamil, Telugu,
 Bengali, Malayalam, Hindi, Marathi, Gujarati, Kannada, Odia).

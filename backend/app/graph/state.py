@@ -1,14 +1,14 @@
-"""LangGraph state definition for ORCA 2.0 with reducers for parallel execution."""
+"""LangGraph state definition for MARVO 2.0 with reducers for parallel execution."""
 from __future__ import annotations
 
 import operator
 from typing import Annotated, Any, Dict, List, Literal, Optional
 from pydantic import BaseModel, Field
 
-from ..schemas import AdvisoryConstraint, DecisionState, Evidence, ORCAState
+from ..schemas import AdvisoryConstraint, DecisionState, Evidence, MARVOState
 
 
-class ORCAGraphState(BaseModel):
+class MARVOGraphState(BaseModel):
     """Internal LangGraph state with list reducers to support parallel node fan-in."""
     request_id: str
     intent: Literal["operational", "analytical"] = "operational"
@@ -21,8 +21,8 @@ class ORCAGraphState(BaseModel):
     decision: Optional[DecisionState] = None
     trace: Annotated[List[dict], operator.add] = Field(default_factory=list)
 
-    def to_orca_state(self) -> ORCAState:
-        return ORCAState(
+    def to_marvo_state(self) -> MARVOState:
+        return MARVOState(
             request_id=self.request_id,
             intent=self.intent,
             raw_query=self.raw_query,
@@ -36,4 +36,4 @@ class ORCAGraphState(BaseModel):
         )
 
 
-__all__ = ["ORCAGraphState", "ORCAState", "Evidence", "AdvisoryConstraint", "DecisionState"]
+__all__ = ["MARVOGraphState", "MARVOState", "Evidence", "AdvisoryConstraint", "DecisionState"]

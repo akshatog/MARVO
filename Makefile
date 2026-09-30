@@ -1,4 +1,4 @@
-﻿# ORCA 2.0 — Makefile
+﻿# MARVO 2.0 — Makefile
 # Cross-platform convenience commands. Requires make (Linux/Mac native; Windows: winget install GnuWin32.Make)
 
 .PHONY: help run dev test build docker docker-dev clean
@@ -22,14 +22,14 @@ build:         ## Build the production React frontend
 	cd frontend && npm run build
 
 run:           ## Start backend server (serves built frontend on :8000)
-	cd backend && ORCA_DATA_MODE=DEMO uvicorn app.main:app --host 127.0.0.1 --port 8000
+	cd backend && MARVO_DATA_MODE=DEMO uvicorn app.main:app --host 127.0.0.1 --port 8000
 
 run-live:      ## Start backend in LIVE mode (real INCOIS/Open-Meteo data)
-	cd backend && ORCA_DATA_MODE=LIVE uvicorn app.main:app --host 127.0.0.1 --port 8000
+	cd backend && MARVO_DATA_MODE=LIVE uvicorn app.main:app --host 127.0.0.1 --port 8000
 
 dev:           ## Dev mode: backend with hot-reload + Vite HMR on :5173
 	@echo "Starting backend with reload on :8000..."
-	cd backend && ORCA_DATA_MODE=DEMO uvicorn app.main:app --reload --port 8000 &
+	cd backend && MARVO_DATA_MODE=DEMO uvicorn app.main:app --reload --port 8000 &
 	@echo "Starting Vite dev server on :5173..."
 	cd frontend && npm run dev
 

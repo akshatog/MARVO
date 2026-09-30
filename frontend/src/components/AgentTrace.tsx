@@ -70,7 +70,7 @@ const STATUS_DOT: Record<Trace["status"], string> = {
 };
 
 /**
- * The crew manifest — the panel that proves ORCA is a crew rather than a
+ * The crew manifest — the panel that proves MARVO is a crew rather than a
  * single prompt. Grouped by execution phase so the parallel fan-out is
  * visible, with real measured latencies, set like a ship's log.
  */

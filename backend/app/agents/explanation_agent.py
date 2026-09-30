@@ -1,6 +1,6 @@
 """Explanation agent — the only component allowed to speak in sentences.
 
-It answers the five questions every ORCA recommendation must answer:
+It answers the five questions every MARVO recommendation must answer:
 WHAT (the verdict), WHY (ranked factors), WHERE, WHEN, and from WHICH SOURCE
 with what confidence. It renders from structured agent output only; it cannot
 invent a number, because it never sees free text — only typed measurements.
@@ -168,9 +168,9 @@ def run(*, intent, risk: Optional[RiskAssessment], pfz: List[PFZZone],
         parts.append(t(key, lang, zone=alert.zone_name, distance=alert.distance_km))
 
     # ---- provenance ------------------------------------------------------
-    # Only real data providers belong in the citation line — "ORCA" is us.
+    # Only real data providers belong in the citation line — "MARVO" is us.
     srcs = sorted({SOURCE_LABELS.get(a.source, a.source)
-                   for a in agents.values() if a.ok and a.source not in ("ORCA",)})
+                   for a in agents.values() if a.ok and a.source not in ("MARVO",)})
     # Use the actual fetch time (now) for the "Updated" stamp, not the forecast
     # target time — otherwise a question about "tomorrow" shows tomorrow's date
     # which confuses users into thinking the data source is wrong.
@@ -229,7 +229,7 @@ def run(*, intent, risk: Optional[RiskAssessment], pfz: List[PFZZone],
             facts["recommended_route_km"] = rec.distance_km
             facts["recommended_route_eta_min"] = rec.eta_minutes
         # Sources line — LLM must append it verbatim.
-        srcs_line = f"{t('sources', lang)}: {chr(44).join(sorted({SOURCE_LABELS.get(a.source, a.source) for a in agents.values() if a.ok and a.source not in ('ORCA',)}))}" \
+        srcs_line = f"{t('sources', lang)}: {chr(44).join(sorted({SOURCE_LABELS.get(a.source, a.source) for a in agents.values() if a.ok and a.source not in ('MARVO',)}))}" \
                     f" · {t('updated', lang)} {display_time.strftime('%d %b %Y, %H:%M IST')}"
         if fetched_at is not None and when.date() != fetched_at.date():
             srcs_line += f" · Forecast for {when.strftime('%d %b, %H:%M IST')}"
@@ -264,7 +264,7 @@ def run(*, intent, risk: Optional[RiskAssessment], pfz: List[PFZZone],
             "disclaimer": t("disclaimer", lang),
             "explanation_source": explanation_source,
         },
-        source="ORCA",
+        source="MARVO",
         timestamp=when.isoformat(timespec="seconds"),
         confidence=0.9,
         mode=mode,  # type: ignore[arg-type]

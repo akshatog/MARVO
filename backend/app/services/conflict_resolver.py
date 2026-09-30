@@ -1,4 +1,4 @@
-"""Authority & Conflict Resolution Policy for ORCA 2.0.
+"""Authority & Conflict Resolution Policy for MARVO 2.0.
 
 Governs multi-source data reconciliation. When multiple data sources report on the
 same metric (e.g., Open-Meteo external forecast vs IMD official forecast vs StormGlass),

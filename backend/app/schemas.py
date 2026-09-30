@@ -1,4 +1,4 @@
-"""Typed contracts shared by every ORCA agent.
+"""Typed contracts shared by every MARVO agent.
 
 Rule: agents never return prose. They return these structures, each carrying
 provenance (value + unit + source + timestamp + confidence). The Explanation
@@ -17,7 +17,7 @@ RiskCategory = Literal["LOW", "MODERATE", "HIGH", "EXTREME"]
 
 
 class Provenance(BaseModel):
-    """Attached to every factual number ORCA shows a user."""
+    """Attached to every factual number MARVO shows a user."""
 
     source: str
     timestamp: str
@@ -207,12 +207,12 @@ class ChatResponse(BaseModel):
 
 
 # ==========================================================================
-# ORCA 2.0 API-facing schemas — consolidated from schemas_v2.py (ARCH-001)
+# MARVO 2.0 API-facing schemas — consolidated from schemas_v2.py (ARCH-001)
 # ==========================================================================
-# Previously in backend/app/schemas_v2.py. These are the ORCA 2.0 contracts
+# Previously in backend/app/schemas_v2.py. These are the MARVO 2.0 contracts
 # powering /plan, /trace, /voyages, /alerts and the LangGraph pipeline. Merged
 # here so there is a single canonical schema module. The v1 "why-table" row
-# type was renamed to EvidenceRow (above) so the ORCA 2.0 Evidence wrapper can
+# type was renamed to EvidenceRow (above) so the MARVO 2.0 Evidence wrapper can
 # own the canonical `Evidence` name. See docs/DECISIONS.md (2026-09-11).
 
 
@@ -224,7 +224,7 @@ class Evidence(BaseModel):
     unit: Optional[str] = None                 # e.g. "m", "kmph" — None for non-numeric
     source: str                                # e.g. "Open-Meteo", "IMD", "INCOIS", "StormGlass", "GDACS"
     observed_at: datetime                      # when the underlying reading was taken
-    retrieved_at: datetime                     # when ORCA fetched it
+    retrieved_at: datetime                     # when MARVO fetched it
     valid_from: Optional[datetime] = None
     valid_until: Optional[datetime] = None
     geometry: Optional[dict] = None            # GeoJSON, when spatially scoped
@@ -290,7 +290,7 @@ class AlertEvent(BaseModel):
     triggered_at: datetime
 
 
-class ORCAState(BaseModel):
+class MARVOState(BaseModel):
     """The single object LangGraph nodes read from and write to."""
     request_id: str
     intent: Literal["operational", "analytical"]

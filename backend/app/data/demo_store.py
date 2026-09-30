@@ -1,4 +1,4 @@
-"""Cached demo datasets — the reason ORCA cannot be killed by stage Wi-Fi.
+"""Cached demo datasets — the reason MARVO cannot be killed by stage Wi-Fi.
 
 Design choice: demo conditions are keyed by HOUR OF DAY, not absolute date, so
 "tomorrow 6 AM" and "today 6 AM" both resolve to the same rehearsed sea state.
@@ -14,7 +14,7 @@ Scenario is selected by the place the user asks about:
     Kochi       → Kerala post-monsoon upwelling, good fishing     (MODERATE)
 
 Each scenario is grounded in a documented real event and tests a different
-branch of the ORCA decision pipeline.
+branch of the MARVO decision pipeline.
 """
 from __future__ import annotations
 
@@ -472,7 +472,7 @@ def pfz_zones(lat: float, lon: float, location_name: str,
     """Synthetic Potential Fishing Zone candidates within `radius_km`.
 
     Mirrors the INCOIS approach conceptually: zones sit on SST/chlorophyll
-    fronts. Values here are SIMULATED — production ORCA parses the INCOIS PFZ
+    fronts. Values here are SIMULATED — production MARVO parses the INCOIS PFZ
     advisory bulletin for the district.
     """
     cond = conditions(location_name, when)

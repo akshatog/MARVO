@@ -46,7 +46,7 @@ const L10N: Localized<Record<string, string>> = {
     law2: "wave ≥ 4.0 m → floor 85 · gale wind ≥ 62 km/h → floor 85",
     law3: "inside a restricted zone → floor 60",
     lawNote:
-      "Deterministic rules can only raise a score. No model, no language output, no prompt can talk ORCA down from an official warning.",
+      "Deterministic rules can only raise a score. No model, no language output, no prompt can talk MARVO down from an official warning.",
     reading: "Reading the coast — right now",
     onePort: "one port every",
     flipNote: "edition · flip DATA EDITION in the header and watch the sources change",
@@ -100,7 +100,7 @@ const L10N: Localized<Record<string, string>> = {
     law2: "लहर ≥ 4.0 मी → 85 · आँधी हवा ≥ 62 किमी/घं → 85",
     law3: "प्रतिबंधित क्षेत्र के भीतर → 60",
     lawNote:
-      "निश्चित नियम स्कोर सिर्फ़ बढ़ा सकते हैं। कोई मॉडल, कोई भाषा, कोई प्रॉम्प्ट ORCA को आधिकारिक चेतावनी से नीचे नहीं ला सकता।",
+      "निश्चित नियम स्कोर सिर्फ़ बढ़ा सकते हैं। कोई मॉडल, कोई भाषा, कोई प्रॉम्प्ट MARVO को आधिकारिक चेतावनी से नीचे नहीं ला सकता।",
     reading: "तट की रीडिंग — अभी",
     onePort: "हर",
     flipNote: "संस्करण · हेडर में DATA EDITION बदलिए और स्रोत बदलते देखिए",
@@ -154,7 +154,7 @@ const L10N: Localized<Record<string, string>> = {
     law2: "लाट ≥ 4.0 मी → 85 · वादळी वारा ≥ 62 किमी/ता → 85",
     law3: "प्रतिबंधित क्षेत्रात → 60",
     lawNote:
-      "निश्चित नियम गुण फक्त वाढवू शकतात. कोणताही मॉडेल, कोणतीही भाषा, कोणताही प्रॉम्प्ट ORCA ला अधिकृत इशाऱ्याखाली आणू शकत नाही.",
+      "निश्चित नियम गुण फक्त वाढवू शकतात. कोणताही मॉडेल, कोणतीही भाषा, कोणताही प्रॉम्प्ट MARVO ला अधिकृत इशाऱ्याखाली आणू शकत नाही.",
     reading: "किनाऱ्याचे वाचन — आत्ता",
     onePort: "दर",
     flipNote: "आवृत्ती · हेडरमधील DATA EDITION बदला आणि स्रोत बदलताना पाहा",

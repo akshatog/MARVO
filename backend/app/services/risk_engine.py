@@ -37,7 +37,7 @@ def _curve(value: Optional[float], points: Breakpoints, default: float = 0.3) ->
 
 
 # --- documented hazard curves ---------------------------------------------
-# Calibrated for SMALL MOTORISED FISHING CRAFT (the ORCA user), which is why
+# Calibrated for SMALL MOTORISED FISHING CRAFT (the MARVO user), which is why
 # they are far more conservative than curves for a merchant vessel.
 WAVE_CURVE: Breakpoints = [(0.0, 0.0), (0.5, 0.10), (1.0, 0.25), (1.5, 0.45),
                            (2.0, 0.68), (2.5, 0.87), (3.0, 0.95), (4.0, 1.0)]

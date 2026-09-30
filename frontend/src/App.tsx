@@ -87,13 +87,13 @@ const LANGUAGES: { code: SupportedLanguage; short: string; native: string }[] = 
 ];
 
 const TAB_LABEL: Localized<Record<AppTab, string>> = {
-  en: { home: "Today",  ask: "Ask ORCA",          authority: "Authority", system: "System",    ops: "Ops & Provenance" },
-  hi: { home: "आज",    ask: "ORCA से पूछें",      authority: "प्रशासन",   system: "प्रणाली",  ops: "अभियान व साक्ष्य" },
-  mr: { home: "आज",    ask: "ORCA ला विचारा",     authority: "प्रशासन",   system: "प्रणाली",  ops: "मोहीम व पुरावे" },
-  ta: { home: "இன்று", ask: "ORCA-யிடம் கேளுங்கள்", authority: "அதிகாரம்", system: "அமைப்பு",  ops: "செயல்பாடு & ஆதாரம்" },
-  te: { home: "నేడు",  ask: "ORCA ని అడగండి",     authority: "అధికారం",  system: "వ్యవస్థ",   ops: "కార్యక్రమాలు & ఆధారాలు" },
-  bn: { home: "আজ",    ask: "ORCA-কে জিজ্ঞেস করুন", authority: "কর্তৃপক্ষ", system: "সিস্টেম", ops: "অভিযান ও প্রমাণ" },
-  ml: { home: "ഇന്ന്", ask: "ORCA-യോട് ചോദിക്കൂ", authority: "അധികാരം",  system: "സംവിധാനം",ops: "പ്രവർത്തനം & തെളിവ്" },
+  en: { home: "Today",  ask: "Ask MARVO",          authority: "Authority", system: "System",    ops: "Ops & Provenance" },
+  hi: { home: "आज",    ask: "MARVO से पूछें",      authority: "प्रशासन",   system: "प्रणाली",  ops: "अभियान व साक्ष्य" },
+  mr: { home: "आज",    ask: "MARVO ला विचारा",     authority: "प्रशासन",   system: "प्रणाली",  ops: "मोहीम व पुरावे" },
+  ta: { home: "இன்று", ask: "MARVO-யிடம் கேளுங்கள்", authority: "அதிகாரம்", system: "அமைப்பு",  ops: "செயல்பாடு & ஆதாரம்" },
+  te: { home: "నేడు",  ask: "MARVO ని అడగండి",     authority: "అధికారం",  system: "వ్యవస్థ",   ops: "కార్యక్రమాలు & ఆధారాలు" },
+  bn: { home: "আজ",    ask: "MARVO-কে জিজ্ঞেস করুন", authority: "কর্তৃপক্ষ", system: "সিস্টেম", ops: "অভিযান ও প্রমাণ" },
+  ml: { home: "ഇന്ന്", ask: "MARVO-യോട് ചോദിക്കൂ", authority: "അധികാരം",  system: "സംവിധാനം",ops: "പ്രവർത്തനം & തെളിവ്" },
 };
 
 /** The app chrome, in the fisher's language. */
@@ -196,7 +196,7 @@ export default function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [latest, setLatest] = useState<ChatResponse | null>(null);
   const [resTab, setResTab] = useState<"risk" | "timeline" | "zones" | "routes" | "trace" | null>(null);
-  // Ask ORCA: height that makes map + chat end exactly at the bottom of the screen (no scrolling needed)
+  // Ask MARVO: height that makes map + chat end exactly at the bottom of the screen (no scrolling needed)
   const askGridRef = useRef<HTMLDivElement | null>(null);
   const [askFitH, setAskFitH] = useState(560);
   // Today page: stretch the map so it ends exactly at the bottom of the screen (fills the gap under it, no more)
@@ -251,7 +251,7 @@ export default function App() {
   const language: SupportedLanguage = langChoice ?? detected;
   const uiLang: Language = language;
 
-  // ---- ORCA 2.0 Operational & Provenance state ----
+  // ---- MARVO 2.0 Operational & Provenance state ----
   const [activeAlert, setActiveAlert] = useState<AlertEvent | null>(null);
   const [activeVoyages, setActiveVoyages] = useState<Voyage[]>([]);
   const [planDecision, setPlanDecision] = useState<DecisionState | null>(null);
@@ -565,7 +565,7 @@ export default function App() {
           setAgentEvents([]);
           setMessages((m) => [
             ...m,
-            { id: `${Date.now()}-o`, role: "orca", text: res.answer, response: res },
+            { id: `${Date.now()}-o`, role: "marvo", text: res.answer, response: res },
           ]);
           if (speak) {
             try {
@@ -588,8 +588,8 @@ export default function App() {
           ...m,
           {
             id: `${Date.now()}-e`,
-            role: "orca",
-            text: "I could not reach the ORCA backend. Is it running on port 8000?",
+            role: "marvo",
+            text: "I could not reach the MARVO backend. Is it running on port 8000?",
           },
         ]);
         setAgentEvents([]);
@@ -710,7 +710,7 @@ export default function App() {
         { id: "timeline" as const, label: "Timeline" },
         ...(latest.pfz.length ? [{ id: "zones" as const, label: "Fishing zones", count: latest.pfz.length }] : []),
         ...(latest.routes.length ? [{ id: "routes" as const, label: "Routes", count: latest.routes.length }] : []),
-        { id: "trace" as const, label: "How ORCA decided" },
+        { id: "trace" as const, label: "How MARVO decided" },
       ]
     : [];
   // Open on the tab that answers the question just asked

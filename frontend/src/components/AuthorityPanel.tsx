@@ -67,19 +67,19 @@ function exportCsv(data: AuthorityDashboard) {
        r.wind_speed_kmh ?? "", q(r.headline)].join(","),
     ),
     "",
-    q(`Generated ${data.generated_at} IST by ORCA (SIH26176). Demo / simulated data is labelled — this sheet is decision support, not an official advisory.`),
+    q(`Generated ${data.generated_at} IST by MARVO (SIH26176). Demo / simulated data is labelled — this sheet is decision support, not an official advisory.`),
   ].join("\r\n");
   const url = URL.createObjectURL(new Blob([rows], { type: "text/csv;charset=utf-8" }));
   const a = document.createElement("a");
   a.href = url;
-  a.download = `orca-coastal-risk-board-${data.generated_at.slice(0, 10)}.csv`;
+  a.download = `marvo-coastal-risk-board-${data.generated_at.slice(0, 10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
 
 /**
  * The district-administration view: every monitored landing centre, ranked by
- * risk. Same engine, same evidence — one screen that shows ORCA scales beyond
+ * risk. Same engine, same evidence — one screen that shows MARVO scales beyond
  * a single fisher to the people who issue the warnings.
  */
 export default function AuthorityPanel({ language = "en" }: { language?: Language }) {

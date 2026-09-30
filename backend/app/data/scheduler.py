@@ -1,4 +1,4 @@
-"""Tiered Data Scheduler for ORCA 2.0.
+"""Tiered Data Scheduler for MARVO 2.0.
 
 Manages periodic background scrapers and API cache warming according to
 the data refresh cadence:
@@ -147,7 +147,7 @@ def start_scheduler(run_warmup: bool = False) -> BackgroundScheduler:
     _scheduler.add_job(job_keep_alive, "interval", minutes=10, id="keep_alive_ping", replace_existing=True)
 
     _scheduler.start()
-    log.info("ORCA 2.0 Tiered Scheduler started with 6 background cadence jobs (incl. keep-alive).")
+    log.info("MARVO 2.0 Tiered Scheduler started with 6 background cadence jobs (incl. keep-alive).")
 
 
     if run_warmup:
@@ -172,7 +172,7 @@ def stop_scheduler() -> None:
     if _scheduler is not None and _scheduler.running:
         _scheduler.shutdown(wait=False)
         _scheduler = None
-        log.info("ORCA 2.0 Tiered Scheduler stopped.")
+        log.info("MARVO 2.0 Tiered Scheduler stopped.")
 
 
 def get_scheduler_status() -> Dict[str, Any]:

@@ -13,7 +13,7 @@ function swCacheStamp(): Plugin {
     closeBundle() {
       const swDist = path.resolve(__dirname, "dist", "sw.js");
       if (!fs.existsSync(swDist)) return;
-      const version = `orca-2.0-cache-${Date.now()}`;
+      const version = `marvo-2.0-cache-${Date.now()}`;
       const updated = fs.readFileSync(swDist, "utf-8").replace(
         "__SW_CACHE_VERSION__",
         version,
@@ -31,7 +31,7 @@ export default defineConfig({
     allowedHosts: true,
     port: 5173,
     // Dev server talks to the FastAPI backend without CORS friction.
-    // `/api` is the canonical prefix. The bare ORCA 2.0 root paths are also
+    // `/api` is the canonical prefix. The bare MARVO 2.0 root paths are also
     // proxied so any direct root call (or older code path) still reaches the
     // backend in dev instead of being served index.html — see INT-001.
     proxy: {

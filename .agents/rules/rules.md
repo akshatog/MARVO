@@ -1,4 +1,4 @@
-# ORCA Development Rules
+# MARVO Development Rules
 
 ## Safety-first principles
 
@@ -46,7 +46,7 @@
 ## Architecture boundaries
 
 11. **Agents don't talk to each other.** Every agent reads from and writes to
-    `ORCAState` (or returns `AgentResult` in the old path). No agent passes data
+    `MARVOState` (or returns `AgentResult` in the old path). No agent passes data
     directly to another agent.
 
 12. **The Constraint Engine is called, never imported.** Core calls the safety

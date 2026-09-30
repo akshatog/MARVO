@@ -7,7 +7,7 @@ PostGIS/GeoPandas remain the production path for real cadastral polygons.
 
 HONESTY NOTE: the restricted-zone polygons below are ILLUSTRATIVE geofences
 drawn for demonstration. They are not official maritime boundaries. Production
-ORCA ingests authoritative polygons (MPA notifications, port limits, IMBL).
+MARVO ingests authoritative polygons (MPA notifications, port limits, IMBL).
 """
 from __future__ import annotations
 
@@ -165,7 +165,7 @@ def nearest_port(lat: float, lon: float) -> Dict:
 def distance_from_shore_km(lat: float, lon: float) -> float:
     """Distance to the nearest landing centre — our proxy for 'offshore-ness'.
 
-    Real ORCA measures to the OSM coastline polyline; for the prototype the
+    Real MARVO measures to the OSM coastline polyline; for the prototype the
     harbour gazetteer is a defensible approximation and keeps the demo offline.
     """
     port = nearest_port(lat, lon)
@@ -179,7 +179,7 @@ def distance_from_shore_km(lat: float, lon: float) -> float:
 # river deltas), traced clockwise and closed far inland so every interior
 # point tests as land. That is plenty to keep a synthetic fishing ground out
 # of a wheat field: candidates sit 25-100 km offshore, an order of magnitude
-# beyond the polygon's error. Production ORCA uses the OSM/GSHHG coastline.
+# beyond the polygon's error. Production MARVO uses the OSM/GSHHG coastline.
 _MAINLAND_INDIA: List[Coord] = [
     (23.90, 68.10),                                       # Sir Creek
     (23.00, 68.45), (22.85, 69.30), (22.95, 70.15),       # Kutch shore
@@ -266,7 +266,7 @@ RESTRICTED_ZONES: List[Dict] = [
     {
         # Sits OFFSHORE of the Sassoon Dock launch point, straddling the direct
         # track to the nearest fishing grounds — so the "shortest route clips a
-        # restricted area, ORCA routes around it" demo triggers naturally.
+        # restricted area, MARVO routes around it" demo triggers naturally.
         "id": "mum-port-limit",
         "name": "Mumbai Port approach channel",
         "zone_type": "port_limit",

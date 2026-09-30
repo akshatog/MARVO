@@ -58,7 +58,7 @@ def _http() -> httpx.Client:
                     headers={
                         "User-Agent": (
                             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                            "ORCA/2.0 (INCOIS ERDDAP client)"
+                            "MARVO/2.0 (INCOIS ERDDAP client)"
                         )
                     },
                 )
@@ -232,7 +232,7 @@ def _noaa_http() -> httpx.Client:
                 _noaa_client = httpx.Client(
                     timeout=15.0,
                     follow_redirects=True,
-                    headers={"User-Agent": "ORCA/2.0 (NOAA CoastWatch ERDDAP client)"},
+                    headers={"User-Agent": "MARVO/2.0 (NOAA CoastWatch ERDDAP client)"},
                 )
     return _noaa_client
 

@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 /* ============================================================
-   ORCA — "the living nautical chart"
+   MARVO — "the living nautical chart"
    Warm chart paper, marine ink, hairline rules, hatched danger
    areas. The app should read like a beautifully drafted sea
    chart that happens to be alive.
@@ -1149,7 +1149,7 @@ path.radius-drift {
 }
 
 /* ==================================================================
-   ORCA — LIGHT OCEAN THEME (desktop website only)
+   MARVO — LIGHT OCEAN THEME (desktop website only)
    Activated by <html class="ocean">, added in main.tsx for every
    non-phone screen. The phone app never gets this class, so it keeps
    the original chart-paper look untouched.
@@ -1837,7 +1837,7 @@ html.ocean .cta-bubble-4 { right: 9%; width: 18px; height: 18px; animation-delay
    trust, closing CTA
    ===================================================================== */
 
-/* ---------- shared logo (landing nav, landing footer, Ask ORCA header) ---------- */
+/* ---------- shared logo (landing nav, landing footer, Ask MARVO header) ---------- */
 .brand-logo {
   display: inline-flex;
   align-items: center;
@@ -2856,7 +2856,7 @@ html.ocean .hd-src {
   border-radius: 11px;
   background: #cfe0e6;
 }
-/* Quieter basemap so ORCA's own layers carry the colour. */
+/* Quieter basemap so MARVO's own layers carry the colour. */
 .map-deck .leaflet-tile {
   filter: saturate(0.55) sepia(0.12) brightness(1.03) contrast(0.94);
 }
@@ -3018,7 +3018,7 @@ html.ocean .hd-src {
   .radar-sweep,
   .sail-wake { animation: none; }
 }
-/* Ask ORCA: pinned map that stretches to its parent while keeping the chart-sheet look */
+/* Ask MARVO: pinned map that stretches to its parent while keeping the chart-sheet look */
 .chart-sheet.chart-sheet-fit {
   display: flex;
   flex-direction: column;
@@ -3030,7 +3030,7 @@ html.ocean .hd-src {
   flex: 1 1 auto;
   min-height: 0;
 }
-/* Ask ORCA: result tab content eases in under the fixed map */
+/* Ask MARVO: result tab content eases in under the fixed map */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }

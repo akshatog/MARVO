@@ -1,14 +1,14 @@
 ﻿version: "3.9"
 
 services:
-  orca:
+  marvo:
     build: .
     ports:
       - "8000:8000"
     environment:
       # Switch to LIVE for real INCOIS/Open-Meteo data
-      ORCA_DATA_MODE: DEMO
-      ORCA_USE_LLM: "0"          # set to 1 + add GROQ_API_KEY for LLM features
+      MARVO_DATA_MODE: DEMO
+      MARVO_USE_LLM: "0"          # set to 1 + add GROQ_API_KEY for LLM features
       # GROQ_API_KEY: ""         # uncomment + fill for AI explanations
       # SARVAM_API_KEY: ""       # uncomment + fill for Hindi/Marathi voice
     restart: unless-stopped
@@ -21,7 +21,7 @@ services:
 
   # ── Dev mode: hot-reload backend + Vite HMR ──────────────────────────────
   # Run with:  docker compose --profile dev up
-  orca-dev-backend:
+  marvo-dev-backend:
     profiles: [dev]
     image: python:3.10-slim
     working_dir: /app/backend
@@ -32,11 +32,11 @@ services:
       - ./backend:/app/backend
       - ./frontend/dist:/app/frontend/dist
     environment:
-      ORCA_DATA_MODE: DEMO
-      ORCA_USE_LLM: "0"
+      MARVO_DATA_MODE: DEMO
+      MARVO_USE_LLM: "0"
       PYTHONIOENCODING: utf-8
 
-  orca-dev-frontend:
+  marvo-dev-frontend:
     profiles: [dev]
     image: node:20-slim
     working_dir: /app/frontend

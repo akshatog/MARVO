@@ -11,7 +11,7 @@ router = APIRouter(prefix="/api", tags=["chat"])
 
 @router.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest) -> ChatResponse:
-    """Ask ORCA anything in English, Hindi or Marathi."""
+    """Ask MARVO anything in English, Hindi or Marathi."""
     return planner.handle(req)
 
 

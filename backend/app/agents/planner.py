@@ -12,7 +12,7 @@ assembles the state that the Risk and Explanation agents consume.
 This is a hand-written state machine with the same execution semantics as a
 LangGraph graph. It is written out explicitly so the whole orchestration is
 readable in one screen during a code walkthrough, and so the demo has zero
-heavyweight dependencies. `ORCA_USE_LANGGRAPH=1` is the documented upgrade path;
+heavyweight dependencies. `MARVO_USE_LANGGRAPH=1` is the documented upgrade path;
 the node functions below are already shaped as LangGraph nodes (state in,
 state out).
 """
@@ -75,7 +75,7 @@ def _trace(result, name: str) -> AgentTrace:
 
 
 def handle(req: ChatRequest) -> ChatResponse:
-    """Run the full ORCA graph for one user message."""
+    """Run the full MARVO graph for one user message."""
     started = time.perf_counter()
 
     # ---- node 1: intent --------------------------------------------------

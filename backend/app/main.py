@@ -1,4 +1,4 @@
-"""ORCA API entrypoint.
+"""MARVO API entrypoint.
 
     uvicorn app.main:app --reload --port 8000
 """
@@ -26,20 +26,20 @@ from .data.scheduler import start_scheduler, stop_scheduler
 @contextlib.asynccontextmanager
 async def lifespan(app_: FastAPI):  # noqa: ARG001
     """Start background jobs on app startup; shut them down cleanly on exit."""
-    log.info("ORCA startup — launching background data scheduler...")
+    log.info("MARVO startup — launching background data scheduler...")
     start_scheduler(run_warmup=True)
     yield
-    log.info("ORCA shutdown — stopping background data scheduler...")
+    log.info("MARVO shutdown — stopping background data scheduler...")
     stop_scheduler()
 
 
 app = FastAPI(
     lifespan=lifespan,
-    title="ORCA — Marine EcOsystem Reasoning with Collaborative Agents",
+    title="MARVO — Marine Agentic Reasoning and Voyage Optimizer",
     description=(
         "SIH26176 · A crew of cooperating AI agents that turns Indian marine data "
         "into one safe, explainable decision for fishers.\n\n"
-        "**Safety note:** ORCA is decision support. It does not replace official "
+        "**Safety note:** MARVO is decision support. It does not replace official "
         "IMD / INCOIS advisories or Coast Guard instructions."
     ),
     version=__version__,
@@ -109,7 +109,7 @@ else:
     @app.get("/")
     def root() -> dict:
         return {
-            "name": "ORCA",
+            "name": "MARVO",
             "problem_statement": "SIH26176",
             "docs": "/docs",
             "health": "/api/health",

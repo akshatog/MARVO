@@ -2,13 +2,13 @@
 
 Same split as test_mosdac_thredds.py:
   - Unit tests: run always (mocked HTTP, no network needed)
-  - Integration tests: need ORCA_INTEGRATION_TESTS=1
+  - Integration tests: need MARVO_INTEGRATION_TESTS=1
 
 Run unit tests only:
     cd backend && python -m pytest tests/test_incois_erddap.py -v
 
 Run with live network:
-    cd backend && ORCA_INTEGRATION_TESTS=1 python -m pytest tests/test_incois_erddap.py -v
+    cd backend && MARVO_INTEGRATION_TESTS=1 python -m pytest tests/test_incois_erddap.py -v
 """
 from __future__ import annotations
 
@@ -26,8 +26,8 @@ from app.data.incois_erddap import (
 )
 
 INTEGRATION = pytest.mark.skipif(
-    os.getenv("ORCA_INTEGRATION_TESTS") != "1",
-    reason="Set ORCA_INTEGRATION_TESTS=1 to run live network tests",
+    os.getenv("MARVO_INTEGRATION_TESTS") != "1",
+    reason="Set MARVO_INTEGRATION_TESTS=1 to run live network tests",
 )
 
 # ── Sample ERDDAP CSV ─────────────────────────────────────────────────────────

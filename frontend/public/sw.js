@@ -1,4 +1,4 @@
-// ORCA 2.0 PWA Service Worker — Offline Sea Cache
+// MARVO 2.0 PWA Service Worker — Offline Sea Cache
 // Cache name is auto-stamped with a build timestamp by the swCacheStamp()
 // Vite plugin in vite.config.ts — do NOT edit this string manually.
 const CACHE_NAME = "__SW_CACHE_VERSION__";

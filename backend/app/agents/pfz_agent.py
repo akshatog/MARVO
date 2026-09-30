@@ -4,7 +4,7 @@ WHAT PFZ MEANS (we say this on stage, because it is the single most likely
 "gotcha" question): a PFZ is not a fish detector. INCOIS derives PFZ advisories
 from sea-surface-temperature fronts and chlorophyll concentration — the physical
 signature of nutrient upwelling where forage species, and therefore catch,
-concentrate. ORCA reproduces that reasoning and ranks candidate zones. It never
+concentrate. MARVO reproduces that reasoning and ranks candidate zones. It never
 claims to see fish.
 
 Data tiers (in order of preference):

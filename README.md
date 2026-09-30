@@ -1,9 +1,9 @@
 <div align="center">
 
-![ORCA 2.0 — Marine EcOsystem Reasoning with Collaborative Agents](docs/images/banner.jpg)
+![MARVO 2.0 — Marine Agentic Reasoning and Voyage Optimizer](docs/images/marvo_logo.jpg)
 
-# ORCA 2.0
-### Marine EcOsystem Reasoning with Collaborative Agents
+# MARVO 2.0
+### Marine Agentic Reasoning and Voyage Optimizer
 
 > *Ten specialized AI agents read the sea.*
 > *One safe, explainable decision — in the fisher's own language.*
@@ -12,7 +12,7 @@
 
 [![SIH 2026](https://img.shields.io/badge/Smart%20India%20Hackathon-2026-0E7490?style=for-the-badge&labelColor=0A1628)](https://sih.gov.in)
 [![PS SIH26176](https://img.shields.io/badge/PS-SIH26176%20%7C%20ISRO%20Space%20Technology-1E5F7A?style=for-the-badge&labelColor=0A1628)](https://sih.gov.in)
-[![Team Marines](https://img.shields.io/badge/Team%20MARINES-%23175766-0E7490?style=for-the-badge&labelColor=0A1628)](https://github.com/akshatog/ORCA)
+[![Team Marines](https://img.shields.io/badge/Team%20MARINES-%23175766-0E7490?style=for-the-badge&labelColor=0A1628)](https://github.com/akshatog/MARVO)
 [![KIET](https://img.shields.io/badge/KIET-Ghaziabad-1D7A50?style=for-the-badge&labelColor=0A1628)](https://kiet.edu)
 
 <br/>
@@ -22,11 +22,11 @@
 [![LangGraph](https://img.shields.io/badge/LangGraph-Multi--Agent-FF6B35?style=flat-square)](https://langchain-ai.github.io/langgraph)
 [![React 18](https://img.shields.io/badge/React_18-TypeScript-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker&logoColor=white)](https://docker.com)
-[![CI](https://img.shields.io/github/actions/workflow/status/akshatog/ORCA/ci.yml?style=flat-square&label=CI&logo=github)](https://github.com/akshatog/ORCA/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/akshatog/MARVO/ci.yml?style=flat-square&label=CI&logo=github)](https://github.com/akshatog/MARVO/actions)
 
 <br/>
 
-**[🌐 Live Demo](https://orca-marine.onrender.com)** &nbsp;·&nbsp; **[📹 Demo Video](#)** *(link coming soon)* &nbsp;·&nbsp; **[📖 API Docs](https://orca-marine.onrender.com/docs)**
+**[🌐 Live Demo](https://marvo-marine.onrender.com)** &nbsp;·&nbsp; **[📹 Demo Video](#)** *(link coming soon)* &nbsp;·&nbsp; **[📖 API Docs](https://marvo-marine.onrender.com/docs)**
 
 </div>
 
@@ -50,7 +50,7 @@
 | **₹17,820 additional income** per PFZ-guided trip | INCOIS validation study |
 | **28–30 million livelihoods** dependent on Indian fisheries | PIB, Ministry of Fisheries |
 
-**Three core gaps ORCA addresses:**
+**Three core gaps MARVO addresses:**
 
 1. **Fragmented Marine Intelligence** — ISRO, IMD, and INCOIS data existed but no system synthesised it into one decision
 2. **Last-Mile Advisory Gap** — Chlorophyll maps are hard to read on small screens at 4 AM in a regional language
@@ -58,11 +58,11 @@
 
 ---
 
-## 💡 Proposed Solution — ORCA
+## 💡 Proposed Solution — MARVO
 
-**ORCA — Agentic Marine Intelligence Platform**
+**MARVO — Agentic Marine Intelligence Platform**
 
-ORCA synthesises fragmented marine data through **10 collaborative AI agents** to generate safe, explainable, and location-specific decisions — with evidence, safety overrides, and multilingual delivery.
+MARVO synthesises fragmented marine data through **10 collaborative AI agents** to generate safe, explainable, and location-specific decisions — with evidence, safety overrides, and multilingual delivery.
 
 ```
                     USER INPUT
@@ -74,7 +74,7 @@ ORCA synthesises fragmented marine data through **10 collaborative AI agents** t
           └──────────────┬──────────────┘
                          │
               ┌──────────▼──────────┐
-              │   ORCA CORE ENGINE  │
+              │   MARVO CORE ENGINE  │
               │  10 Collaborative   │
               │    AI Agents        │
               └──────────┬──────────┘
@@ -100,13 +100,13 @@ ORCA synthesises fragmented marine data through **10 collaborative AI agents** t
           └─────────────────────────────────┘
 ```
 
-### 🏆 What Makes ORCA Different — Innovation & Uniqueness
+### 🏆 What Makes MARVO Different — Innovation & Uniqueness
 
 | Innovation | Description |
 |---|---|
 | **Proactive, Not Reactive** | Pre-departure Drift/SAR Envelope + IMBL Current Guard identify potential drift and boundary-crossing risks *before* an emergency occurs |
 | **Peer-Reviewed Fishing Intelligence** | Fishing zones computed using the Habitat Suitability Index methodology (Sarangi et al., CMFRI 2024) — the same method INCOIS uses, now voice-delivered in regional languages |
-| **AI Never Controls Safety Math** | No model output, user input, or override can bypass certified safety floors. When IMD says "do not venture," ORCA locks at UNSAFE. Always. |
+| **AI Never Controls Safety Math** | No model output, user input, or override can bypass certified safety floors. When IMD says "do not venture," MARVO locks at UNSAFE. Always. |
 | **Evidence Transparency** | Every number carries its source, timestamp, and confidence tier — judges, fishers, and Coast Guard can trace any output |
 | **5-Stakeholder Platform** | One backend, five role-based interfaces — fishers, researchers, authorities, disaster management, maritime operators |
 
@@ -114,7 +114,7 @@ ORCA synthesises fragmented marine data through **10 collaborative AI agents** t
 
 ## 🗃️ Multi-Source Data Fusion
 
-ORCA ingests real-time + historical data from **9 sources** across 6 data categories:
+MARVO ingests real-time + historical data from **9 sources** across 6 data categories:
 
 | Category | Sources | Data Points |
 |---|---|---|
@@ -278,7 +278,7 @@ HSI = (SI_chl^0.30 × SI_sst^0.25 × SI_front^0.20 × SI_sea^0.15 × SI_time^0.1
 
 **535–560 Indian fishermen arrested in 2024 for crossing the IMBL — cause: ocean current drift, not intent.**
 
-ORCA solves this geometrically:
+MARVO solves this geometrically:
 1. GIS agent computes current distance to IMBL boundary polygon
 2. Ocean agent provides current velocity + direction
 3. If projection shows crossing within 2 hours → voice alert in fisher's language:
@@ -434,7 +434,7 @@ DATA → EVIDENCE → DECISION → SAFER OUTCOMES
 ### 🔬 For Authorities & Researchers
 - Unified marine evidence layer with traceable source + timestamp + confidence
 - Automated 5nm violation logging for enforcement records
-- PFZ Validation Module — compare catch reports vs ORCA predictions
+- PFZ Validation Module — compare catch reports vs MARVO predictions
 - Historical trends + anomaly detection for policy and research
 
 ### 🌊 For the Blue Economy
@@ -449,7 +449,7 @@ DATA → EVIDENCE → DECISION → SAFER OUTCOMES
 
 | Feature | Description |
 |---|---|
-| **NavIC/VCSS Integration** | ISRO's VCSS transponders (49,000 deployed, ₹364 crore PMMSY project) for at-sea satellite communication; ORCA registers as VCSS application provider |
+| **NavIC/VCSS Integration** | ISRO's VCSS transponders (49,000 deployed, ₹364 crore PMMSY project) for at-sea satellite communication; MARVO registers as VCSS application provider |
 | **Species-Specific HSI Models** | Separate models for pomfret (26–28°C), mackerel (22–27°C), tuna (28–30°C), hilsa (brackish) |
 | **LoRa Mesh Network** | ₹800/vessel peer-to-peer relay — boats within 10–15 km form ad-hoc mesh for connectivity without infrastructure |
 | **Marine Pollution Sentinel** | Detect oil spills, HABs, industrial thermal discharge from same satellite data via anomaly detection |
@@ -462,10 +462,10 @@ DATA → EVIDENCE → DECISION → SAFER OUTCOMES
 
 ## 📚 Research & References
 
-| Research Area | Paper | Relevance to ORCA |
+| Research Area | Paper | Relevance to MARVO |
 |---|---|---|
 | **PFZ Methodology** | Sarangi et al. (2024), CMFRI — *Environmental Monitoring and Assessment* | HSI weight hierarchy: Chl-a (0.30) as strongest predictor |
-| **HSI Formula** | Zainuddin et al., *Frontiers in Marine Science* | Standard geometric mean formula ORCA implements |
+| **HSI Formula** | Zainuddin et al., *Frontiers in Marine Science* | Standard geometric mean formula MARVO implements |
 | **SST Ranges** | Northern Indian Ocean fishing study (2024), PMC/NIH | Optimal SST: 27.96–29.47°C for Indian fishing operations |
 | **Marine Risk** | IMO Intact Stability Code (IS Code) | Wave height as primary capsize driver, safety floor thresholds |
 | **IMO Guidance** | MSC.1/Circ.1228 — avoiding dangerous weather | 4m wave + gale force wind danger thresholds |
@@ -473,9 +473,9 @@ DATA → EVIDENCE → DECISION → SAFER OUTCOMES
 | **PFZ Impact** | ICAR Goa Validation Study | 2.3× CPUE improvement, ₹17,820 additional income |
 | **VCSS Deployment** | PIB (2024), PMMSY | 49,000+ transponders deployed, ₹364 crore project |
 | **LoRa Maritime** | MDPI Sensors (2024) | Validates LoRa 10–15 km range for fishing fleet mesh |
-| **Multi-Agent XAI** | MDPI (2025), *Journal of Marine Science and Engineering* | Deterministic core + XAI explanation layer — ORCA's architecture |
-| **PFZ Adoption** | INCOIS Adoption Study | 52% receive advisories, 35% use — ORCA's adoption gap solution |
-| **Ocean Data Integration** | Multi-source data fusion for marine decision systems | Basis for ORCA's evidence normalisation and conflict resolution |
+| **Multi-Agent XAI** | MDPI (2025), *Journal of Marine Science and Engineering* | Deterministic core + XAI explanation layer — MARVO's architecture |
+| **PFZ Adoption** | INCOIS Adoption Study | 52% receive advisories, 35% use — MARVO's adoption gap solution |
+| **Ocean Data Integration** | Multi-source data fusion for marine decision systems | Basis for MARVO's evidence normalisation and conflict resolution |
 
 ---
 
@@ -484,8 +484,8 @@ DATA → EVIDENCE → DECISION → SAFER OUTCOMES
 ### Option A — Docker (recommended — works on any OS, no setup required)
 
 ```bash
-git clone https://github.com/akshatog/ORCA.git
-cd ORCA
+git clone https://github.com/akshatog/MARVO.git
+cd MARVO
 docker compose up --build
 ```
 
@@ -510,7 +510,7 @@ npm run build
 
 # Start server
 cd ../backend
-ORCA_DATA_MODE=DEMO uvicorn app.main:app --port 8000
+MARVO_DATA_MODE=DEMO uvicorn app.main:app --port 8000
 ```
 
 Open **http://localhost:8000**.
@@ -520,7 +520,7 @@ Open **http://localhost:8000**.
 ```bash
 # Terminal 1 — backend with auto-reload
 cd backend
-ORCA_DATA_MODE=DEMO uvicorn app.main:app --reload --port 8000
+MARVO_DATA_MODE=DEMO uvicorn app.main:app --reload --port 8000
 
 # Terminal 2 — Vite dev server (proxies /api → :8000)
 cd frontend
@@ -545,8 +545,8 @@ make build      # Build the frontend production bundle
 
 | Variable | Default | Description |
 |---|---|---|
-| `ORCA_DATA_MODE` | `DEMO` | `DEMO` (rehearsed scenarios) or `LIVE` (real APIs) |
-| `ORCA_USE_LLM` | `0` | `1` to enable Groq LLM explanation layer |
+| `MARVO_DATA_MODE` | `DEMO` | `DEMO` (rehearsed scenarios) or `LIVE` (real APIs) |
+| `MARVO_USE_LLM` | `0` | `1` to enable Groq LLM explanation layer |
 | `GROQ_API_KEY` | — | From [console.groq.com](https://console.groq.com) — free tier |
 | `SARVAM_API_KEY` | — | From [sarvam.ai](https://sarvam.ai) — free tier |
 
@@ -571,9 +571,9 @@ make build      # Build the frontend production bundle
 
 | | |
 |---|---|
-| **Web App (PWA)** | https://orca-marine.onrender.com |
-| **API Documentation** | https://orca-marine.onrender.com/docs |
-| **Health Check** | https://orca-marine.onrender.com/api/health |
+| **Web App (PWA)** | https://marvo-marine.onrender.com |
+| **API Documentation** | https://marvo-marine.onrender.com/docs |
+| **Health Check** | https://marvo-marine.onrender.com/api/health |
 | **Platform** | Render · Docker container · auto-deploys on `main` push |
 
 > **Note:** The live deployment runs in DEMO mode (no API keys needed). For voice + LLM features, run locally with keys per setup instructions above.
@@ -583,7 +583,7 @@ make build      # Build the frontend production bundle
 ## 📁 Repository Structure
 
 ```
-ORCA/
+MARVO/
 ├── .github/workflows/ci.yml     # CI: pytest + npm build + /api/health check
 ├── Dockerfile                    # Multi-stage: Node frontend build → Python serve
 ├── docker-compose.yml            # Production + dev profiles
@@ -653,13 +653,13 @@ ORCA/
 
 ## ⚠️ Safety Disclaimer
 
-ORCA is **decision support software** built for Smart India Hackathon 2026. It does **not** replace official advisories from:
+MARVO is **decision support software** built for Smart India Hackathon 2026. It does **not** replace official advisories from:
 
 - **INCOIS** — National Centre for Ocean Information Services
 - **IMD** — India Meteorological Department
 - **Indian Coast Guard**
 
-This notice appears on every ORCA screen. When in doubt, always follow official government advisories.
+This notice appears on every MARVO screen. When in doubt, always follow official government advisories.
 
 ---
 

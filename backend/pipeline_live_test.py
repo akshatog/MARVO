@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-ORCA Pipeline Live Data Test
+MARVO Pipeline Live Data Test
 =============================
 Runs the full multi-agent pipeline in LIVE mode and shows exactly what each
 agent fetched, which data source was used, and whether it came from
@@ -22,7 +22,7 @@ from datetime import datetime, timezone
 
 # ── Bootstrap: force LIVE mode before importing anything else ─────────────────
 import os
-os.environ["ORCA_DATA_MODE"] = "LIVE"
+os.environ["MARVO_DATA_MODE"] = "LIVE"
 
 # Add backend/ to path so we can import the app package
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -273,9 +273,9 @@ def main():
 
     print()
     print("╔══════════════════════════════════════════════════════════════════════╗")
-    print("║          ORCA 2.0 — LIVE PIPELINE DATA FETCH TEST                   ║")
+    print("║          MARVO 2.0 — LIVE PIPELINE DATA FETCH TEST                   ║")
     print("╠══════════════════════════════════════════════════════════════════════╣")
-    print(f"║  Mode     : LIVE (ORCA_DATA_MODE=LIVE)                              ║")
+    print(f"║  Mode     : LIVE (MARVO_DATA_MODE=LIVE)                              ║")
     print(f"║  Time UTC : {when.strftime('%Y-%m-%d %H:%M')}                                      ║")
     print(f"║  Tier 1   : MOSDAC THREDDS NCSS + INCOIS ERDDAP (ISRO/MoES)        ║")
     print(f"║  Tier 2   : Open-Meteo Marine (labeled fallback if Tier 1 fails)    ║")

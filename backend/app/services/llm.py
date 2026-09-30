@@ -1,4 +1,4 @@
-"""Multi-provider LLM abstraction layer for ORCA 2.0.
+"""Multi-provider LLM abstraction layer for MARVO 2.0.
 
 Fallback Chain:
     Groq (Primary) -> Cerebras (Fallback 1) -> Gemini Flash (Fallback 2) -> Template Engine (Safety Net)
@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 _DEFAULT_TIMEOUT_S = 6.0
 
 _SYSTEM_PROMPT = (
-    "You are ORCA, a marine-safety assistant for small-boat fishers in India. "
+    "You are MARVO, a marine-safety assistant for small-boat fishers in India. "
     "The user asked a specific question (given as user_query in <facts>). "
     "Answer that specific question using ONLY the structured <facts> provided. "
     "Write 3-5 clear, empathetic sentences in the language given by the language field "

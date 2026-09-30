@@ -26,7 +26,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error("[ORCA ErrorBoundary] Caught render error:", error, info);
+    console.error("[MARVO ErrorBoundary] Caught render error:", error, info);
   }
 
   reset = () => {

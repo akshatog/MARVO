@@ -1,4 +1,4 @@
-"""Centralized Data Source Registry for ORCA 2.0.
+"""Centralized Data Source Registry for MARVO 2.0.
 
 Decouples specialist agents from hardcoded API/scraper clients.
 Provides capability-based source discovery:
@@ -80,7 +80,7 @@ def clear_registry() -> None:
 
 
 def init_default_sources() -> None:
-    """Register standard ORCA 2.0 marine data providers."""
+    """Register standard MARVO 2.0 marine data providers."""
     # 1. Weather
     try:
         from .live_client import fetch_weather

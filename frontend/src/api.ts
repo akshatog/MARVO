@@ -5,7 +5,7 @@ import type {
   DecisionState,
   FishingOutlook,
   Language,
-  ORCAState,
+  MARVOState,
   PositionCheck,
   RiskCategory,
   SupportedLanguage,
@@ -256,7 +256,7 @@ export function config() {
 }
 
 // --------------------------------------------------------------------------
-// ORCA 2.0 Plan, Trace, Voyage, Alert & Voice Endpoints
+// MARVO 2.0 Plan, Trace, Voyage, Alert & Voice Endpoints
 // --------------------------------------------------------------------------
 
 export function fetchPlan(params: {
@@ -275,8 +275,8 @@ export function fetchTrace(requestId: string): Promise<TraceEntry[]> {
   return json<TraceEntry[]>(`${BASE}/trace/${encodeURIComponent(requestId)}`);
 }
 
-export function fetchState(requestId: string): Promise<ORCAState> {
-  return json<ORCAState>(`${BASE}/state/${encodeURIComponent(requestId)}`);
+export function fetchState(requestId: string): Promise<MARVOState> {
+  return json<MARVOState>(`${BASE}/state/${encodeURIComponent(requestId)}`);
 }
 
 export function startVoyage(params: {

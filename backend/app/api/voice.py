@@ -14,7 +14,7 @@ from ..services.voice import normalize_language_code, speak, transcribe
 
 log = logging.getLogger(__name__)
 
-router = APIRouter(tags=["ORCA 2.0 Voice"])
+router = APIRouter(tags=["MARVO 2.0 Voice"])
 
 
 class SpeakRequest(BaseModel):

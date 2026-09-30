@@ -1,4 +1,4 @@
-# ORCA — Architecture
+# MARVO — Architecture
 
 ## Primary pipeline (operational intent)
 
@@ -98,7 +98,7 @@ graph, same nodes, different terminal formatting and depth of exposure — not
 a separate system.
 
 ```
-                   ORCA CORE
+                   MARVO CORE
                        │
              ┌─────────┴─────────┐
              │                   │
@@ -112,7 +112,7 @@ a separate system.
 ## LangGraph state object
 
 ```python
-class ORCAState(BaseModel):
+class MARVOState(BaseModel):
     request_id: str
     intent: Literal["operational", "analytical"]
     raw_query: str
@@ -126,7 +126,7 @@ class ORCAState(BaseModel):
 ```
 
 Every agent node reads from and writes to this one object. No agent passes
-data directly to another agent — everything goes through `ORCAState`. This is
+data directly to another agent — everything goes through `MARVOState`. This is
 what makes the graph traceable (the `trace` list is literally your "agent
 trace" feature for the research web, for free, if every node appends to it).
 
@@ -137,7 +137,7 @@ concurrent agent execution. This works and remains the active path for
 the legacy `/api/chat` endpoint. LangGraph is being built alongside it:
 
 - Each agent function is wrapped as a **LangGraph node** in `graph/nodes.py`
-  (function taking `ORCAState`, returning a partial state update).
+  (function taking `MARVOState`, returning a partial state update).
 - The fan-out/fan-in is **explicit parallel edges**: Intent → [Weather,
   Marine, PFZ, Advisory, GIS] → Evidence Store → Constraint Engine → Route
   → Explanation.

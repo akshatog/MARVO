@@ -8,7 +8,7 @@ from app.schemas import (
     AdvisoryConstraint,
     DecisionState,
     AlertEvent,
-    ORCAState,
+    MARVOState,
     measurement_to_evidence,
     agent_result_to_evidence_list,
     risk_assessment_to_decision_state,
@@ -263,10 +263,10 @@ def test_alert_event_invalid_types():
 
 
 # ============================================================================
-# ORCAState Tests (3 tests: valid, missing field, out-of-range)
+# MARVOState Tests (3 tests: valid, missing field, out-of-range)
 # ============================================================================
-def test_orca_state_valid():
-    state = ORCAState(
+def test_marvo_state_valid():
+    state = MARVOState(
         request_id="req-999",
         intent="operational",
         raw_query="Can I go fishing tomorrow morning?",
@@ -278,16 +278,16 @@ def test_orca_state_valid():
     assert state.evidence == []
 
 
-def test_orca_state_missing_field():
+def test_marvo_state_missing_field():
     # missing request_id, intent, raw_query, language
     with pytest.raises(ValidationError):
-        ORCAState(location={"name": "Mumbai"})
+        MARVOState(location={"name": "Mumbai"})
 
 
-def test_orca_state_out_of_range():
+def test_marvo_state_out_of_range():
     # invalid intent literal (not "operational" or "analytical")
     with pytest.raises(ValidationError):
-        ORCAState(
+        MARVOState(
             request_id="req-1000",
             intent="commercial_shipping",  # invalid
             raw_query="Weather query",

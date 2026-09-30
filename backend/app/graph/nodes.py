@@ -1,4 +1,4 @@
-"""LangGraph node implementations for the ORCA 2.0 pipeline.
+"""LangGraph node implementations for the MARVO 2.0 pipeline.
 
 Nodes wrap existing battle-tested agents and enforce:
   1. Universal Evidence_v2 contract.
@@ -159,7 +159,7 @@ def pfz_node(state) -> Dict[str, Any]:
     _auth_map = {
         "official_advisory":  ("INCOIS",           "official_advisory", 0.92),
         "satellite_enriched": ("NOAA-CoastWatch",  "external_forecast", 0.72),
-        "synthetic":          ("ORCA-Demo",        "heuristic",         0.40),
+        "synthetic":          ("MARVO-Demo",        "heuristic",         0.40),
     }
     ev_source, ev_auth, ev_conf = _auth_map.get(data_quality, _auth_map["synthetic"])
 
@@ -236,7 +236,7 @@ def gis_node(state) -> Dict[str, Any]:
                     metric=metric,
                     value=value,
                     unit=unit,
-                    source="ORCA_GIS",
+                    source="MARVO_GIS",
                     confidence=0.90,
                     authority_level="derived",
                     mode=get_data_mode(),
@@ -607,7 +607,7 @@ def explanation_node(state) -> Dict[str, Any]:
     }
 
     system_prompt = (
-        "You are ORCA 2.0 marine safety advisor for fishers in India. "
+        "You are MARVO 2.0 marine safety advisor for fishers in India. "
         "Provide a clear, respectful, authoritative 2-3 sentence summary of whether it is safe "
         f"to venture out, and the economic potential. Language: {state.language}."
     )
@@ -622,7 +622,7 @@ def explanation_node(state) -> Dict[str, Any]:
 
     if provider == "template":
         explanation_text = (
-            f"ORCA Safety Advisory: Conditions are assessed as {decision.status} "
+            f"MARVO Safety Advisory: Conditions are assessed as {decision.status} "
             f"(Risk score {decision.risk_score}/100). "
             f"Primary reason: {decision.reasons[0] if decision.reasons else 'Normal sea conditions'}."
         )

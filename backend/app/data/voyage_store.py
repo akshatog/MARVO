@@ -1,4 +1,4 @@
-"""In-memory active voyage tracking store for ORCA 2.0.
+"""In-memory active voyage tracking store for MARVO 2.0.
 
 Powers real-time offshore safety monitoring. When a vessel departs port, a voyage is
 registered here. The alert engine continuously checks new incoming advisories and

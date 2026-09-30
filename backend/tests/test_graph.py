@@ -1,5 +1,5 @@
 import pytest
-from app.graph import get_ascii_topology, run_plan, ORCAState
+from app.graph import get_ascii_topology, run_plan, MARVOState
 from app.schemas import DecisionState
 
 
@@ -18,13 +18,13 @@ def test_graph_ascii_topology():
     assert "explanation" in topo
 
 
-def test_graph_mock_run_produces_valid_orca_state():
+def test_graph_mock_run_produces_valid_marvo_state():
     state = run_plan(
         query="Is it safe to fish off Sassoon Dock tomorrow morning?",
         language="en",
         location={"name": "Sassoon Dock", "lat": 18.91, "lon": 72.82},
     )
-    assert isinstance(state, ORCAState)
+    assert isinstance(state, MARVOState)
     assert state.request_id.startswith("req-")
     assert state.intent in ("operational", "analytical")
     assert len(state.evidence) > 0

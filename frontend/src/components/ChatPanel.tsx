@@ -5,33 +5,33 @@ import type { Localized, ChatMessage, Language } from "../types";
 import { BoatGlyph, CompassMark, CourseArrow, MicGlyph, SchoolGlyph, StopGlyph } from "./glyphs";
 
 const PLACEHOLDER: Localized<string> = {
-  en: "Ask ORCA — can I go fishing tomorrow at 6 AM?",
-  hi: "ORCA se puchhen — kya main kal subah 6 baje ja sakta hun?",
-  mr: "ORCA la vichara — mi udya sakali 6 vajata jau shakto ka?",
-  ta: "ORCA விடம் கேளுங்கள் — நாளை காலை 6 மணிக்கு மீன்பிடிக்க செல்லலாமா?",
-  te: "ORCA ని అడగండి — నేను రేపు ఉదయం 6 గంటలకు చేపలు పట్టడానికి వెళ్ళవచ్చా?",
-  bn: "ORCA কে জিজ্ঞেস করুন — আমি কি কাল সকাল ৬টায় মাছ ধরতে যেতে পারি?",
-  ml: "ORCA യോട് ചോദിക്കുക — എനിക്ക് നാളെ രാവിലെ 6 മണിക്ക് മീൻ പിടിക്കാൻ പോകാമോ?",
+  en: "Ask MARVO — can I go fishing tomorrow at 6 AM?",
+  hi: "MARVO se puchhen — kya main kal subah 6 baje ja sakta hun?",
+  mr: "MARVO la vichara — mi udya sakali 6 vajata jau shakto ka?",
+  ta: "MARVO விடம் கேளுங்கள் — நாளை காலை 6 மணிக்கு மீன்பிடிக்க செல்லலாமா?",
+  te: "MARVO ని అడగండి — నేను రేపు ఉదయం 6 గంటలకు చేపలు పట్టడానికి వెళ్ళవచ్చా?",
+  bn: "MARVO কে জিজ্ঞেস করুন — আমি কি কাল সকাল ৬টায় মাছ ধরতে যেতে পারি?",
+  ml: "MARVO യോട് ചോദിക്കുക — എനിക്ക് നാളെ രാവിലെ 6 മണിക്ക് മീൻ പിടിക്കാൻ പോകാമോ?",
 };
 
 const T: Localized<Record<string, string>> = {
   en: {
-    title: "Ask ORCA",
+    title: "Ask MARVO",
     you: "You",
     emptyMain: "Ask about safety, fishing zones, routes or warnings.",
-    emptySub: "ORCA keeps context — follow-ups like what about 12 PM? work.",
+    emptySub: "MARVO keeps context — follow-ups like what about 12 PM? work.",
   },
   hi: {
-    title: "ORCA se puchhen",
+    title: "MARVO se puchhen",
     you: "Aap",
     emptyMain: "Suraksha, matsya kshetra, marg ya chetavaniyon ke bare mein puchiye.",
-    emptySub: "ORCA sandarbh yaad rakhta hai.",
+    emptySub: "MARVO sandarbh yaad rakhta hai.",
   },
   mr: {
-    title: "ORCA la vichara",
+    title: "MARVO la vichara",
     you: "Tumhi",
     emptyMain: "Suraksha, maseemari kshetra, marg kiva isharyanbadd vichara.",
-    emptySub: "ORCA sandarbh lakshat thevate.",
+    emptySub: "MARVO sandarbh lakshat thevate.",
   },
 };
 
@@ -232,7 +232,7 @@ export default function ChatPanel({
                   (T[language] ?? T.en).you
                 ) : (
                   <>
-                    <CompassMark size={10} className="shrink-0 text-chart-500" /> ORCA
+                    <CompassMark size={10} className="shrink-0 text-chart-500" /> MARVO
                   </>
                 )}
               </div>
@@ -258,7 +258,7 @@ export default function ChatPanel({
           <div className="flex justify-start">
             <div className="max-w-[92%] animate-rise">
               <div className="label mb-1 flex items-center gap-1 !text-[8.5px] !tracking-[0.2em] !text-ink-300">
-                <CompassMark size={10} className="shrink-0 text-chart-500" /> ORCA
+                <CompassMark size={10} className="shrink-0 text-chart-500" /> MARVO
               </div>
               <ThinkingPanel events={agentEvents} />
             </div>

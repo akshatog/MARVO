@@ -1,4 +1,4 @@
-# ORCA backend — deliberately small so it installs in seconds on any laptop.
+# MARVO backend — deliberately small so it installs in seconds on any laptop.
 fastapi>=0.110
 uvicorn[standard]>=0.27
 pydantic>=2.6

@@ -1,4 +1,4 @@
-"""Comprehensive smoke test for all ORCA 2.0 API endpoints.
+"""Comprehensive smoke test for all MARVO 2.0 API endpoints.
 
 Tests:
 - GET /api/health
@@ -25,7 +25,7 @@ client = TestClient(app)
 
 def run_smoke_test() -> int:
     print("=" * 80)
-    print("ORCA 2.0 — COMPREHENSIVE END-TO-END API SMOKE TEST")
+    print("MARVO 2.0 — COMPREHENSIVE END-TO-END API SMOKE TEST")
     print("=" * 80)
     failures = []
 

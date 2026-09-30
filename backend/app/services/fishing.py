@@ -164,7 +164,7 @@ SPECIES_BANDS: List[Dict] = [
 # Regional prevalence from REAL occurrence records — an OBIS snapshot
 # (api.obis.org, queried 31 Aug 2026; raw counts below). OBIS/Map of Life
 # aggregate open ocean-biodiversity records; neither offers a keyless JSON
-# API suited to a stage demo, so ORCA bundles the snapshot: the demo stays
+# API suited to a stage demo, so MARVO bundles the snapshot: the demo stays
 # offline, the source is named, and the numbers are checkable.
 # Regions: NW Gujarat-Maharashtra · SW Goa-Kerala · SE TN-Andhra ·
 # NE Odisha-Bengal.

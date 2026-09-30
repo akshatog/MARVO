@@ -1,4 +1,4 @@
-# ORCA 2.0 Risk Thresholds & Safety Floors Configuration
+# MARVO 2.0 Risk Thresholds & Safety Floors Configuration
 # Everything is centralized here so judges and operators can inspect and configure thresholds.
 
 weights:

@@ -1,4 +1,4 @@
-"""ORCA configuration â€” data mode, risk weights, thresholds.
+"""MARVO configuration â€” data mode, risk weights, thresholds.
 
 Everything a judge might question ("why these weights?", "is this data real?")
 is centralised here so it can be shown on screen and defended in Q&A.
@@ -44,7 +44,7 @@ _load_dotenv()
 # DEMO : serve only cached, clearly-labelled scenario data. Stage-safe.
 #
 # Default is DEMO so a laptop with no internet still runs the full pipeline.
-DATA_MODE = os.getenv("ORCA_DATA_MODE", "DEMO").upper()
+DATA_MODE = os.getenv("MARVO_DATA_MODE", "DEMO").upper()
 
 # Runtime-switchable copy so the mode can be flipped from the UI mid-demo
 # ("watch â€” I'll switch it to live government-adjacent data now") without a
@@ -64,15 +64,15 @@ def set_data_mode(mode: str) -> str:
     return mode
 
 # Seconds before a live API call is abandoned in favour of cache/demo data.
-LIVE_TIMEOUT_SECONDS = float(os.getenv("ORCA_LIVE_TIMEOUT", "4.0"))
+LIVE_TIMEOUT_SECONDS = float(os.getenv("MARVO_LIVE_TIMEOUT", "4.0"))
 
-# Optional LLM layer. ORCA runs fully without it (rule-based intent + template
+# Optional LLM layer. MARVO runs fully without it (rule-based intent + template
 # explanations). When a key is present the LLM only *rephrases* â€” it never
 # computes a risk score. See services/llm.py.
 LLM_API_KEY = os.getenv("GROQ_API_KEY", "")
-LLM_MODEL = os.getenv("ORCA_LLM_MODEL", "openai/gpt-oss-120b")
-LLM_ENABLED  = bool(LLM_API_KEY) and os.getenv("ORCA_USE_LLM", "1") != "0"
-LLM_TIMEOUT  = float(os.getenv("ORCA_LLM_TIMEOUT", "8.0"))  # per-call wall-clock limit
+LLM_MODEL = os.getenv("MARVO_LLM_MODEL", "openai/gpt-oss-120b")
+LLM_ENABLED  = bool(LLM_API_KEY) and os.getenv("MARVO_USE_LLM", "1") != "0"
+LLM_TIMEOUT  = float(os.getenv("MARVO_LLM_TIMEOUT", "8.0"))  # per-call wall-clock limit
 
 
 # --------------------------------------------------------------------------
@@ -254,8 +254,8 @@ SOURCE_LABELS = {
     "IMD": "IMD (India Meteorological Department)",
     "MOSDAC": "ISRO MOSDAC",
     "OPEN_METEO": "Open-Meteo Marine (open fallback source)",
-    "DEMO": "ORCA demo dataset - SIMULATED, not official data",
-    "ORCA_GIS": "ORCA geospatial layer (OpenStreetMap derived)",
+    "DEMO": "MARVO demo dataset - SIMULATED, not official data",
+    "MARVO_GIS": "MARVO geospatial layer (OpenStreetMap derived)",
 }
 
 # Text appended to every synthetic value so simulated data can never be

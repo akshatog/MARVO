@@ -1,4 +1,4 @@
-"""ORCA 2.0 /plan and /trace endpoints.
+"""MARVO 2.0 /plan and /trace endpoints.
 
 POST /plan: Primary decision endpoint invoking the LangGraph pipeline.
 GET /trace/{request_id}: Returns node trace execution telemetry for visualizer.
@@ -11,14 +11,14 @@ from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel, Field
 
 from ..graph import run_plan
-from ..schemas import DecisionState, ORCAState
+from ..schemas import DecisionState, MARVOState
 
 log = logging.getLogger(__name__)
 
-router = APIRouter(tags=["ORCA 2.0 Plan & Trace"])
+router = APIRouter(tags=["MARVO 2.0 Plan & Trace"])
 
-# In-memory store for ORCAState objects keyed by request_id
-STATE_STORE: Dict[str, ORCAState] = {}
+# In-memory store for MARVOState objects keyed by request_id
+STATE_STORE: Dict[str, MARVOState] = {}
 
 
 class PlanRequest(BaseModel):
@@ -31,7 +31,7 @@ class PlanRequest(BaseModel):
 @router.post("/plan", response_model=DecisionState)
 @router.post("/api/plan", response_model=DecisionState, include_in_schema=False)
 def plan_endpoint(req: PlanRequest, response: Response) -> DecisionState:
-    """Run the ORCA 2.0 LangGraph decision pipeline for an operational or analytical query."""
+    """Run the MARVO 2.0 LangGraph decision pipeline for an operational or analytical query."""
     user_query = req.intent_text or req.query or "Can I safely go fishing?"
     
     state = run_plan(
@@ -60,10 +60,10 @@ def trace_endpoint(request_id: str) -> List[Dict[str, Any]]:
     return state.trace
 
 
-@router.get("/state/{request_id}", response_model=ORCAState)
-@router.get("/api/state/{request_id}", response_model=ORCAState, include_in_schema=False)
-def state_endpoint(request_id: str) -> ORCAState:
-    """Retrieve the complete ORCAState including evidence, conflict log, and trace."""
+@router.get("/state/{request_id}", response_model=MARVOState)
+@router.get("/api/state/{request_id}", response_model=MARVOState, include_in_schema=False)
+def state_endpoint(request_id: str) -> MARVOState:
+    """Retrieve the complete MARVOState including evidence, conflict log, and trace."""
     state = STATE_STORE.get(request_id)
     if not state:
         raise HTTPException(status_code=404, detail=f"State not found for request_id: {request_id}")

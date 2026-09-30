@@ -1,11 +1,11 @@
-# ORCA — Project Overview
+# MARVO — Project Overview
 
 **SIH Problem Statement 26176. Round 2: Sep 12, 2026.**
 **Build started Sep 10, 2026. Solo builder with AI coding agents.**
 
 ## The one-line spine
 
-> ORCA helps fishermen decide where, when, and whether to fish — and keeps
+> MARVO helps fishermen decide where, when, and whether to fish — and keeps
 > monitoring that decision while they're at sea. Two faces, one intelligence core.
 
 Every feature, every task, every file must trace back to this sentence. If it
@@ -14,7 +14,7 @@ doesn't, it doesn't get built this round.
 ## Product shape
 
 ```
-                     ORCA CORE (one backend, one agent graph)
+                     MARVO CORE (one backend, one agent graph)
                           │
              ┌────────────┴────────────┐
              │                         │
@@ -62,7 +62,7 @@ built and working (do not rebuild):
 - **Design system** — nautical chart aesthetic, 30KB CSS, full animation system
 - **Demo data store** — rehearsed scenarios per port (Mumbai/Goa/Paradip/Kochi/Digha)
 
-## What's being built new (the ORCA 2.0 upgrades)
+## What's being built new (the MARVO 2.0 upgrades)
 
 - **LangGraph** state graph (replacing ThreadPoolExecutor planner)
 - **Gemini Flash** LLM (replacing Groq)
@@ -70,7 +70,7 @@ built and working (do not rebuild):
 - **Conflict Resolver** — authority-based evidence resolution
 - **Voyage tracking** + `on_evidence_change` alert system
 - **GDACS live cyclone feed** + StormGlass tide/current adapter
-- **`POST /plan`** + **`GET /trace/{id}`** endpoints (new ORCA 2.0 API)
+- **`POST /plan`** + **`GET /trace/{id}`** endpoints (new MARVO 2.0 API)
 - **New schemas** (`schemas_v2.py`) alongside existing schemas
 
 ## Repo conventions

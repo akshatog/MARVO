@@ -22,7 +22,7 @@ def run(location: Location, when: datetime, *, destination: Optional[Tuple[float
         return AgentResult(agent="route", ok=False, location=location,
                            data={"reason": "no destination supplied"},
                            unavailable=["destination unknown"],
-                           source="ORCA", timestamp=stamp, mode="DEMO")
+                           source="MARVO", timestamp=stamp, mode="DEMO")
 
     options = plan_routes(
         (location.latitude, location.longitude),
@@ -45,7 +45,7 @@ def run(location: Location, when: datetime, *, destination: Optional[Tuple[float
             "options": [o.model_dump() for o in options],
             "recommended": recommended.model_dump(),
         },
-        source="ORCA",
+        source="MARVO",
         timestamp=stamp,
         confidence=0.78,
         mode="DEMO",

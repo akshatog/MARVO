@@ -10,7 +10,7 @@ A* over a sea grid where edge cost is NOT just distance:
 
 Because the zone penalty dwarfs distance, the safest route is frequently longer
 than the straight line — which is exactly the behaviour we want to show a judge:
-the shortest track clips a naval exclusion area, ORCA routes around it.
+the shortest track clips a naval exclusion area, MARVO routes around it.
 """
 from __future__ import annotations
 

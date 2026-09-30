@@ -1,4 +1,4 @@
-# ORCA — Schemas
+# MARVO — Schemas
 
 ## Dual-schema strategy
 
@@ -9,7 +9,7 @@ The codebase maintains **two** schema files:
    `ChatResponse`, `RiskAssessment`, `AgentResult`, etc. continue to power the
    old `/api/chat` endpoint and all 17 frontend components.
 
-2. **`backend/app/schemas_v2.py`** — the ORCA 2.0 API-facing schemas defined below.
+2. **`backend/app/schemas_v2.py`** — the MARVO 2.0 API-facing schemas defined below.
    These power the new `/plan`, `/trace`, `/voyages`, `/alerts` endpoints and the
    LangGraph state graph.
 
@@ -18,7 +18,7 @@ a cleanup pass can consolidate to one schema set.
 
 ---
 
-## ORCA 2.0 schemas (schemas_v2.py)
+## MARVO 2.0 schemas (schemas_v2.py)
 
 These are frozen. If a change is genuinely needed, log it in `DECISIONS.md`
 with a reason before changing this file.
@@ -37,7 +37,7 @@ class Evidence(BaseModel):
     unit: Optional[str] = None       # e.g. "m", "kmph" — None for non-numeric
     source: str                      # e.g. "Open-Meteo", "IMD", "INCOIS", "StormGlass", "GDACS"
     observed_at: datetime            # when the underlying reading was taken
-    retrieved_at: datetime           # when ORCA fetched it
+    retrieved_at: datetime           # when MARVO fetched it
     valid_from: Optional[datetime] = None
     valid_until: Optional[datetime] = None
     geometry: Optional[dict] = None  # GeoJSON, when spatially scoped
@@ -93,7 +93,7 @@ class AlertEvent(BaseModel):
     triggered_at: datetime
 
 
-class ORCAState(BaseModel):
+class MARVOState(BaseModel):
     """The single object LangGraph nodes read from and write to."""
     request_id: str
     intent: Literal["operational", "analytical"]

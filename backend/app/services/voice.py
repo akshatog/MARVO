@@ -1,4 +1,4 @@
-"""Sarvam AI Voice Integration for ORCA 2.0.
+"""Sarvam AI Voice Integration for MARVO 2.0.
 
 Provides:
 - Saaras STT: Speech-to-Text across 22 Indian languages.

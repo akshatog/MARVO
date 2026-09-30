@@ -311,13 +311,13 @@ export interface FishingOutlook {
 
 export interface ChatMessage {
   id: string;
-  role: "user" | "orca";
+  role: "user" | "marvo";
   text: string;
   response?: ChatResponse;
 }
 
 // --------------------------------------------------------------------------
-// ORCA 2.0 Schemas
+// MARVO 2.0 Schemas
 // --------------------------------------------------------------------------
 
 export interface WaypointCondition {
@@ -402,7 +402,7 @@ export interface TraceEntry {
   timestamp?: string;
 }
 
-export interface ORCAState {
+export interface MARVOState {
   request_id: string;
   intent: "operational" | "analytical";
   raw_query: string;

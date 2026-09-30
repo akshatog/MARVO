@@ -28,7 +28,7 @@ import PFZList from "./PFZList";
 import { RISK_COLOR } from "./RiskDial";
 
 /**
- * The phone — ORCA for the fisher himself, many of whom read little.
+ * The phone — MARVO for the fisher himself, many of whom read little.
  *
  * Design rules, in order:
  *   1. Zero taps to the verdict: open → GPS → the big coloured circle.
@@ -347,7 +347,7 @@ export default function MobileApp() {
   const [language, setLanguage] = useState<SupportedLanguage>(() => {
     const l = new URLSearchParams(window.location.search).get("lang") as SupportedLanguage;
     if (l) return l;
-    const saved = window.localStorage.getItem("orca_lang") as SupportedLanguage | null;
+    const saved = window.localStorage.getItem("marvo_lang") as SupportedLanguage | null;
     return saved || "en";
   });
   const uiLang: Language = language;
@@ -361,11 +361,11 @@ export default function MobileApp() {
   // choice — only an explicit tap here, remembered in localStorage, skips
   // the gate on future opens.
   const [langChosen, setLangChosen] = useState<boolean>(() =>
-    Boolean(window.localStorage.getItem("orca_lang")),
+    Boolean(window.localStorage.getItem("marvo_lang")),
   );
   const pickLanguage = (l: SupportedLanguage) => {
     setLanguage(l);
-    window.localStorage.setItem("orca_lang", l);
+    window.localStorage.setItem("marvo_lang", l);
     setLangChosen(true);
   };
 
@@ -374,7 +374,7 @@ export default function MobileApp() {
   // grid, then — on the SAME screen — a simplified status + voice shortcut,
   // before landingDone flips true and the full tabbed app takes over.
   const [landingDone, setLandingDone] = useState<boolean>(() =>
-    Boolean(window.localStorage.getItem("orca_lang")),
+    Boolean(window.localStorage.getItem("marvo_lang")),
   );
 
   // Header language dropdown (replaces the old row of always-visible chips —
@@ -667,7 +667,7 @@ export default function MobileApp() {
           speak(res.answer.split(". ").slice(0, 3).join(". "), res.language);
         },
         (_err) => {
-          setAnswer("Could not reach ORCA — is the backend running?");
+          setAnswer("Could not reach MARVO — is the backend running?");
           setAgentProgress(null);
         },
       );
@@ -711,7 +711,7 @@ export default function MobileApp() {
           <>
             <CompassMark size={60} className="animate-stampIn text-ink-900" />
             <div className="animate-rise" style={{ animationDelay: "80ms" }}>
-              <div className="font-display m-wordmark text-[26px] font-black leading-tight text-ink-900">ORCA</div>
+              <div className="font-display m-wordmark text-[26px] font-black leading-tight text-ink-900">MARVO</div>
               <div className="mt-2 font-mono text-[12px] uppercase tracking-[0.14em] text-ink-500">
                 Choose your language · अपनी भाषा चुनें
               </div>
@@ -742,7 +742,7 @@ export default function MobileApp() {
           <div className="popin flex w-full max-w-[360px] flex-col items-center gap-4">
             <div className="flex items-center gap-2">
               <CompassMark size={26} className="text-ink-900 compass-needle" />
-              <span className="font-display m-wordmark text-[18px] font-black text-ink-900">ORCA</span>
+              <span className="font-display m-wordmark text-[18px] font-black text-ink-900">MARVO</span>
             </div>
 
             {!outlook ? (
@@ -831,7 +831,7 @@ export default function MobileApp() {
       >
         <CompassMark size={30} className="shrink-0 text-ink-900 compass-needle" />
         <div className="min-w-0">
-          <div className="font-display m-wordmark text-[17px] font-black leading-none text-ink-900">ORCA</div>
+          <div className="font-display m-wordmark text-[17px] font-black leading-none text-ink-900">MARVO</div>
           {place && outlook && (
             <div className="truncate font-mono text-[9px] text-chart-600">
               {outlook.location.nearest_landing_centre}

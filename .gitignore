@@ -28,13 +28,13 @@ Thumbs.db
 .env
 .env.local
 
-# ORCA specifics — internal dev notes (kept locally, not for public repo)
-ORCA_TRUTH.md
+# MARVO specifics — internal dev notes (kept locally, not for public repo)
+MARVO_TRUTH.md
 REPOSITORY_AUDIT.md
 AGENT.md
 render.py
-ORCA_Complete_Content.md
-ORCA_Complete_Content_Beautiful.html
+MARVO_Complete_Content.md
+MARVO_Complete_Content_Beautiful.html
 
 # Root-level npm files (app npm is in /frontend)
 /package.json

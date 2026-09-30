@@ -3,14 +3,14 @@
 Tests are split into:
   1. Unit tests — test parsers with pre-baked CSV strings (no network).
   2. Integration tests — marked with @pytest.mark.integration; skipped by
-     default, run only when ORCA_INTEGRATION_TESTS=1 is set.  These hit the
+     default, run only when MARVO_INTEGRATION_TESTS=1 is set.  These hit the
      real MOSDAC endpoint.
 
 Run unit tests only (fast, CI-safe):
     cd backend && python -m pytest tests/test_mosdac_thredds.py -v
 
 Run with live network:
-    cd backend && ORCA_INTEGRATION_TESTS=1 python -m pytest tests/test_mosdac_thredds.py -v
+    cd backend && MARVO_INTEGRATION_TESTS=1 python -m pytest tests/test_mosdac_thredds.py -v
 """
 from __future__ import annotations
 
@@ -32,8 +32,8 @@ from app.data.mosdac_thredds import (
 )
 
 INTEGRATION = pytest.mark.skipif(
-    os.getenv("ORCA_INTEGRATION_TESTS") != "1",
-    reason="Set ORCA_INTEGRATION_TESTS=1 to run live network tests",
+    os.getenv("MARVO_INTEGRATION_TESTS") != "1",
+    reason="Set MARVO_INTEGRATION_TESTS=1 to run live network tests",
 )
 
 # ── Sample data ────────────────────────────────────────────────────────────────

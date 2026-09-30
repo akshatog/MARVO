@@ -30,7 +30,7 @@ def alerts(lat: float = Query(...), lon: float = Query(...)) -> dict:
 def authority_dashboard() -> dict:
     """Every monitored landing centre, scored — the authority view.
 
-    Shows ORCA serving district administrations, not just individual fishers.
+    Shows MARVO serving district administrations, not just individual fishers.
     """
     now = now_ist()
     rows = []

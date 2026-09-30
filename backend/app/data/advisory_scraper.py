@@ -61,7 +61,7 @@ _MARINE_KEYWORDS = {
     "high seas", "port", "warning",
 }
 
-# CAP severity → ORCA severity mapping
+# CAP severity → MARVO severity mapping
 _CAP_SEVERITY_MAP = {
     "extreme": "severe",
     "severe": "severe",

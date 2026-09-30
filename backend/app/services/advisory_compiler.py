@@ -1,4 +1,4 @@
-"""Advisory Compiler for ORCA 2.0.
+"""Advisory Compiler for MARVO 2.0.
 
 Compiles unstructured marine weather and safety bulletins (IMD, INCOIS, SACHET)
 into structured AdvisoryConstraint objects.
@@ -20,7 +20,7 @@ from .llm import complete_chat
 
 log = logging.getLogger(__name__)
 
-_COMPILER_SYSTEM_PROMPT = """You are the ORCA 2.0 Maritime Advisory Compiler.
+_COMPILER_SYSTEM_PROMPT = """You are the MARVO 2.0 Maritime Advisory Compiler.
 Your job is to parse official government marine bulletins (IMD, INCOIS, SACHET, Coast Guard)
 into structured safety constraints for Indian coastal waters.
 

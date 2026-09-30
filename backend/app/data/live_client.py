@@ -25,7 +25,7 @@ briefly too, so live mode with no internet degrades in seconds, not minutes
 (24 x 2 x 4 s of timeouts).
 
 ON INCOIS / IMD / MOSDAC:
-ORCA uses a tiered cascade:
+MARVO uses a tiered cascade:
   Tier 1 (PRIMARY) — MOSDAC THREDDS NCSS (mosdac_thredds.py) for waves and
     ocean currents; INCOIS ERDDAP (incois_erddap.py) for chlorophyll.
     Both are unauthenticated, keyless, and serve ISRO/MoES-authoritative data.

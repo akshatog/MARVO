@@ -1,10 +1,10 @@
-"""MOSDAC Data Download API client for ORCA 2.0.
+"""MOSDAC Data Download API client for MARVO 2.0.
 
 MOSDAC (Meteorological and Oceanographic Satellite Data Archival Centre, ISRO)
 provides satellite-derived Chlorophyll and SST data for the Indian Ocean.
 
 This adapter wraps the MOSDAC Data Download API (mdapi) directly, replicating
-the exact HTTP calls made by the official mdapi.py tool, so ORCA can fetch
+the exact HTTP calls made by the official mdapi.py tool, so MARVO can fetch
 real satellite files without running the external script.
 
 API ENDPOINTS (reverse-engineered from official mdapi.py v2025):

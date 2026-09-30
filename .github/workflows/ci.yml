@@ -1,4 +1,4 @@
-name: ORCA CI
+name: MARVO CI
 
 on:
   push:
@@ -31,8 +31,8 @@ jobs:
 
       - name: Run unit tests
         env:
-          ORCA_DATA_MODE: DEMO      # no live network calls in CI
-          ORCA_USE_LLM: "0"         # skip Groq/Sarvam — needs API keys
+          MARVO_DATA_MODE: DEMO      # no live network calls in CI
+          MARVO_USE_LLM: "0"         # skip Groq/Sarvam — needs API keys
         run: python -m pytest tests/ -q --tb=short
 
   # ── Frontend: build ──────────────────────────────────────────────────────────
@@ -88,8 +88,8 @@ jobs:
 
       - name: Start server and probe /api/health
         env:
-          ORCA_DATA_MODE: DEMO
-          ORCA_USE_LLM: "0"
+          MARVO_DATA_MODE: DEMO
+          MARVO_USE_LLM: "0"
         run: |
           uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           SERVER_PID=$!

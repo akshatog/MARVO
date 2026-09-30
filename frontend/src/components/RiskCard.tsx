@@ -32,7 +32,7 @@ const UI: Localized<Record<string, string>> = {
     askAgain: "— ask again then.",
     overrides: "Safety overrides applied",
     overrideNote:
-      "Deterministic rules can only raise a risk score — never lower it. No model or language output can talk ORCA down from an official warning.",
+      "Deterministic rules can only raise a risk score — never lower it. No model or language output can talk MARVO down from an official warning.",
     evidence: "Evidence",
     traced: "traced values",
     show: "show ▾",

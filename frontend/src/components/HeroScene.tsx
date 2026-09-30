@@ -146,7 +146,7 @@ const SCENES: Scene[] = [
 
 const UI: Record<string, Record<string, string>> = {
   en: {
-    ask: "Ask ORCA",
+    ask: "Ask MARVO",
     standby: "10 agents standing by",
     working: "agents working",
     done: "Verdict ready",
@@ -155,7 +155,7 @@ const UI: Record<string, Record<string, string>> = {
     official: "Official warning",
   },
   hi: {
-    ask: "ORCA से पूछें",
+    ask: "MARVO से पूछें",
     standby: "10 एजेंट तैयार",
     working: "एजेंट काम कर रहे हैं",
     done: "फ़ैसला तैयार",
@@ -164,7 +164,7 @@ const UI: Record<string, Record<string, string>> = {
     official: "आधिकारिक चेतावनी",
   },
   mr: {
-    ask: "ORCA ला विचारा",
+    ask: "MARVO ला विचारा",
     standby: "10 एजंट तयार",
     working: "एजंट काम करत आहेत",
     done: "निर्णय तयार",
