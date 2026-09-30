@@ -37,6 +37,7 @@ We never label Open-Meteo output as INCOIS or MOSDAC/ISRO data.
 """
 from __future__ import annotations
 
+import os
 import threading
 import time
 import xml.etree.ElementTree as ET
