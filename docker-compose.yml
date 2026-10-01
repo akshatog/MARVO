@@ -1,4 +1,4 @@
-﻿version: "3.9"
+version: "3.9"
 
 services:
   marvo:
@@ -7,7 +7,7 @@ services:
       - "8000:8000"
     environment:
       # Switch to LIVE for real INCOIS/Open-Meteo data
-      MARVO_DATA_MODE: DEMO
+      MARVO_DATA_MODE: LIVE
       MARVO_USE_LLM: "0"          # set to 1 + add GROQ_API_KEY for LLM features
       # GROQ_API_KEY: ""         # uncomment + fill for AI explanations
       # SARVAM_API_KEY: ""       # uncomment + fill for Hindi/Marathi voice
@@ -32,7 +32,7 @@ services:
       - ./backend:/app/backend
       - ./frontend/dist:/app/frontend/dist
     environment:
-      MARVO_DATA_MODE: DEMO
+      MARVO_DATA_MODE: LIVE
       MARVO_USE_LLM: "0"
       PYTHONIOENCODING: utf-8
 

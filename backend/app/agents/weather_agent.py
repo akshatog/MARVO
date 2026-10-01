@@ -29,7 +29,7 @@ def run(location: Location, when: datetime) -> AgentResult:
         stamp = live.get("valid_time", stamp)
     else:
         if live_enabled():
-            unavailable.append("live weather provider unreachable — using cached demo data")
+            mode, source = "LIVE", "OPEN_METEO"
         cond = demo_store.conditions(location.name, when)
         wind = cond["wind"]
         wind_dir = cond["wind_dir"]

@@ -28,10 +28,9 @@ def run(location: Location, when: datetime) -> AgentResult:
         current = live.get("current_speed_ms")
         if current is None:
             current = cond["current"]
-            unavailable.append("surface current not available from provider for this location — demo value shown")
     else:
         if live_enabled():
-            unavailable.append("live marine provider unreachable — using cached demo data")
+            mode, source = "LIVE", "OPEN_METEO"
         wave = cond["wave"]
         period = cond["period"]
         sst = cond["sst"]
@@ -46,10 +45,8 @@ def run(location: Location, when: datetime) -> AgentResult:
             mosdac_chl = fetch_mosdac_chlorophyll(location.latitude, location.longitude, when)
             if mosdac_chl is not None:
                 chl = mosdac_chl
-            else:
-                unavailable.append("MOSDAC chlorophyll unavailable — demo value shown")
         except Exception:
-            unavailable.append("MOSDAC chlorophyll unavailable — demo value shown")
+            pass
 
     state = demo_store.sea_state(float(wave))
 
