@@ -4,6 +4,9 @@ WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm ci --no-audit --no-fund
 COPY frontend/ .
+# Vite bakes env vars at build time — pass the Mapbox token as a build arg
+ARG VITE_MAPBOX_TOKEN
+ENV VITE_MAPBOX_TOKEN=$VITE_MAPBOX_TOKEN
 RUN npm run build
 
 # ── Stage 2: Production image ─────────────────────────────────────────────────

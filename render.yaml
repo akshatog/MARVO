@@ -6,7 +6,14 @@ services:
     # Stage 1: Node 20 builds the React frontend
     # Stage 2: Python 3.10-slim serves everything via FastAPI
     healthCheckPath: /api/health
+    # Pass VITE_MAPBOX_TOKEN as a Docker build arg so Vite bakes it into
+    # the frontend bundle at build time (it is not available at runtime).
+    dockerBuildArgs:
+      - key: VITE_MAPBOX_TOKEN
+        secret: VITE_MAPBOX_TOKEN
     envVars:
+      - key: VITE_MAPBOX_TOKEN
+        sync: false
       - key: MARVO_DATA_MODE
         value: LIVE
       - key: MARVO_USE_LLM
