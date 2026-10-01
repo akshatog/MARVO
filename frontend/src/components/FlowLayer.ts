@@ -1,20 +1,16 @@
-import L from "leaflet";
+import mapboxgl from "mapbox-gl";
 import * as api from "../api";
 
 /**
- * The sea in motion — an earth.nullschool-style particle field, drawn in the
- * chart's own ink so the paper map comes alive rather than turning into a
- * different product.
+ * The sea in motion — earth.nullschool-style particle field, now riding
+ * the Mapbox GL canvas overlay.
  *
- * Two canvases ride the Leaflet overlay pane:
- *   - an SST shade (repainted only when the field or view changes),
- *   - a particle canvas advecting ~1000 motes along the wind or surface
- *     current, with fading trails.
+ * Two canvases sit on top of the Mapbox map (fixed-position, pointer-events:none):
+ *   - an SST shade canvas (repainted on view change)
+ *   - a particle canvas advecting ~1000 motes along wind / current
  *
- * Doctrine: this layer is pure decoration. It never carries safety
- * information, so it may pause (hidden tab), skip (reduced motion → one
- * static frame of streaks), or fail to fetch (drawn empty) without any
- * fallback machinery.
+ * Exactly the same visual logic as the Leaflet version; only the coordinate
+ * projection calls change (map.project() instead of L.latLngToContainerPoint).
  */
 
 export type FlowMode = "wind" | "current" | "off";
@@ -48,7 +44,7 @@ interface Particle {
 }
 
 export class FlowLayer {
-  private map: L.Map;
+  private map: mapboxgl.Map;
   private sstCanvas: HTMLCanvasElement;
   private flowCanvas: HTMLCanvasElement;
   private field: api.FlowField | null = null;
@@ -59,21 +55,28 @@ export class FlowLayer {
   private fetchSeq = 0;
   private destroyed = false;
 
-  constructor(map: L.Map) {
+  constructor(map: mapboxgl.Map) {
     this.map = map;
-    this.sstCanvas = this.makeCanvas("400");
-    this.flowCanvas = this.makeCanvas("401");
-    map.on("moveend zoomend resize", this.onViewChange);
-    map.on("movestart zoomstart", this.pause);
+    this.sstCanvas = this.makeCanvas();
+    this.flowCanvas = this.makeCanvas();
+    map.on("moveend", this.onViewChange);
+    map.on("zoomend", this.onViewChange);
+    map.on("resize", this.onViewChange);
+    map.on("movestart", this.pause);
+    map.on("zoomstart", this.pause);
     this.onViewChange();
   }
 
-  private makeCanvas(z: string): HTMLCanvasElement {
+  private makeCanvas(): HTMLCanvasElement {
     const c = document.createElement("canvas");
     c.style.position = "absolute";
+    c.style.top = "0";
+    c.style.left = "0";
     c.style.pointerEvents = "none";
-    c.style.zIndex = z;
-    this.map.getPanes().overlayPane.appendChild(c);
+    c.style.zIndex = "200";
+    // Mapbox GL canvas sits inside .mapboxgl-canvas-container — append there
+    const container = this.map.getCanvasContainer();
+    container.appendChild(c);
     return c;
   }
 
@@ -94,8 +97,11 @@ export class FlowLayer {
     this.destroyed = true;
     this.pause();
     window.clearTimeout(this.fetchTimer);
-    this.map.off("moveend zoomend resize", this.onViewChange);
-    this.map.off("movestart zoomstart", this.pause);
+    this.map.off("moveend", this.onViewChange);
+    this.map.off("zoomend", this.onViewChange);
+    this.map.off("resize", this.onViewChange);
+    this.map.off("movestart", this.pause);
+    this.map.off("zoomstart", this.pause);
     this.sstCanvas.remove();
     this.flowCanvas.remove();
   }
@@ -109,23 +115,27 @@ export class FlowLayer {
   };
 
   private layoutCanvases() {
-    const size = this.map.getSize();
+    const canvas = this.map.getCanvas();
+    const w = canvas.offsetWidth;
+    const h = canvas.offsetHeight;
     for (const c of [this.sstCanvas, this.flowCanvas]) {
-      c.width = size.x;
-      c.height = size.y;
-      L.DomUtil.setPosition(c, this.map.containerPointToLayerPoint([0, 0]));
+      c.width = w;
+      c.height = h;
+      c.style.width = `${w}px`;
+      c.style.height = `${h}px`;
     }
   }
 
   private async fetchField() {
     if (this.destroyed || this.mode === "off") return;
     const seq = ++this.fetchSeq;
-    const b = this.map.getBounds().pad(0.15);
+    const b = this.map.getBounds();
+    if (!b) return;
     try {
       const f = await api.flowField(
         {
-          minLat: b.getSouth(), maxLat: b.getNorth(),
-          minLon: b.getWest(), maxLon: b.getEast(),
+          minLat: b.getSouth() - 1, maxLat: b.getNorth() + 1,
+          minLon: b.getWest() - 1, maxLon: b.getEast() + 1,
         },
         13,
         10,
@@ -141,11 +151,6 @@ export class FlowLayer {
   }
 
   // ---------------------------------------------------------------- field
-  /**
-   * Sea-ness at a point from the FINE mask (0..1 via bilinear over the 0/1
-   * grid). The vector grid is far too coarse to know where the coast is;
-   * this is what keeps particles off the land.
-   */
   private seaAt(lat: number, lon: number): number {
     const f = this.field;
     if (!f?.mask || !f.mask_nx || !f.mask_ny) return 1;
@@ -164,7 +169,6 @@ export class FlowLayer {
     );
   }
 
-  /** Bilinear interpolation over the regular grid; null over land/no-data. */
   private sample(lat: number, lon: number): Vec {
     const f = this.field;
     if (!f) return null;
@@ -176,7 +180,6 @@ export class FlowLayer {
     const x0 = Math.min(Math.floor(x0f), lons.length - 2);
     const ty = y0f - y0;
     const tx = x0f - x0;
-
     const wind = this.mode === "wind";
     const get = (j: number, i: number): Vec => {
       const p = points[j * nx + i];
@@ -186,10 +189,6 @@ export class FlowLayer {
       if (u == null || v == null) return null;
       return { u, v };
     };
-    // Weighted average over whichever corners actually have sea data. The
-    // old all-four-corners rule cut the field off along whole grid cells,
-    // leaving a saw-tooth edge kilometres offshore; this lets the flow run
-    // up to the coast and die only where there is genuinely nothing left.
     const corners: [Vec, number][] = [
       [get(y0, x0), (1 - tx) * (1 - ty)],
       [get(y0, x0 + 1), tx * (1 - ty)],
@@ -198,13 +197,9 @@ export class FlowLayer {
     ];
     let u = 0, v = 0, w = 0;
     for (const [c, wt] of corners) {
-      if (c) {
-        u += c.u * wt;
-        v += c.v * wt;
-        w += wt;
-      }
+      if (c) { u += c.u * wt; v += c.v * wt; w += wt; }
     }
-    if (w < 0.25) return null; // effectively over land
+    if (w < 0.25) return null;
     return { u: u / w, v: v / w };
   }
 
@@ -220,8 +215,8 @@ export class FlowLayer {
   }
 
   private seed() {
-    const size = this.map.getSize();
-    const count = Math.min(1100, Math.round((size.x * size.y) / 1300));
+    const canvas = this.map.getCanvas();
+    const count = Math.min(1100, Math.round((canvas.offsetWidth * canvas.offsetHeight) / 1300));
     this.particles = [];
     for (let i = 0; i < count; i++) {
       const p = this.randomSeaPoint();
@@ -234,7 +229,12 @@ export class FlowLayer {
     c.getContext("2d")?.clearRect(0, 0, c.width, c.height);
   }
 
-  /** SST at a point — weighted bilinear over sea corners of the coarse grid. */
+  /** Project lat/lon to canvas pixel using Mapbox */
+  private project(lat: number, lon: number): { x: number; y: number } {
+    const p = this.map.project([lon, lat]);
+    return { x: p.x, y: p.y };
+  }
+
   private sstAt(lat: number, lon: number): number | null {
     const f = this.field;
     if (!f) return null;
@@ -249,10 +249,7 @@ export class FlowLayer {
     let s = 0, w = 0;
     const acc = (j: number, i: number, wt: number) => {
       const p = points[j * nx + i];
-      if (p?.sea && p.sst != null) {
-        s += p.sst * wt;
-        w += wt;
-      }
+      if (p?.sea && p.sst != null) { s += p.sst * wt; w += wt; }
     };
     acc(y0, x0, (1 - tx) * (1 - ty));
     acc(y0, x0 + 1, tx * (1 - ty));
@@ -268,9 +265,6 @@ export class FlowLayer {
     ctx.clearRect(0, 0, this.sstCanvas.width, this.sstCanvas.height);
     if (!f || this.mode === "off") return;
 
-    // Paint at the FINE mask's resolution (so the shade ends at the actual
-    // coast), sampling temperature from the coarse grid, then let the
-    // browser smooth it up to full size — the classic cheap-gradient trick.
     const mw = f.mask_nx ?? f.nx;
     const mh = f.mask_ny ?? f.ny;
     const mini = document.createElement("canvas");
@@ -278,6 +272,7 @@ export class FlowLayer {
     mini.height = mh;
     const mctx = mini.getContext("2d");
     if (!mctx) return;
+
     const latSpan = f.lats[f.lats.length - 1] - f.lats[0];
     const lonSpan = f.lons[f.lons.length - 1] - f.lons[0];
     for (let j = 0; j < mh; j++) {
@@ -291,8 +286,9 @@ export class FlowLayer {
         mctx.fillRect(i, j, 1, 1);
       }
     }
-    const nw = this.map.latLngToContainerPoint([f.lats[f.lats.length - 1], f.lons[0]]);
-    const se = this.map.latLngToContainerPoint([f.lats[0], f.lons[f.lons.length - 1]]);
+
+    const nw = this.project(f.lats[f.lats.length - 1], f.lons[0]);
+    const se = this.project(f.lats[0], f.lons[f.lons.length - 1]);
     ctx.globalAlpha = 0.26;
     ctx.imageSmoothingEnabled = true;
     ctx.drawImage(mini, nw.x, nw.y, se.x - nw.x, se.y - nw.y);
@@ -318,7 +314,6 @@ export class FlowLayer {
     this.raf = requestAnimationFrame(tick);
   }
 
-  /** Reduced motion: the field as ~250 still streaks — informative, silent. */
   private drawStaticStreaks() {
     const ctx = this.flowCanvas.getContext("2d");
     if (!ctx) return;
@@ -335,7 +330,7 @@ export class FlowLayer {
       ctx.strokeStyle = rampColor(ramp, Math.hypot(first.u, first.v));
       ctx.globalAlpha = 0.55;
       ctx.beginPath();
-      const p0 = this.map.latLngToContainerPoint([lat, lon]);
+      const p0 = this.project(lat, lon);
       ctx.moveTo(p0.x, p0.y);
       for (let s = 0; s < 10; s++) {
         const vec = this.sample(lat, lon);
@@ -345,7 +340,7 @@ export class FlowLayer {
         if (this.seaAt(nlat, nlon) < 0.45) break;
         lat = nlat;
         lon = nlon;
-        const pt = this.map.latLngToContainerPoint([lat, lon]);
+        const pt = this.project(lat, lon);
         ctx.lineTo(pt.x, pt.y);
       }
       ctx.stroke();
@@ -357,14 +352,13 @@ export class FlowLayer {
     const ctx = this.flowCanvas.getContext("2d");
     if (!ctx || !this.field) return;
 
-    // fade existing trails
     ctx.globalCompositeOperation = "destination-in";
     ctx.fillStyle = "rgba(0,0,0,0.96)";
     ctx.fillRect(0, 0, this.flowCanvas.width, this.flowCanvas.height);
     ctx.globalCompositeOperation = "source-over";
 
     const wind = this.mode === "wind";
-    const scale = wind ? 0.00042 : 0.0028; // deg per (km/h · frame), tuned by eye
+    const scale = wind ? 0.00042 : 0.0028;
     const ramp = wind ? WIND_RAMP : CUR_RAMP;
     ctx.lineWidth = 1.15;
 
@@ -373,25 +367,16 @@ export class FlowLayer {
       p.age += 1;
       if (!vec || p.age > p.maxAge) {
         const np = this.randomSeaPoint();
-        if (np) {
-          p.lat = np.lat;
-          p.lon = np.lon;
-          p.age = 0;
-          p.maxAge = 60 + Math.random() * 60;
-        }
+        if (np) { p.lat = np.lat; p.lon = np.lon; p.age = 0; p.maxAge = 60 + Math.random() * 60; }
         continue;
       }
-      const from = this.map.latLngToContainerPoint([p.lat, p.lon]);
+      const from = this.project(p.lat, p.lon);
       const nlat = p.lat + vec.v * scale;
       const nlon = p.lon + (vec.u * scale) / Math.max(0.2, Math.cos((p.lat * Math.PI) / 180));
-      // The step is only drawn if it STAYS at sea — a trail never runs ashore.
-      if (this.seaAt(nlat, nlon) < 0.45) {
-        p.age = p.maxAge + 1;
-        continue;
-      }
+      if (this.seaAt(nlat, nlon) < 0.45) { p.age = p.maxAge + 1; continue; }
       p.lat = nlat;
       p.lon = nlon;
-      const to = this.map.latLngToContainerPoint([p.lat, p.lon]);
+      const to = this.project(p.lat, p.lon);
       ctx.strokeStyle = rampColor(ramp, Math.hypot(vec.u, vec.v));
       ctx.globalAlpha = 0.85;
       ctx.beginPath();
