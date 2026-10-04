@@ -4,6 +4,10 @@ const L: Localized<Record<string, string>> = {
   en: { wave: "Wave", wind: "Wind", sea: "Sea state", vis: "Visibility", sst: "Sea temp", rain: "Rain" },
   hi: { wave: "लहरें", wind: "हवा", sea: "समुद्र", vis: "दृश्यता", sst: "तापमान", rain: "वर्षा" },
   mr: { wave: "लाटा", wind: "वारा", sea: "समुद्र", vis: "दृश्यमानता", sst: "तापमान", rain: "पाऊस" },
+  ta: { wave: "அலை", wind: "காற்று", sea: "கடல் நிலை", vis: "பார்வைதிறன்", sst: "கடல் வெப்பம்", rain: "மழை" },
+  te: { wave: "అల", wind: "గాలి", sea: "సముద్ర స్థితి", vis: "దృశ్యత", sst: "సముద్ర ఉష్ణోగ్రత", rain: "వర్షం" },
+  bn: { wave: "ঢেউ", wind: "বাতাস", sea: "সমুদ্রের অবস্থা", vis: "দৃশ্যমানতা", sst: "সমুদ্রের তাপমাত্রা", rain: "বৃষ্টি" },
+  ml: { wave: "തിര", wind: "കാറ്റ്", sea: "കടൽ അവസ്ഥ", vis: "കാഴ്ച", sst: "കടൽ താപനില", rain: "മഴ" },
 };
 
 /** Reads the traced evidence rows rather than duplicating any parsing. */

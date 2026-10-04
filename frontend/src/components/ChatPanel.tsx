@@ -33,6 +33,30 @@ const T: Localized<Record<string, string>> = {
     emptyMain: "Suraksha, maseemari kshetra, marg kiva isharyanbadd vichara.",
     emptySub: "MARVO sandarbh lakshat thevate.",
   },
+  ta: {
+    title: "MARVO விடம் கேளுங்கள்",
+    you: "நீங்கள்",
+    emptyMain: "பாதுகாப்பு, மீன்பிடி மண்டலங்கள், பாதைகள் அல்லது எச்சரிக்கைகள் பற்றி கேளுங்கள்.",
+    emptySub: "MARVO சூழலை நினைவில் கொள்கிறது.",
+  },
+  te: {
+    title: "MARVO ని అడగండి",
+    you: "మీరు",
+    emptyMain: "భద్రత, మత్స్య ప్రాంతాలు, మార్గాలు లేదా హెచ్చరికల గురించి అడగండి.",
+    emptySub: "MARVO సందర్భాన్ని గుర్తుంచుకుంటుంది.",
+  },
+  bn: {
+    title: "MARVO কে জিজ্ঞেস করুন",
+    you: "আপনি",
+    emptyMain: "নিরাপত্তা, মৎস্য অঞ্চল, পথ বা সতর্কতা সম্পর্কে জিজ্ঞাসা করুন।",
+    emptySub: "MARVO প্রসঙ্গ মনে রাখে।",
+  },
+  ml: {
+    title: "MARVO യോട് ചോദിക്കുക",
+    you: "നിങ്ങൾ",
+    emptyMain: "സുരക്ഷ, മത്സ്യബന്ധന മേഖലകൾ, വഴികൾ അല്ലെങ്കിൽ മുന്നറിയിപ്പുകളെക്കുറിച്ച് ചോദിക്കുക.",
+    emptySub: "MARVO സന്ദർഭം ഓർക്കുന്നു.",
+  },
 };
 
 const AGENT_ICON: Record<string, string> = {
@@ -52,6 +76,10 @@ const SPEECH_LOCALE: Localized<string> = {
   en: "en-IN",
   hi: "hi-IN",
   mr: "mr-IN",
+  ta: "ta-IN",
+  te: "te-IN",
+  bn: "bn-IN",
+  ml: "ml-IN",
 };
 
 function getRecognition(): any | null {

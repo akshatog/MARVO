@@ -1,5 +1,6 @@
 import React from "react";
 import type { Language } from "../types";
+import { CONFLICT_LOG_UI } from "../i18n";
 
 export interface ConflictRecord {
   metric: string;
@@ -21,6 +22,8 @@ interface Props {
 }
 
 export default function ConflictLogPanel({ conflicts, language = "en" }: Props) {
+  const t = CONFLICT_LOG_UI[language] ?? CONFLICT_LOG_UI.en;
+
   // Filter to only valid conflict records (backend may emit internal __reconciled__ entries)
   const validConflicts = (conflicts ?? []).filter(
     (item) => item && typeof item.metric === "string" && item.metric.length > 0
@@ -30,29 +33,29 @@ export default function ConflictLogPanel({ conflicts, language = "en" }: Props) 
       <div className="border-b border-[#e5dfd0] pb-3 mb-4">
         <h3 className="font-serif text-lg font-bold tracking-wide flex items-center gap-2 text-[#12212d]">
           <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#c62828]"></span>
-          Observational Conflict Resolution Log
+          {t.heading}
         </h3>
         <p className="text-xs text-[#556975] mt-0.5">
-          Deterministic authority arbitration across disparate telemetry, buoys, satellite retrievals, and regulatory bulletins.
+          {t.description}
         </p>
         
         {/* Tier hierarchy badge row */}
         <div className="flex flex-wrap gap-2 mt-2.5 pt-2 border-t border-[#eee7d8] text-[10px] text-[#425460]">
-          <span className="font-semibold text-[#12212d]">Hierarchy:</span>
+          <span className="font-semibold text-[#12212d]">{t.hierarchyLabel}</span>
           <span className="bg-[#fdf2e9] text-[#9c4221] px-1.5 py-0.5 rounded border border-[#f5c6aa]">
-            1. Official Regulatory (IMD/INCOIS)
+            {t.tier1}
           </span>
           <span>&gt;</span>
           <span className="bg-[#edf7ed] text-[#1e4620] px-1.5 py-0.5 rounded border border-[#c8e6c9]">
-            2. In-Situ Buoy / StormGlass
+            {t.tier2}
           </span>
           <span>&gt;</span>
           <span className="bg-[#e8f4fd] text-[#0d3c61] px-1.5 py-0.5 rounded border border-[#b8dcf8]">
-            3. Numerical Forecast (Open-Meteo)
+            {t.tier3}
           </span>
           <span>&gt;</span>
           <span className="bg-[#f5f5f5] text-[#616161] px-1.5 py-0.5 rounded border border-[#e0e0e0]">
-            4. Crowd / Heuristic
+            {t.tier4}
           </span>
         </div>
       </div>
@@ -62,8 +65,8 @@ export default function ConflictLogPanel({ conflicts, language = "en" }: Props) 
           <svg className="w-5 h-5 text-[#2e7d32]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
           </svg>
-          <span className="font-semibold">Zero Discrepancies Detected</span>
-          <span className="text-[#556975] text-[11px]">All sensors, forecasts, and regulatory models are in complete mathematical consensus.</span>
+          <span className="font-semibold">{t.noConflicts}</span>
+          <span className="text-[#556975] text-[11px]">{t.noConflictsDetail}</span>
         </div>
       ) : (
         <div className="space-y-3">
@@ -75,14 +78,14 @@ export default function ConflictLogPanel({ conflicts, language = "en" }: Props) 
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#f0eae0] pb-2">
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-xs uppercase tracking-wider text-[#9c4221] bg-[#fdf2e9] px-2 py-0.5 rounded border border-[#f5c6aa]">
-                    Conflict #{idx + 1}
+                    {t.conflictBadge.replace("{n}", String(idx + 1))}
                   </span>
                   <span className="font-serif font-bold text-sm text-[#12212d] capitalize">
-                    {item.metric?.replace(/_/g, " ")} Disagreement
+                    {item.metric?.replace(/_/g, " ")} {t.disagreement}
                   </span>
                 </div>
                 <span className="text-[11px] font-mono text-[#556975]">
-                  Contenders: {(item.contending_sources ?? []).join(" vs ")}
+                  {t.contenders} {(item.contending_sources ?? []).join(" vs ")}
                 </span>
               </div>
 
@@ -119,9 +122,9 @@ export default function ConflictLogPanel({ conflicts, language = "en" }: Props) 
                           </span>
                           <div className="text-[10px]">
                             {isWinner ? (
-                              <span className="font-bold text-[#1b5e20]">SELECTED</span>
+                              <span className="font-bold text-[#1b5e20]">{t.selected}</span>
                             ) : (
-                              <span className="text-[#9e9e9e]">Overridden</span>
+                              <span className="text-[#9e9e9e]">{t.overridden}</span>
                             )}
                           </div>
                         </div>
@@ -133,7 +136,7 @@ export default function ConflictLogPanel({ conflicts, language = "en" }: Props) 
 
               {/* Rationale explanation */}
               <div className="bg-[#fcfaf4] border border-[#ece4d5] rounded p-2 text-xs text-[#3e515d]">
-                <span className="font-semibold text-[#12212d]">Resolution Mandate: </span>
+                <span className="font-semibold text-[#12212d]">{t.resolutionMandate} </span>
                 <span>{item.reason}</span>
               </div>
             </div>

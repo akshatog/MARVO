@@ -23,6 +23,17 @@ export const PORTS: { name: string; state: string; lat: number; lon: number }[] 
   { name: "Port Blair", state: "Andaman & Nicobar", lat: 11.6234, lon: 92.7265 },
 ];
 
+const PORT_NAMES: Localized<Record<string, string>> = {
+  en: {},
+  hi: { Mumbai: "मुंबई", Ratnagiri: "रत्नागिरी", "Panaji (Goa)": "पणजी (गोवा)", Veraval: "वेरावल", Kochi: "कोच्चि", Chennai: "चेन्नई", Visakhapatnam: "विशाखापत्तनम", Paradip: "पारादीप", Digha: "दीघा", "Port Blair": "पोर्ट ब्लेयर" },
+  mr: { Mumbai: "मुंबई", Ratnagiri: "रत्नागिरी", "Panaji (Goa)": "पणजी (गोवा)", Veraval: "वेरावळ", Kochi: "कोची", Chennai: "चेन्नई", Visakhapatnam: "विशाखापट्टणम", Paradip: "पारादीप", Digha: "दीघा", "Port Blair": "पोर्ट ब्लेअर" },
+  ta: { Mumbai: "மும்பை", Ratnagiri: "ரத்னகிரி", "Panaji (Goa)": "பனாஜி (கோவா)", Veraval: "வேராவல்", Kochi: "கொச்சி", Chennai: "சென்னை", Visakhapatnam: "விசாகப்பட்டினம்", Paradip: "பாராதிப்", Digha: "திகா", "Port Blair": "போர்ட் பிளேர்" },
+  te: { Mumbai: "ముంబై", Ratnagiri: "రత్నగిరి", "Panaji (Goa)": "పనాజీ (గోవా)", Veraval: "వేరావల్", Kochi: "కొచ్చి", Chennai: "చెన్నై", Visakhapatnam: "విశాఖపట్నం", Paradip: "పారాదీప్", Digha: "దిఘా", "Port Blair": "పోర్ట్ బ్లెయిర్" },
+  bn: { Mumbai: "মুম্বাই", Ratnagiri: "রত্নগিরি", "Panaji (Goa)": "পানাজি (গোয়া)", Veraval: "ভেরাভল", Kochi: "কোচি", Chennai: "চেন্নাই", Visakhapatnam: "বিশাখাপত্তনম", Paradip: "পারাদীপ", Digha: "দিঘা", "Port Blair": "পোর্ট ব্লেয়ার" },
+  ml: { Mumbai: "മുംബൈ", Ratnagiri: "രത്നഗിരി", "Panaji (Goa)": "പനാജി (ഗോവ)", Veraval: "വേരാവൽ", Kochi: "കൊച്ചി", Chennai: "ചെന്നൈ", Visakhapatnam: "വിശാഖപട്ടണം", Paradip: "പാരാദീപ്", Digha: "ദിഘ", "Port Blair": "പോർട്ട് ബ്ലെയർ" }
+};
+
+
 const T: Localized<Record<string, string>> = {
   en: {
     yourLocation: "Your location",
@@ -57,6 +68,10 @@ const T: Localized<Record<string, string>> = {
     gps: "जीपीएस",
     search: "बंदर शोधा",
   },
+  ta: { yourLocation: "உங்கள் இடம்", useGps: "என் இடத்தை பயன்படுத்து", locating: "தேடுகிறது…", denied: "இடம் மறுக்கப்பட்டது — துறைமுகத்தை தேர்வு செய்", unavailable: "இடம் இல்லை — துறைமுகத்தை தேர்வு செய்", pickPort: "துறைமுகத்தை தேர்வு செய்", tapMap: "வரைபடத்தில் தட்டவும்", gps: "GPS", search: "துறைமுகத்தை தேடு" },
+  te: { yourLocation: "మీ స్థానం", useGps: "నా స్థానాన్ని ఉపయోగించండి", locating: "వెతుకుతోంది…", denied: "స్థానం బ్లాక్ చేయబడింది — రేవును ఎంచుకోండి", unavailable: "స్థానం అందుబాటులో లేదు — రేవును ఎంచుకోండి", pickPort: "రేవును ఎంచుకోండి", tapMap: "మ్యాప్‌లో ఎక్కడైనా నొక్కవచ్చు", gps: "GPS", search: "రేవును శోధించండి" },
+  bn: { yourLocation: "আপনার অবস্থান", useGps: "আমার অবস্থান ব্যবহার করুন", locating: "খুঁজছে…", denied: "অবস্থান অবরুদ্ধ — বন্দর বেছে নিন", unavailable: "অবস্থান উপলব্ধ নেই — বন্দর বেছে নিন", pickPort: "বন্দর বেছে নিন", tapMap: "মানচিত্রে যেকোনো জায়গায় ট্যাপ করতে পারেন", gps: "GPS", search: "বন্দর খুঁজুন" },
+  ml: { yourLocation: "നിങ്ങളുടെ സ്ഥാനം", useGps: "എന്റെ സ്ഥാനം ഉപയോഗിക്കുക", locating: "തിരയുന്നു…", denied: "സ്ഥാനം തടഞ്ഞു — തുറമുഖം തിരഞ്ഞെടുക്കൂ", unavailable: "സ്ഥാനം ലഭ്യമല്ല — തുറമുഖം തിരഞ്ഞെടുക്കൂ", pickPort: "തുറമുഖം തിരഞ്ഞെടുക്കൂ", tapMap: "മാപ്പിൽ എവിടെ വേണമെങ്കിലും ടാപ്പുചെയ്യാം", gps: "GPS", search: "തുറമുഖം തിരയൂ" },
 };
 
 export default function LocationPicker({
@@ -129,7 +144,7 @@ export default function LocationPicker({
                 compact ? "min-w-[4.5rem] max-w-[11rem] truncate text-[15px]" : "truncate text-[18px]"
               }`}
             >
-              {current?.label ?? "—"}
+              {(current?.source === "port" ? PORT_NAMES[language]?.[current.label] : null) ?? current?.label ?? "—"}
             </span>
             {current?.source === "gps" && (
               <span className="shrink-0 border border-risk-low/70 px-1.5 py-px font-mono text-[8.5px] font-bold uppercase tracking-wider text-risk-low">
@@ -204,7 +219,7 @@ export default function LocationPicker({
                 className="flex w-full items-baseline gap-2 border-b px-4 py-2.5 text-left transition last:border-0 hover:bg-paper-150"
                 style={{ borderColor: "var(--rule-faint)" }}
               >
-                <span className="text-[13px] font-semibold text-ink-900">{p.name}</span>
+                <span className="text-[13px] font-semibold text-ink-900">{PORT_NAMES[language]?.[p.name] || p.name}</span>
                 <span className="text-[11px] text-ink-400">{p.state}</span>
                 <span className="ml-auto font-mono text-[9.5px] tabular-nums text-ink-300">
                   {p.lat.toFixed(2)}°N {p.lon.toFixed(2)}°E
