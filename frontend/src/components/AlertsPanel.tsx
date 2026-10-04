@@ -5,6 +5,8 @@
 import { useEffect, useState, useCallback } from "react";
 import * as api from "../api";
 import { CheckGlyph, WarnGlyph } from "./glyphs";
+import type { Language } from "../types";
+import { ALERTS_PANEL_UI, LOCALE_MAP } from "../i18n";
 
 interface AlertsPanelProps {
   lat: number;
@@ -12,6 +14,7 @@ interface AlertsPanelProps {
   /** Auto-refresh interval in ms. Default: 60000 (1 min). Pass 0 to disable. */
   refreshMs?: number;
   compact?: boolean;
+  language?: Language;
 }
 
 const SEV_COLOR: Record<string, string> = {
@@ -24,10 +27,19 @@ const SEV_COLOR: Record<string, string> = {
   LOW: "var(--risk-low)",
 };
 
-export default function AlertsPanel({ lat, lon, refreshMs = 60_000, compact = false }: AlertsPanelProps) {
+export default function AlertsPanel({
+  lat,
+  lon,
+  refreshMs = 60_000,
+  compact = false,
+  language = "en",
+}: AlertsPanelProps) {
   const [data, setData] = useState<api.LocationAlerts | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastFetch, setLastFetch] = useState(0);
+
+  const t = ALERTS_PANEL_UI[language] ?? ALERTS_PANEL_UI.en;
+  const locale = LOCALE_MAP[language] ?? "en-IN";
 
   const fetchAlerts = useCallback(async () => {
     try {
@@ -59,7 +71,7 @@ export default function AlertsPanel({ lat, lon, refreshMs = 60_000, compact = fa
   if (loading && !data) {
     return (
       <div className="panel flex items-center gap-3 px-4 py-3.5">
-        <span className="text-[12px] italic text-ink-400">Checking for marine warnings…</span>
+        <span className="text-[12px] italic text-ink-400">{t.checking}</span>
       </div>
     );
   }
@@ -72,10 +84,13 @@ export default function AlertsPanel({ lat, lon, refreshMs = 60_000, compact = fa
           <CheckGlyph size={15} />
         </span>
         <div className="min-w-0">
-          <div className="text-[13px] font-semibold text-risk-low">No active marine warnings</div>
+          <div className="text-[13px] font-semibold text-risk-low">{t.noWarnings}</div>
           {lastFetch > 0 && (
             <div className="font-mono text-[10px] text-ink-400">
-              Checked {new Date(lastFetch).toLocaleTimeString()}
+              {t.checkedAt.replace(
+                "{time}",
+                new Date(lastFetch).toLocaleTimeString(locale)
+              )}
             </div>
           )}
         </div>
@@ -88,10 +103,10 @@ export default function AlertsPanel({ lat, lon, refreshMs = 60_000, compact = fa
       <div className="hd border-risk-extreme/25">
         <span className="label flex items-center gap-2" style={{ color: "var(--risk-extreme)" }}>
           <WarnGlyph size={13} />
-          Marine Warnings
+          {t.marineWarnings}
         </span>
         <span className="font-mono text-[10px] text-ink-400">
-          {totalAlerts} active
+          {t.activeAlerts.replace("{n}", String(totalAlerts))}
         </span>
       </div>
 

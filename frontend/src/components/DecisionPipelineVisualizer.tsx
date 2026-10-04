@@ -1,34 +1,27 @@
 import React, { useState } from "react";
-import type { TraceEntry } from "../types";
+import type { Language, TraceEntry } from "../types";
+import { DECISION_PIPELINE_UI, NODE_DESCRIPTIONS_I18N, LOCALE_MAP } from "../i18n";
 
 interface Props {
   trace: TraceEntry[];
   requestId?: string;
   onRefresh?: () => void;
   isLoading?: boolean;
+  language?: Language;
 }
-
-const NODE_DESCRIPTIONS: Record<string, string> = {
-  intent: "Parses user query intent, geographic target, and trip constraints",
-  cyclone: "Queries GDACS & IMD cyclone bulletins, parses warnings & buffer zones",
-  weather: "Pulls Open-Meteo marine & atmospheric weather numerical forecast",
-  gis: "Checks spatial restricted navigation channels & border geofences",
-  ocean: "Ingests wave height, swell period, tidal phase, and sea state",
-  pfz: "Fetches INCOIS Preferred Fishing Zone coordinates & chlorophyll maps",
-  evidence_store: "Aggregates observations into universal typed Evidence contracts",
-  conflict_resolver: "Arbitrates discrepancies using 4-tier regulatory hierarchy",
-  constraint_engine: "Applies deterministic mathematical safety floors & Go/No-Go rules",
-  route: "Samples waypoints along candidate tracks for path-integrated risk",
-  explanation: "Synthesizes multilingual localized narrative with LLM guardrails",
-};
 
 export default function DecisionPipelineVisualizer({
   trace,
   requestId,
   onRefresh,
   isLoading = false,
+  language = "en",
 }: Props) {
   const [selectedNodeIndex, setSelectedNodeIndex] = useState<number | null>(null);
+
+  const t = DECISION_PIPELINE_UI[language] ?? DECISION_PIPELINE_UI.en;
+  const nodeDescs = NODE_DESCRIPTIONS_I18N[language] ?? NODE_DESCRIPTIONS_I18N.en;
+  const locale = LOCALE_MAP[language] ?? "en-IN";
 
   const totalLatency = trace.reduce((acc, t) => acc + (t.latency_ms || 0), 0);
   const successCount = trace.filter((t) => t.status === "ok").length;
@@ -39,10 +32,10 @@ export default function DecisionPipelineVisualizer({
         <div>
           <h3 className="font-serif text-lg font-bold tracking-wide flex items-center gap-2 text-[#12212d]">
             <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#2a7391]"></span>
-            LangGraph Decision Pipeline Visualizer
+            {t.heading}
           </h3>
           <p className="text-xs text-[#556975]">
-            Deterministic StateGraph execution trace with per-node latencies and state transition checkpoints.
+            {t.description}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -57,7 +50,7 @@ export default function DecisionPipelineVisualizer({
               disabled={isLoading}
               className="px-3 py-1 text-xs font-medium rounded border border-[#2a7391] text-[#2a7391] hover:bg-[#2a7391] hover:text-white transition-colors disabled:opacity-50"
             >
-              {isLoading ? "Tracing…" : "Reload Trace"}
+              {isLoading ? t.tracing : t.reloadTrace}
             </button>
           )}
         </div>
@@ -66,22 +59,22 @@ export default function DecisionPipelineVisualizer({
       {/* Pipeline Summary KPIs */}
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="bg-white border border-[#e2dacb] rounded p-2.5 text-center">
-          <div className="text-[10px] uppercase font-bold text-[#70808b] tracking-wider">Nodes Executed</div>
+          <div className="text-[10px] uppercase font-bold text-[#70808b] tracking-wider">{t.nodesExecuted}</div>
           <div className="text-xl font-bold font-serif text-[#12212d] mt-0.5">
-            {successCount} / {trace.length}
+            {successCount.toLocaleString(locale)} / {trace.length.toLocaleString(locale)}
           </div>
         </div>
         <div className="bg-white border border-[#e2dacb] rounded p-2.5 text-center">
-          <div className="text-[10px] uppercase font-bold text-[#70808b] tracking-wider">Total Pipeline Latency</div>
+          <div className="text-[10px] uppercase font-bold text-[#70808b] tracking-wider">{t.totalLatency}</div>
           <div className="text-xl font-bold font-mono text-[#2a7391] mt-0.5">
-            {totalLatency} ms
+            {totalLatency.toLocaleString(locale)} ms
           </div>
         </div>
         <div className="bg-white border border-[#e2dacb] rounded p-2.5 text-center">
-          <div className="text-[10px] uppercase font-bold text-[#70808b] tracking-wider">Pipeline Status</div>
+          <div className="text-[10px] uppercase font-bold text-[#70808b] tracking-wider">{t.pipelineStatus}</div>
           <div className="text-sm font-bold text-[#2e7d32] mt-1.5 flex items-center justify-center gap-1">
             <span className="w-2 h-2 rounded-full bg-[#2e7d32] animate-pulse"></span>
-            VERIFIED OK
+            {t.verifiedOk}
           </div>
         </div>
       </div>
@@ -89,14 +82,14 @@ export default function DecisionPipelineVisualizer({
       {/* DAG Stepper Flow */}
       {trace.length === 0 ? (
         <div className="text-center py-8 text-xs text-[#70808b] bg-white/60 border border-dashed border-[#d6cfbe] rounded">
-          No pipeline trace available for this execution.
+          {t.noTrace}
         </div>
       ) : (
         <div className="relative border-l-2 border-[#2a7391]/30 ml-4 pl-4 space-y-3.5 my-2">
           {trace.map((entry, idx) => {
             const name = entry.node_name || entry.agent || `node-${idx}`;
             const isSelected = selectedNodeIndex === idx;
-            const desc = NODE_DESCRIPTIONS[name.toLowerCase()] || "Pipeline State Processing Node";
+            const desc = nodeDescs[name.toLowerCase()] || t.fallbackNodeDesc;
 
             return (
               <div
@@ -157,13 +150,24 @@ export default function DecisionPipelineVisualizer({
                 {/* Expanded state details */}
                 {isSelected && (
                   <div className="mt-2.5 pt-2.5 border-t border-[#f0eae0] text-xs space-y-1">
-                    <div className="font-semibold text-[#12212d]">Node Telemetry Checkpoint:</div>
+                    <div className="font-semibold text-[#12212d]">{t.telemetryHeading}</div>
                     <div className="font-mono text-[11px] text-[#425460] bg-[#f7f5ed] p-2 rounded border border-[#e5dfd0]">
-                      <div>Node: {name}</div>
-                      <div>Status: {entry.status}</div>
-                      <div>Latency: {entry.latency_ms} ms</div>
-                      <div>Reducer: operator.add list aggregation</div>
-                      {entry.timestamp && <div>Checkpoint Time: {entry.timestamp}</div>}
+                      <div>{t.telemetryNode.replace("{name}", name)}</div>
+                      <div>{t.telemetryStatus.replace("{status}", entry.status)}</div>
+                      <div>{t.telemetryLatency.replace("{latency}", String(entry.latency_ms))}</div>
+                      <div>{t.telemetryReducer}</div>
+                      {entry.timestamp && (
+                        <div>
+                          {t.telemetryTime.replace(
+                            "{time}",
+                            new Date(entry.timestamp).toLocaleTimeString(locale, {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              second: "2-digit",
+                            })
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

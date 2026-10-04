@@ -1,5 +1,6 @@
 import React from "react";
 import type { AlertEvent, Language } from "../types";
+import { ALERT_BANNER_UI } from "../i18n";
 
 interface Props {
   alert: AlertEvent | null;
@@ -11,6 +12,7 @@ interface Props {
 export default function AlertBanner({ alert, onDismiss, onDivert, language = "en" }: Props) {
   if (!alert) return null;
 
+  const t = ALERT_BANNER_UI[language] ?? ALERT_BANNER_UI.en;
   const isUnsafe = alert.new_status === "UNSAFE" || alert.new_status === "EXTREME";
 
   return (
@@ -37,7 +39,7 @@ export default function AlertBanner({ alert, onDismiss, onDivert, language = "en
           <div className="space-y-0.5">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-serif font-black uppercase text-xs tracking-wider bg-black/30 px-2 py-0.5 rounded border border-white/20">
-                CRITICAL AT-SEA DETERIORATION
+                {t.criticalBadge}
               </span>
               <span className="text-xs font-mono font-bold">
                 Voyage {alert.voyage_id}: {alert.previous_status} → {alert.new_status}
@@ -54,7 +56,7 @@ export default function AlertBanner({ alert, onDismiss, onDivert, language = "en
           {alert.safe_port && (
             <div className="bg-black/40 px-3 py-1.5 rounded border border-white/20 text-xs flex items-center gap-2.5">
               <div className="text-right">
-                <div className="text-[10px] uppercase text-yellow-300 font-bold">Recommended Safe Port</div>
+                <div className="text-[10px] uppercase text-yellow-300 font-bold">{t.recommendedSafePort}</div>
                 <div className="font-serif font-bold text-white">
                   {alert.safe_port.name} ({alert.safe_port.distance_km.toFixed(1)} km)
                 </div>
@@ -64,7 +66,7 @@ export default function AlertBanner({ alert, onDismiss, onDivert, language = "en
                   onClick={() => onDivert(alert.safe_port)}
                   className="px-2.5 py-1 bg-yellow-400 hover:bg-yellow-300 text-black font-bold text-xs rounded transition-colors"
                 >
-                  Divert Course
+                  {t.divertCourse}
                 </button>
               )}
             </div>
@@ -74,7 +76,7 @@ export default function AlertBanner({ alert, onDismiss, onDivert, language = "en
             <button
               onClick={onDismiss}
               className="p-1 hover:bg-white/20 rounded text-white/80 hover:text-white transition-colors"
-              title="Acknowledge & Dismiss"
+              title={t.dismiss}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />

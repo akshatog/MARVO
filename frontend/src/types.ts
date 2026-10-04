@@ -1,7 +1,7 @@
 export type Language = "en" | "hi" | "mr" | "ta" | "te" | "bn" | "ml";
 export type SupportedLanguage = Language;
 /** Dictionaries must define en; other languages fall back to en when missing. */
-export type Localized<T> = { en: T } & Partial<Record<Language, T>>;  // all supported languages are now in Language
+export type Localized<T> = Record<Language, T>;  // all supported languages are now required
 
 export type DataMode = "LIVE" | "DEMO" | "CACHE";
 export type RiskCategory = "LOW" | "MODERATE" | "HIGH" | "EXTREME";

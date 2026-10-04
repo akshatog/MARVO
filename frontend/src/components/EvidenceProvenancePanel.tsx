@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import type { Evidence_v2, Language } from "../types";
+import { EVIDENCE_PANEL_UI, LOCALE_MAP } from "../i18n";
 
 interface Props {
   evidence: Evidence_v2[];
@@ -33,6 +34,9 @@ export default function EvidenceProvenancePanel({
   const [filterMode, setFilterMode] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+  const t = EVIDENCE_PANEL_UI[language] ?? EVIDENCE_PANEL_UI.en;
+  const locale = LOCALE_MAP[language] ?? "en-IN";
+
   const filtered = (evidence ?? []).filter((item) => {
     if (!item || !item.metric) return false; // guard against malformed entries
     if (filterAuthority !== "all" && item.authority_level !== filterAuthority) return false;
@@ -52,10 +56,10 @@ export default function EvidenceProvenancePanel({
         <div>
           <h3 className="font-serif text-lg font-bold tracking-wide flex items-center gap-2 text-[#12212d]">
             <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#2a7391]"></span>
-            Evidence Provenance & Audit Trail
+            {t.heading}
           </h3>
           <p className="text-xs text-[#556975]">
-            Multi-source observational evidence with authority ranking, calibration confidence, and freshness telemetry.
+            {t.description}
           </p>
         </div>
         {onRefresh && (
@@ -64,7 +68,7 @@ export default function EvidenceProvenancePanel({
             disabled={isLoading}
             className="px-3 py-1 text-xs font-medium rounded border border-[#2a7391] text-[#2a7391] hover:bg-[#2a7391] hover:text-white transition-colors disabled:opacity-50"
           >
-            {isLoading ? "Syncing…" : "Sync Evidence"}
+            {isLoading ? t.syncing : t.syncEvidence}
           </button>
         )}
       </div>
@@ -73,7 +77,7 @@ export default function EvidenceProvenancePanel({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
         <input
           type="text"
-          placeholder="Filter by metric or source…"
+          placeholder={t.filterPlaceholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="px-3 py-1.5 text-xs bg-white border border-[#d6cfbe] rounded focus:outline-none focus:border-[#2a7391]"
@@ -83,43 +87,43 @@ export default function EvidenceProvenancePanel({
           onChange={(e) => setFilterAuthority(e.target.value)}
           className="px-2 py-1.5 text-xs bg-white border border-[#d6cfbe] rounded focus:outline-none focus:border-[#2a7391]"
         >
-          <option value="all">All Authority Levels</option>
-          <option value="official_advisory">Official Advisory (Tier 1)</option>
-          <option value="official_forecast">Official Forecast (Tier 2)</option>
-          <option value="external_forecast">External Forecast (Tier 3)</option>
-          <option value="derived">Derived / Inferred</option>
-          <option value="heuristic">Heuristic Default</option>
+          <option value="all">{t.filterAllAuthority}</option>
+          <option value="official_advisory">{t.filterOfficialAdvisory}</option>
+          <option value="official_forecast">{t.filterOfficialForecast}</option>
+          <option value="external_forecast">{t.filterExternalForecast}</option>
+          <option value="derived">{t.filterDerived}</option>
+          <option value="heuristic">{t.filterHeuristic}</option>
         </select>
         <select
           value={filterMode}
           onChange={(e) => setFilterMode(e.target.value)}
           className="px-2 py-1.5 text-xs bg-white border border-[#d6cfbe] rounded focus:outline-none focus:border-[#2a7391]"
         >
-          <option value="all">All Freshness Modes</option>
-          <option value="LIVE">LIVE Only</option>
-          <option value="CACHED">CACHED Only</option>
-          <option value="STALE">STALE Only</option>
-          <option value="DEMO">DEMO Only</option>
+          <option value="all">{t.filterAllFreshness}</option>
+          <option value="LIVE">{t.filterLiveOnly}</option>
+          <option value="CACHED">{t.filterCachedOnly}</option>
+          <option value="STALE">{t.filterStaleOnly}</option>
+          <option value="DEMO">{t.filterDemoOnly}</option>
         </select>
       </div>
 
       {/* Evidence Table / Cards */}
       {filtered.length === 0 ? (
         <div className="text-center py-8 text-xs text-[#70808b] bg-white/60 border border-dashed border-[#d6cfbe] rounded">
-          No evidence records match the current filter criteria.
+          {t.noMatch}
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="border-b border-[#e5dfd0] bg-[#f2ecde] text-[#3e515d] uppercase tracking-wider font-semibold">
-                <th className="py-2 px-3">Metric</th>
-                <th className="py-2 px-3">Value</th>
-                <th className="py-2 px-3">Source & Authority</th>
-                <th className="py-2 px-3">Confidence</th>
-                <th className="py-2 px-3">Freshness</th>
-                <th className="py-2 px-3">Observed At</th>
-                <th className="py-2 px-3">Conflict State</th>
+                <th className="py-2 px-3">{t.colMetric}</th>
+                <th className="py-2 px-3">{t.colValue}</th>
+                <th className="py-2 px-3">{t.colSourceAuthority}</th>
+                <th className="py-2 px-3">{t.colConfidence}</th>
+                <th className="py-2 px-3">{t.colFreshness}</th>
+                <th className="py-2 px-3">{t.colObservedAt}</th>
+                <th className="py-2 px-3">{t.colConflictState}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#ece6d8]">
@@ -156,7 +160,7 @@ export default function EvidenceProvenancePanel({
                     <td className="py-2.5 px-3">
                       <div className="w-24">
                         <div className="flex justify-between text-[10px] text-[#556975] mb-0.5 font-mono">
-                          <span>{confPct}%</span>
+                          <span>{confPct.toLocaleString(locale)}%</span>
                         </div>
                         <div className="w-full h-1.5 bg-[#e0d9cb] rounded-full overflow-hidden">
                           <div
@@ -184,7 +188,7 @@ export default function EvidenceProvenancePanel({
                       </span>
                     </td>
                     <td className="py-2.5 px-3 text-[#556975] font-mono text-[11px]">
-                      {new Date(item.observed_at || item.retrieved_at).toLocaleTimeString([], {
+                      {new Date(item.observed_at || item.retrieved_at).toLocaleTimeString(locale, {
                         hour: "2-digit",
                         minute: "2-digit",
                         second: "2-digit",
@@ -200,10 +204,10 @@ export default function EvidenceProvenancePanel({
                           }`}
                           title={item.conflict_reason || ""}
                         >
-                          {item.conflict_status.toUpperCase()}
+                          {item.conflict_status === "selected" ? t.selected.toUpperCase() : t.overridden.toUpperCase()}
                         </span>
                       ) : (
-                        <span className="text-[#a0aab0] text-[10px]">Uncontested</span>
+                        <span className="text-[#a0aab0] text-[10px]">{t.uncontested}</span>
                       )}
                     </td>
                   </tr>
