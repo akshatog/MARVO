@@ -1,0 +1,29 @@
+# Dependencies and generated output are rebuilt inside the image.
+.git
+.github
+.agents
+.codex
+.worktrees
+.local-review
+**/node_modules
+**/venv
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/*.pyc
+frontend/dist
+data
+
+# Exclude local credentials; retain the blank configuration templates.
+**/.env
+**/.env.*
+!**/.env.example
+
+# Local development/editor artifacts.
+.vscode
+.idea
+**/*.log
+frontend/plan_*.png
+AGENT.md
+README.sih-draft.md
+ORCA_Complete_Content_Beautiful.html

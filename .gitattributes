@@ -1,0 +1,5 @@
+# Submission documents and images are binary artifacts.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary

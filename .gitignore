@@ -12,10 +12,8 @@ node_modules/
 *.log
 npm-debug.log*
 
-# Build output — the launcher rebuilds it, but we ship it so the
-# one-click .bat works on a machine with no npm install yet.
-!frontend/dist/
-frontend/dist/*.map
+# Generated frontend output is rebuilt locally, in CI and in Docker.
+frontend/dist/
 
 # OS / editor
 .DS_Store
@@ -27,6 +25,8 @@ Thumbs.db
 # Local secrets
 .env
 .env.local
+.env.*
+!.env.example
 
 # MARVO specifics — internal dev notes (kept locally, not for public repo)
 MARVO_TRUTH.md
@@ -49,6 +49,14 @@ postman/
 
 # Git worktrees (isolated feature branches)
 .worktrees/
+
+# Local review notes, intermediate screenshots and test/tool caches.
+.local-review/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+coverage/
+frontend/plan_*.png
 
 # Internal development docs — kept locally for reference, not for submission.
 # The public technical docs (00-05) are in docs/ but tracked separately.

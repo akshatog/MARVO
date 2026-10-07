@@ -1,0 +1,13 @@
+# Usage: docker compose -f docker-compose.yml -f docker-compose.demo.yml up --build marvo
+services:
+  marvo:
+    environment:
+      MARVO_DATA_MODE: DEMO
+      MARVO_USE_LLM: "0"
+      GROQ_API_KEY: ""
+      CEREBRAS_API_KEY: ""
+      GEMINI_API_KEY: ""
+      SARVAM_API_KEY: ""
+      MOSDAC_USER: ""
+      MOSDAC_PASS: ""
+      MARVO_MOSDAC_ENABLED: "0"

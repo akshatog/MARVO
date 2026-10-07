@@ -1,676 +1,463 @@
 <div align="center">
 
-![MARVO 2.0 — Marine Agentic Reasoning and Voyage Optimizer](docs/images/marvo_logo.jpg)
+<img src="docs/images/marvo_logo.jpg" alt="MARVO logo" width="120" />
 
-# MARVO 2.0
+# MARVO
+
 ### Marine Agentic Reasoning and Voyage Optimizer
 
-> *Ten specialized AI agents read the sea.*
-> *One safe, explainable decision — in the fisher's own language.*
+**From fragmented marine data to an explainable decision at sea.**
 
-<br/>
+[![SIH 2026](https://img.shields.io/badge/Smart_India_Hackathon-2026-0E7490)](https://www.sih.gov.in/sih2026PS)
+[![PS SIH26176](https://img.shields.io/badge/Problem_Statement-SIH26176-1E5F7A)](https://www.sih.gov.in/sih2026PS)
+[![Team MARINES](https://img.shields.io/badge/Team-MARINES_%23175766-1D7A50)](https://github.com/akshatog/MARVO)
 
-[![SIH 2026](https://img.shields.io/badge/Smart%20India%20Hackathon-2026-0E7490?style=for-the-badge&labelColor=0A1628)](https://sih.gov.in)
-[![PS SIH26176](https://img.shields.io/badge/PS-SIH26176%20%7C%20ISRO%20Space%20Technology-1E5F7A?style=for-the-badge&labelColor=0A1628)](https://sih.gov.in)
-[![Team Marines](https://img.shields.io/badge/Team%20MARINES-%23175766-0E7490?style=for-the-badge&labelColor=0A1628)](https://github.com/akshatog/MARVO)
-[![KIET](https://img.shields.io/badge/KIET-Ghaziabad-1D7A50?style=for-the-badge&labelColor=0A1628)](https://kiet.edu)
-
-<br/>
-
-[![Python 3.10](https://img.shields.io/badge/Python-3.10-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com)
-[![LangGraph](https://img.shields.io/badge/LangGraph-Multi--Agent-FF6B35?style=flat-square)](https://langchain-ai.github.io/langgraph)
-[![React 18](https://img.shields.io/badge/React_18-TypeScript-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
-[![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker&logoColor=white)](https://docker.com)
-[![CI](https://img.shields.io/github/actions/workflow/status/akshatog/MARVO/ci.yml?style=flat-square&label=CI&logo=github)](https://github.com/akshatog/MARVO/actions)
-
-<br/>
-
-**[🌐 Live Demo](https://marvo-marine.onrender.com)** &nbsp;·&nbsp; **[📹 Demo Video](#)** *(link coming soon)* &nbsp;·&nbsp; **[📖 API Docs](https://marvo-marine.onrender.com/docs)**
+**[Deployed prototype](https://marvo-47mz.onrender.com)** · **[Demo video](https://youtu.be/yg2hYYAysRA)** · **[API documentation](https://marvo-47mz.onrender.com/docs)**
 
 </div>
 
----
+> **Submission scope:** This README presents Team MARINES' proposed solution for SIH 2026. The [current prototype](#current-prototype) section separately identifies implemented, partially integrated, and planned capabilities. The deployed demonstration uses **DEMO** data.
 
-## 📋 Problem Statement
+## Contents
 
-**PS ID: SIH26176 &nbsp;·&nbsp; Theme: Space Technology &nbsp;·&nbsp; Category: Software &nbsp;·&nbsp; Organization: ISRO**
+- [Problem statement](#problem-statement)
+- [Proposed solution](#proposed-solution)
+- [Innovation and design principles](#innovation-and-design-principles)
+- [Proposed architecture](#proposed-architecture)
+- [Data sources and evidence](#data-sources-and-evidence)
+- [Stakeholders and expected impact](#stakeholders-and-expected-impact)
+- [Current prototype](#current-prototype)
+- [Local setup](#local-setup)
+- [Implementation roadmap and validation](#implementation-roadmap-and-validation)
+- [Repository guide](#repository-guide)
+- [Team and references](#team-and-references)
 
-> *"Develop an intelligent conversational platform with collaborative agents to synthesise fragmented satellite and ocean data into actionable, evidence-based recommendations for fishermen, researchers, coastal authorities, disaster management agencies, and maritime operators."*
+## Problem statement
 
-### The Problems — Documented & Quantified
-
-| Problem | Evidence |
+| Submission detail | Value |
 |---|---|
-| **535 fishermen arrested** for inadvertently crossing IMBL in 2024 | ISRO, ICG reports — cause: ocean current drift, not intent |
-| **INCOIS advisories reach 52% of fishers, only 35% use them** | INCOIS adoption study — advisories are chlorophyll maps in English |
-| **~400–500 fishers die annually** on Indian coasts | Ministry of Fisheries — most deaths preventable with better information |
-| **No unified decision layer** | ISRO, IMD, INCOIS data exists — but no system synthesises it into one answer |
-| **2.3× catch improvement** possible with PFZ guidance — currently inaccessible | ICAR Goa Validation Study |
-| **₹17,820 additional income** per PFZ-guided trip | INCOIS validation study |
-| **28–30 million livelihoods** dependent on Indian fisheries | PIB, Ministry of Fisheries |
+| Problem statement ID | **SIH26176** (PS 176) |
+| Official title | **ORCA Marine EcOsystem Reasoning with Collaborative Agents** |
+| Organization / department | Indian Space Research Organisation (ISRO) / Department of Space |
+| Theme / category | Space Technology / Software |
+| Team name / ID | **MARINES / 175766** |
+| Institution | KIET Deemed to be University, Ghaziabad |
+| Proposed solution name | **MARVO** |
 
-**Three core gaps MARVO addresses:**
+The [official problem statement](https://www.sih.gov.in/sih2026PS) calls for a conversational marine intelligence platform combining collaborative agents, satellite and ocean information, geospatial reasoning, and actionable recommendations for multiple marine stakeholders.
 
-1. **Fragmented Marine Intelligence** — ISRO, IMD, and INCOIS data existed but no system synthesised it into one decision
-2. **Last-Mile Advisory Gap** — Chlorophyll maps are hard to read on small screens at 4 AM in a regional language
-3. **No Unified Decision Layer** — No single system combines risk + fishing zones + routes + travel time into one clear answer
+A fisher planning a trip needs to understand weather, waves, potential fishing zones, restrictions, travel time, and return conditions together. A coastal authority needs the same information across a larger area, with its evidence intact.
 
----
+Our proposal addresses three connected gaps:
 
-## 💡 Proposed Solution — MARVO
+1. **Fragmented marine intelligence:** Forecasts, satellite products, fishing advisories, and geographic restrictions arrive through different sources and formats.
+2. **Last-mile advisory access:** Technical maps and bulletins need to become understandable guidance for a particular location, trip, and regional language.
+3. **A unified decision layer:** A recommendation must connect where to go, when to leave and return, relevant hazards, and applicable official restrictions.
 
-**MARVO — Agentic Marine Intelligence Platform**
+## Proposed solution
 
-MARVO synthesises fragmented marine data through **10 collaborative AI agents** to generate safe, explainable, and location-specific decisions — with evidence, safety overrides, and multilingual delivery.
+MARVO proposes a conversational platform in which **ten specialized agent roles** assemble marine evidence into a location- and time-specific recommendation. Users ask through text or voice; the system gathers relevant information, evaluates constraints, proposes a trip, and explains its basis.
 
-```
-                    USER INPUT
-          ┌─────────────────────────────┐
-          │  Location (GPS)             │
-          │  Time / Duration            │
-          │  Target Species             │
-          │  Risk tolerance / Budget    │
-          └──────────────┬──────────────┘
-                         │
-              ┌──────────▼──────────┐
-              │   MARVO CORE ENGINE  │
-              │  10 Collaborative   │
-              │    AI Agents        │
-              └──────────┬──────────┘
-                         │
-          ┌──────────────┼───────────────┐
-          ▼              ▼               ▼
-   Fisherman App    Web Platform    Alerts & Notifications
-   GPS-based recs   Analytics       Hazard alerts
-   GO/CAUTION/NO-GO Historical      Mass broadcast
-   Voice (EN/HI/MR) Research tools  Cyclone warnings
-   Offline-first    Policy insights  Multi-channel
+The platform answers: **Where should I go? When should I go? How should I get there and return? What fishing opportunity should I consider? Why is this recommendation appropriate?**
 
-                    DECISION OUTPUT
-          ┌─────────────────────────────────┐
-          │  Where to go  (safest/best zone)│
-          │  When to go   (optimal window)  │
-          │  How to go    (safest route)    │
-          │  What to catch (target species) │
-          │  Estimated cost & revenue       │
-          │  Risk level   (0–100 + factors) │
-          │  Why          (evidence trail)  │
-          │  Confidence score               │
-          └─────────────────────────────────┘
-```
+### A proposed user journey
 
-### 🏆 What Makes MARVO Different — Innovation & Uniqueness
+> **Example request:** "I am leaving from Ratnagiri tomorrow morning. Where can I fish for mackerel and return before the sea gets rough?"
 
-| Innovation | Description |
+1. **Understand.** Identify location, departure time, duration, target species, boat constraints, language, and preferences. Ask follow-up questions when essential details are missing.
+2. **Gather.** Retrieve forecasts, ocean conditions, fishing-zone information, advisories, and geographic constraints for the requested area and time window.
+3. **Evaluate.** Apply deterministic hazard checks and official advisory constraints before ranking fishing opportunities and candidate routes.
+4. **Explain.** Return a recommended zone, departure/return window, route, risk factors, indicative trip economics, and supporting evidence.
+5. **Monitor.** Reassess an active trip when evidence changes and, where tracking and communications are available, issue location-specific warnings or diversion guidance.
+
+### Proposed decision outputs
+
+| Output | What the user receives |
 |---|---|
-| **Proactive, Not Reactive** | Pre-departure Drift/SAR Envelope + IMBL Current Guard identify potential drift and boundary-crossing risks *before* an emergency occurs |
-| **Peer-Reviewed Fishing Intelligence** | Fishing zones computed using the Habitat Suitability Index methodology (Sarangi et al., CMFRI 2024) — the same method INCOIS uses, now voice-delivered in regional languages |
-| **AI Never Controls Safety Math** | No model output, user input, or override can bypass certified safety floors. When IMD says "do not venture," MARVO locks at UNSAFE. Always. |
-| **Evidence Transparency** | Every number carries its source, timestamp, and confidence tier — judges, fishers, and Coast Guard can trace any output |
-| **5-Stakeholder Platform** | One backend, five role-based interfaces — fishers, researchers, authorities, disaster management, maritime operators |
+| Trip assessment | GO / CAUTION / NO-GO guidance, or insufficient evidence when a reliable assessment cannot be made |
+| Fishing opportunity | Ranked zones and indicative species suitability, with the factors behind the ranking |
+| Time window | Departure, fishing, and return windows evaluated against forecast validity |
+| Fishing calendar | A proposed outlook of up to 10 days, bounded by the actual forecast horizon and data quality |
+| Route | Candidate outward/return paths, geographic constraints, and alternatives |
+| Trip economics | Indicative fuel, time, cost, and revenue estimates with visible assumptions |
+| Evidence and explanation | Source, observation/forecast time, freshness, confidence, advisory constraints, and decision rationale |
+| Alerts | Relevant changes in weather, cyclone conditions, restrictions, or projected drift |
 
----
+Fishing suitability and economic estimates require local calibration; they are not guaranteed catch probabilities or earnings.
 
-## 🗃️ Multi-Source Data Fusion
+The risk score summarizes hazards, evidence confidence describes input quality, and habitat suitability ranks fishing opportunities. These are separate measures and must be presented separately.
 
-MARVO ingests real-time + historical data from **9 sources** across 6 data categories:
+## Innovation and design principles
 
-| Category | Sources | Data Points |
-|---|---|---|
-| **Weather** | Open-Meteo Forecast | Wind, rainfall, temperature, cloud cover |
-| **Ocean Conditions** | Open-Meteo Marine | Waves, tides, currents, SST |
-| **PFZ & Fishing** | INCOIS ERDDAP | Fishing zones, chlorophyll, species distribution |
-| **Cyclones & Warnings** | GDACS (15 min), IMD CAP | Track & forecast, storm alerts, severity |
-| **Satellite Data** | ISRO MOSDAC, NOAA CoastWatch | SST imagery, ocean colour, anomaly detection |
-| **Geospatial** | OpenStreetMap, built-in gazetteer | Bathymetry, marine boundaries, coastal infrastructure |
-| **Historical** | OBIS / Map of Life | Past trends, seasonal patterns, species occurrence |
+| Proposed differentiator | Design approach |
+|---|---|
+| **A unified decision layer** | Combine fishing opportunities, timing, route feasibility, and marine risk in one contextual answer, retaining the original evidence. |
+| **Collaborative specialist reasoning** | Coordinate weather, ocean, PFZ, cyclone, and GIS roles through structured state. |
+| **Deterministic safety constraints** | Keep risk calculations, advisory precedence, geometry, and route costs in inspectable code. Language models support interpretation and explanation. |
+| **Pre-departure Drift / SAR Envelope** | Project possible drift positions from current, wind, elapsed time, and vessel assumptions to support preparedness and search-and-rescue planning. **Planned extension.** |
+| **IMBL Current Guard** | Estimate drift toward the International Maritime Boundary Line and issue early warnings using authoritative boundaries and current vectors. **Planned extension.** |
+| **Regional-language delivery** | Prioritize English, Hindi, and Marathi text and voice, with an extensible language layer and simple mobile interactions. |
+| **Evidence transparency** | Expose provenance, validity, conflicts, and LIVE / CACHED / STALE / DEMO / unavailable evidence. |
+| **Low-connectivity access** | Provide a PWA with saved trip information and dated cached evidence; expand offshore delivery through approved communications partnerships. |
 
-**3-Tier Fallback Cascade:** Official (INCOIS/IMD) → Open Equivalent (Open-Meteo/NOAA) → Cached → Demo Store.
-Synthetic data is **never** silently presented as live — every response carries a `mode: LIVE/DEMO` badge.
+The proposal uses a habitat-suitability approach to fishing-zone ranking: chlorophyll, sea-surface temperature, thermal fronts, sea state, and time of day contribute to an indicative suitability index. The prototype's coefficients are engineering heuristics; validation against catch records is part of the roadmap.
 
----
+### Safety contract of the proposed platform
 
-## 🤖 The 10-Agent Architecture
+- **Official restrictions take precedence.** A favorable fishing score cannot cancel a valid official no-go advisory or a prohibited area.
+- **Safety floors only raise risk.** The intended rule is `final_risk = max(model_risk, applicable_safety_floors)`, with every applied constraint recorded.
+- **Missing evidence is explicit.** Missing or expired essential inputs must produce an insufficient-evidence or degraded assessment.
+- **Authority and freshness remain visible.** Old or simulated values must not acquire LIVE labels because of the selected runtime mode.
+- **Uncertainty is preserved.** Drift envelopes, suitability scores, and trip estimates expose assumptions and limits.
+
+These are design requirements. End-to-end enforcement across the prototype's decision paths is an implementation and validation priority.
+
+## Proposed architecture
+
+### System architecture
 
 ```mermaid
 flowchart TB
-    subgraph input["USER INPUT"]
-        UI["Location · Time · Species · Preferences"]
-    end
-
-    subgraph data["DATA SOURCES — Real-time + Historical"]
-        OM["Open-Meteo\nMarine + Forecast"]
-        IN["INCOIS ERDDAP\nPFZ + Chlorophyll"]
-        GD["GDACS\nCyclone Feed"]
-        IM["IMD CAP\nBulletins"]
-        MS["ISRO MOSDAC\nSatellite SST"]
-        OB["OBIS\nSpecies DB"]
-    end
-
-    subgraph agents["10-AGENT LANGGRAPH PIPELINE"]
-        A1["① Intent Agent\nLanguage detection\nEntity extraction\nSession memory"]
-        A2["② Planner Agent\nTask dispatch\nParallel fan-out\nDependency ordering"]
-        A3["③ Weather Agent\nWind · Rain · Visibility\nLightning index (CAPE)"]
-        A4["④ Ocean Agent\nWaves · SST · Currents\nBeaufort sea state"]
-        A5["⑤ PFZ Agent\nFishing zones\nHSI probability\nSafety filter"]
-        A6["⑥ Cyclone Agent\nActive alerts\nOfficial warning flag\nSeverity cascade"]
-        A7["⑦ GIS Agent\nShore distance · IMBL\nZone intersection\nGeofence alerts"]
-        A8["⑧ Risk Agent\nWeighted hazard model\nSafety floors\nDeterministic override"]
-        A9["⑨ Route Agent\nA* optimizer\nZone-penalty grid\nAlternate paths"]
-        A10["⑩ Explanation Agent\nGroq LLM\nEN · HI · MR\nSarvam TTS"]
-    end
-
-    subgraph output["DECISION OUTPUT"]
-        V["Verdict 0–100\nGO / CAUTION / NO-GO"]
-        P["Trip Plan\nZone · Window · Route · Economics"]
-        S["Live SSE Stream\nAgent thoughts + latencies"]
-    end
-
-    input --> A1 --> A2
-    data --> A3 & A4 & A5 & A6
-    A2 --> A3 & A4 & A5 & A6 & A7
-    A3 & A4 & A5 & A6 & A7 --> A8 --> A9 --> A10
-    A10 --> V & P & S
+    U["Fishers, researchers, authorities,<br/>disaster agencies and maritime operators"]
+    UI["Web and mobile PWA<br/>Text, voice, GPS and trip preferences"]
+    API["FastAPI application layer<br/>Conversation, planning and monitoring"]
+    PIPE["Collaborative agent workflow<br/>Structured state and execution trace"]
+    DATA["Weather, marine, satellite, PFZ,<br/>advisory and geospatial sources"]
+    INGEST["Source adapters and scheduled ingestion<br/>Normalize units, time, location and provenance"]
+    CACHE["Evidence store and dated cache<br/>Authority, validity, quality and conflicts"]
+    RESULT["Decision and evidence<br/>Zones, time windows, routes and explanations"]
+    MON["Voyage monitoring and alert delivery<br/>Drift / SAR and IMBL guard extensions"]
+    U --> UI --> API --> PIPE --> RESULT --> UI
+    DATA --> INGEST --> CACHE --> PIPE
+    CACHE --> MON
+    API --> MON
+    MON --> UI
 ```
 
-### Agent Details
+Persistent evidence storage, complete offline trip packs, production notifications, and drift/IMBL services are part of the target architecture. The prototype currently uses in-memory stores for several services.
 
-| # | Agent | Output | Key Logic |
-|---|---|---|---|
-| ① | **Intent** | Structured query: location, time, activity, language | Regex + optional LLM, session memory — zero hallucination on safety fields |
-| ② | **Planner** | Execution DAG | LangGraph concurrent fan-out, dependency ordering |
-| ③ | **Weather** | Wind, rain, visibility, lightning potential | Open-Meteo Forecast · CAPE-derived lightning index |
-| ④ | **Ocean** | Waves, SST, currents, sea state, chlorophyll | Open-Meteo Marine · Beaufort scale |
-| ⑤ | **PFZ** | Ranked fishing zones with probability | INCOIS → NOAA → Demo cascade · Safety filter removes restricted zones |
-| ⑥ | **Cyclone** | Active alerts, official warning flag, severity | GDACS + IMD CAP priority cascade |
-| ⑦ | **GIS** | Shore distance, IMBL distance, zone proximity | Built-in gazetteer · pure-Python ray-casting point-in-polygon |
-| ⑧ | **Risk** | Score 0–100, category, factor breakdown | 3-layer: Normalise → Combine → Override (floors only raise, never lower) |
-| ⑨ | **Route** | Recommended route + 2 alternatives, travel time | A* with risk-weighted edges, zone-penalty 50×50 grid |
-| ⑩ | **Explanation** | Natural language in EN/HI/MR: WHAT/WHY/WHERE/WHEN/SOURCE | Template + Groq LLM rephrase + Sarvam TTS |
-
----
-
-## ⚠️ Risk Engine — The Safety Core
-
-Three layers, in strict order. **The system can ONLY raise risk scores, never lower them.**
-
-### Layer 1 — Normalise
-Piecewise-linear hazard curves → 0–1 factor per parameter. Calibrated for small motorised fishing craft (8–12m) per **IMO Intact Stability Code**:
-
-| Hazard | Safe | Warning | Danger | Basis |
-|---|---|---|---|---|
-| Wave height | 0m → 0.00 | 1.5m → 0.45 | 4.0m → 1.00 | IS Code: small craft danger at 4m |
-| Wind speed | 0 → 0.00 | 20km/h → 0.35 | 62km/h → 1.00 | Beaufort 8 gale = capsizing threshold |
-| Visibility | 15km → 0.05 | 3km → 0.60 | 0km → 1.00 | Navigation hazard, distress detection |
-| Offshore dist. | 0km → 0.05 | 25km → 0.38 | 100km → 0.90 | Rescue response time gradient |
-
-### Layer 2 — Combine
-Weighted sum → 0–100 composite score (weights from IMO IS Code capsizing factor hierarchy):
-
-| Factor | Weight | Basis |
-|---|---|---|
-| Wave height | 0.25 | Primary capsize driver (IMO IS Code) |
-| Official cyclone/advisory | 0.25 | Regulatory mandate — IMD warnings are law |
-| Wind speed | 0.20 | Secondary capsizing amplifier |
-| Rain/visibility | 0.10 | Navigation hazard |
-| Sea state/currents | 0.10 | Hull stress, drift risk |
-| GIS (distance, zones) | 0.10 | Rescue accessibility, legal compliance |
-
-### Layer 3 — Deterministic Safety Floors
-
-```yaml
-# Inspectable, auditable, tunable without code changes
-floors:
-  severe_warning_floor:     92   # Cyclone/tsunami → EXTREME regardless of model output
-  fishermen_warning_floor:  70   # IMD "do not venture" bulletin → minimum score
-  wave_danger_floor:        85   # ≥ 4m waves → UNSAFE (IMO IS Code threshold)
-  wind_danger_floor:        85   # ≥ 62 km/h gale → UNSAFE
-  restricted_zone_floor:    60   # Inside restricted area → CAUTION minimum
-  lightning_floor:          78   # Active lightning → HIGH minimum
-```
-
-**Score categories:** `0–35 SAFE` · `36–60 CAUTION` · `61–85 UNSAFE` · `86–100 EXTREME`
-
-### Safety Floor Flow
-
-```mermaid
-flowchart TD
-    A["Raw Risk Score from agents\n(weighted model output: 0–100)"] --> B{Safety Floor Check}
-    B --> C{"IMD 'Do Not Venture'\nadvisory active?"}
-    C -->|YES| D["Floor = 70 MINIMUM\nReason logged in Evidence Ledger"]
-    C -->|NO| E{"GDACS Cyclone /\nSevere Warning?"}
-    E -->|YES| F["Floor = 92 EXTREME"]
-    E -->|NO| G{"Wave height ≥ 4m?"}
-    G -->|YES| H["Floor = 85 UNSAFE\nIMO IS Code threshold"]
-    G -->|NO| I{"Wind ≥ 62 km/h\n(Beaufort 8)?"}
-    I -->|YES| J["Floor = 85 UNSAFE"]
-    I -->|NO| K["Raw score accepted\nno override needed"]
-    D & F & H & J --> L["Final = MAX(raw_score, floor)"]
-    K --> L
-    L -->|"0–35"| SAFE["🟢 SAFE — GO"]
-    L -->|"36–60"| CAU["🟡 CAUTION — Monitor"]
-    L -->|"61–85"| UNS["🔴 UNSAFE — No-Go"]
-    L -->|"86–100"| EXT["⛔ EXTREME — Emergency"]
-```
-
----
-
-## 🐟 Fishing Probability Model (HSI — Peer-Reviewed)
-
-Based on **Habitat Suitability Index** methodology (Sarangi et al., CMFRI 2024) — the same approach INCOIS uses for official PFZ generation, now voice-delivered.
-
-```
-HSI = (SI_chl^0.30 × SI_sst^0.25 × SI_front^0.20 × SI_sea^0.15 × SI_time^0.10)
-```
-
-| Factor | Weight | Scientific Basis |
-|---|---|---|
-| Chlorophyll-a | 0.30 | Sarangi et al. 2024: strongest catch correlation — food proxy |
-| SST band match | 0.25 | Thermal comfort — species-specific optimal range (27.96–29.47°C) |
-| SST front detection | 0.20 | Convergence zones — bait aggregation hotspots |
-| Sea state | 0.15 | Operational constraint — rough water scatters shoals |
-| Time of day | 0.10 | Crepuscular feeding peaks (5–7 AM, 5–7 PM) |
-
----
-
-## 🛡️ IMBL Current Guard
-
-**535–560 Indian fishermen arrested in 2024 for crossing the IMBL — cause: ocean current drift, not intent.**
-
-MARVO solves this geometrically:
-1. GIS agent computes current distance to IMBL boundary polygon
-2. Ocean agent provides current velocity + direction
-3. If projection shows crossing within 2 hours → voice alert in fisher's language:
-   *"Ocean current is carrying you toward international waters. Adjust course 15° North."*
-
-This is a real, documented problem with a purely deterministic solution — no LLM involved.
-
----
-
-## 👥 5-Stakeholder Platform
-
-**Same backend. Same 10-agent pipeline. Same evidence ledger. Five role-based interfaces.**
-
-| Stakeholder | Key Capabilities |
-|---|---|
-| **🎣 Fishermen** | GPS-based recommendations · Risk score GO/CAUTION/NO-GO · Best time + route · Species-specific fishing probability · Return-before risk guidance · IMBL drift alerts · Offline-first + multilingual voice |
-| **🚨 Safety & Disaster Management** | Real-time hazard + cyclone alerts · Vessels-at-risk counter in projected cyclone path · Pre-computed SAR drift envelopes · Location-based mass alerts · Restricted-zone monitoring |
-| **🔬 Researchers & Authorities** | Unified marine risk view · Evidence-backed marine intelligence · Historical trends + anomaly analysis · PFZ validation through catch reports · Vessel registry + geofence violation log · Custom data queries + visualisations |
-| **🏛️ Coastal Authorities** | Automated 5nm violation log for enforcement · Monsoon ban compliance tracking · District-level risk dashboard · Policy and research insights |
-| **🚢 Maritime Operators** | Port weather windows · Commercial routing (A* with cargo parameters) · Fleet tracking + ETA with weather delay · Multi-vessel management |
-
----
-
-## 🏗️ Technical Architecture
+### Collaborative decision workflow
 
 ```mermaid
 flowchart TB
-    subgraph L0["LAYER 0 — External Data Sources"]
-        OM["🌊 Open-Meteo Marine\nWaves · SST · Currents"]
-        OW["💨 Open-Meteo Forecast\nWind · Rain · CAPE"]
-        GD["🌀 GDACS\nCyclone · Disaster"]
-        IM["📡 IMD CAP RSS\nOfficial Advisories"]
-        IN["🛰️ INCOIS ERDDAP\nPFZ · Chlorophyll"]
-        NO["🛰️ NOAA CoastWatch\nVIIRS DINEOF fallback"]
-        MO["🛰️ ISRO MOSDAC\nSatellite SST"]
-        OB["🐟 OBIS\nSpecies Occurrence"]
-        SA["🎙️ Sarvam AI\nSTT · TTS · Translation"]
-    end
-
-    subgraph L1["LAYER 1 — Ingestion, Normalisation & Cache"]
-        FE["Background Fetchers\n(15min / 30min / 1h / 6h)"]
-        NM["Evidence Normaliser\n→ Unified Evidence Schema"]
-        CR["Conflict Resolver\nAuthority Hierarchy"]
-        CA["Series Cache\n72h hourly · ~1km key · 10min TTL"]
-        EL["📒 Evidence Ledger\nsource · ts · confidence · conflicts"]
-    end
-
-    subgraph L2["LAYER 2 — 10-Agent Pipeline (LangGraph)"]
-        A1["Intent Agent"] --> A2["Planner"]
-        A2 --> A3["Weather"] & A4["Ocean"] & A5["PFZ"] & A6["Cyclone"] & A7["GIS"]
-        A3 & A4 & A5 & A6 & A7 --> A8["Risk Engine\n+ Safety Floors"]
-        A8 --> A9["Route A*"]
-        A9 --> A10["Explanation\nGroq LLM"]
-    end
-
-    subgraph L3["LAYER 3 — Application Services"]
-        TD["Trip Decision\nGO/CAUTION/NO-GO"]
-        FC["Fishing Calendar\n10-day window"]
-        VM["Voyage Monitor\nPush alerts on worsening"]
-        IG["IMBL Guard\nDrift projection warning"]
-        SA2["SAR Envelope\nPre-departure drift calc"]
-        GF["Geofence Engine\nMPA · Naval · IMBL"]
-    end
-
-    subgraph L4["LAYER 4 — 5 Role-Based Interfaces"]
-        FI["Fisherman\nVoice + Map + PWA"]
-        DM["Disaster Mgmt\nVessels-at-Risk + SAR"]
-        AU["Authority\nRegistry + Violations"]
-        RS["Researcher\nEvidence API + Analytics"]
-        MO2["Maritime Operator\nFleet + Routing"]
-    end
-
-    L0 --> L1 --> L2 --> L3 --> L4
+    Q["Text or voice request + location + trip window"]
+    I["1. Intent<br/>Language and structured trip context"]
+    P["2. Planner<br/>Select tools and coordinate dependencies"]
+    W["3. Weather"]
+    O["4. Ocean"]
+    F["5. PFZ"]
+    C["6. Cyclone"]
+    G["7. GIS"]
+    E["Evidence store<br/>Provenance, units and validity"]
+    CR["Conflict resolution<br/>Authority and freshness checks"]
+    R["8. Risk / constraint engine<br/>Deterministic hazards and safety floors"]
+    RT["9. Route<br/>Deterministic search and trip feasibility"]
+    EX["10. Explanation<br/>Grounded regional-language response"]
+    OUT["Decision + map + evidence + confidence"]
+    Q --> I --> P
+    P --> W & O & F & C & G
+    W & O & F & C & G --> E
+    E --> CR --> R --> RT --> EX --> OUT
 ```
 
----
+Arrows describe workflow dependencies; agents read and contribute structured state. Evidence storage and conflict resolution are supporting services, not additional agent roles. The Planner is the orchestration role; a language model is optional for understanding and explaining the request.
 
-## 🛠️ Tech Stack
-
-| Layer | Technology | Notes |
-|---|---|---|
-| **Backend** | Python 3.10 · FastAPI · Pydantic v2 | Async, typed, 5 core dependencies |
-| **Agent Orchestration** | LangGraph | Fan-out graph, wait-for-all semantics, streaming |
-| **LLM** | Groq (Llama 3.3 70B) | <600ms inference, free tier |
-| **Voice** | Sarvam AI (Saaras STT + Bulbul TTS) | Hindi, Marathi, English |
-| **Marine Data** | Open-Meteo, INCOIS ERDDAP, NOAA CoastWatch | Government + open APIs |
-| **Satellite** | ISRO MOSDAC, GDACS | SST, ocean colour, cyclone events |
-| **Species Data** | OBIS / Map of Life | Species occurrence for HSI model |
-| **Frontend** | React 18 · TypeScript · Vite | SSE-native, fast HMR |
-| **Maps** | Leaflet.js | Nautical chart, wind/current particles |
-| **Real-Time** | Server-Sent Events (SSE) | Live agent trace streaming |
-| **GIS** | Pure-Python (ray-casting, A\*, haversine) | No external GIS library required |
-| **PWA** | Service Worker · IndexedDB · Background Sync | Offline-first, installable |
-| **Auth** | JWT + bcrypt | Role-based: fisher / researcher / authority / dm / operator |
-| **Persistence** | SQLite | Voyage state survives server restarts |
-| **Containerisation** | Docker + docker-compose | One-command setup |
-| **Deployment** | Render | Auto-deploys on `main` push |
-| **CI/CD** | GitHub Actions | pytest + npm build + /api/health on every push |
-
-**No paid API keys required for the demo. No external database. No proprietary dependencies.**
-
----
-
-## ✅ Feasibility & Viability
-
-### Technical Feasibility
-
-- Built on proven, widely available technologies (Python, FastAPI, React)
-- Uses open and government data sources (IMD, INCOIS, Open-Meteo, GDACS, MOSDAC)
-- 10-agent hybrid architecture — LLM for language, deterministic for safety
-- Runs on standard devices (mobile PWA + web) with offline support
-- Modular and extensible design for future expansion
-
-### Data & Operational Feasibility
-
-- Real-time + historical marine data from 9 verified sources
-- Multiple dataset integration: waves, SST, chlorophyll, currents, tides, alerts
-- Location-based analysis using GPS + coastal grids
-- 10-day forecast calendar with tiered background data refresh
-- Fallback mechanisms for data unavailability at every tier
-
-### Strategies for Challenges
-
-| Challenge | Strategy |
+| Agent role | Proposed responsibility |
 |---|---|
-| Inconsistent marine datasets | Multi-source cascade + confidence scoring + transparent labelling |
-| Connectivity at sea | PWA offline cache pre-loaded at port + VCSS satellite path |
-| IMD/INCOIS data access | Use publicly available APIs; VCSS partnership post-selection |
-| Forecast uncertainty | Deterministic safety floors override model uncertainty |
-| GIS boundary accuracy | OSM + built-in 1974 IMBL coordinates + configurable alert distances |
+| Intent | Extract location, time, activity, language, species, and trip constraints; retain conversation context. |
+| Planner | Select specialists/tools, coordinate parallel work, and assemble the decision workflow. |
+| Weather | Supply wind, rain, visibility, and atmospheric forecasts. |
+| Ocean | Supply waves, swell, currents, SST, and related ocean observations. |
+| PFZ | Rank fishing opportunities from official products and habitat-suitability evidence. |
+| Cyclone | Interpret warnings with issuing authority, severity, and validity. |
+| GIS | Evaluate coastline, ports, restricted areas, and approved maritime boundaries. |
+| Risk | Compute deterministic risk factors and enforce advisory constraints. |
+| Route | Search paths under risk, geographic, vessel, and return-time constraints. |
+| Explanation | Present the result, uncertainty, and evidence in the user's language. |
 
----
+### Technology choices
 
-## 🌍 Impact & Benefits
-
-```
-DATA → EVIDENCE → DECISION → SAFER OUTCOMES
-```
-
-### 🎣 For Fishermen
-- Helps make safer, more informed decisions — reducing loss of life
-- 2.3× higher catch per trip via PFZ guidance (ICAR validated)
-- ₹17,820 additional income per guided trip
-- Reduces fuel costs by 60–70% (less search time)
-- Supports offline and multilingual access — bridges digital divide
-
-### 🚨 For Coastal Communities & Disaster Management
-- Real-time cyclone and hazard alerts with mass broadcast capability
-- Vessels-at-risk counter overlaid on cyclone projected paths
-- Pre-departure SAR drift envelopes — Coast Guard knows where to search before incidents
-- Supports IMBL boundary monitoring to prevent illegal crossings
-
-### 🔬 For Authorities & Researchers
-- Unified marine evidence layer with traceable source + timestamp + confidence
-- Automated 5nm violation logging for enforcement records
-- PFZ Validation Module — compare catch reports vs MARVO predictions
-- Historical trends + anomaly detection for policy and research
-
-### 🌊 For the Blue Economy
-- Improved fishing efficiency + resource sustainability
-- Reduced operational costs across the fishing value chain
-- Modular platform scalable to other coastal regions
-- VCSS-ready — integrates with 49,000+ ISRO transponders already deployed
-
----
-
-## 🔭 Future Roadmap
-
-| Feature | Description |
+| Layer | Prototype foundation and proposed direction |
 |---|---|
-| **NavIC/VCSS Integration** | ISRO's VCSS transponders (49,000 deployed, ₹364 crore PMMSY project) for at-sea satellite communication; MARVO registers as VCSS application provider |
-| **Species-Specific HSI Models** | Separate models for pomfret (26–28°C), mackerel (22–27°C), tuna (28–30°C), hilsa (brackish) |
-| **LoRa Mesh Network** | ₹800/vessel peer-to-peer relay — boats within 10–15 km form ad-hoc mesh for connectivity without infrastructure |
-| **Marine Pollution Sentinel** | Detect oil spills, HABs, industrial thermal discharge from same satellite data via anomaly detection |
-| **Predictive SAR** | Pre-position Coast Guard assets using historical distress patterns before incidents occur |
-| **10-Day Fishing Calendar** | Same risk engine on full 10-day Open-Meteo forecast for weekly planning |
-| **Marine Ecological Health Index** | Monthly overfishing detection, coral bleaching risk, mangrove cover monitoring |
-| **Fish Market Intelligence** | Real-time FISHCOPFED prices + optimal landing port routing |
+| Interface | React 18, TypeScript, Vite, Tailwind CSS; desktop/mobile layouts |
+| Mapping | Mapbox GL in the current main map; Leaflet also present in the frontend stack |
+| Backend and contracts | Python, FastAPI, Pydantic v2, HTTPX |
+| Orchestration | LangGraph planning pipeline alongside existing chat/stream orchestrators |
+| Decision services | Deterministic hazard model, YAML safety/economics configuration, A* route search |
+| Language services | Templates; optional Groq, Cerebras, Gemini, and Sarvam integrations |
+| Data refresh and storage | APScheduler and memory/disk caches; persistent evidence/voyage storage planned |
+| Delivery | Docker, Render, GitHub Actions; PWA manifest and service worker |
 
----
+## Data sources and evidence
 
-## 📚 Research & References
+The proposal combines real-time and historical information where coverage, access, and licensing permit. Listing a source does not imply a formal partnership or complete nationwide integration.
 
-| Research Area | Paper | Relevance to MARVO |
+| Source family | Intended contribution | Prototype position |
 |---|---|---|
-| **PFZ Methodology** | Sarangi et al. (2024), CMFRI — *Environmental Monitoring and Assessment* | HSI weight hierarchy: Chl-a (0.30) as strongest predictor |
-| **HSI Formula** | Zainuddin et al., *Frontiers in Marine Science* | Standard geometric mean formula MARVO implements |
-| **SST Ranges** | Northern Indian Ocean fishing study (2024), PMC/NIH | Optimal SST: 27.96–29.47°C for Indian fishing operations |
-| **Marine Risk** | IMO Intact Stability Code (IS Code) | Wave height as primary capsize driver, safety floor thresholds |
-| **IMO Guidance** | MSC.1/Circ.1228 — avoiding dangerous weather | 4m wave + gale force wind danger thresholds |
-| **ML Weather Prediction** | ML models for wave height, wind speed, cyclone prediction | Framework for coastal hazard alerts and risk communication |
-| **PFZ Impact** | ICAR Goa Validation Study | 2.3× CPUE improvement, ₹17,820 additional income |
-| **VCSS Deployment** | PIB (2024), PMMSY | 49,000+ transponders deployed, ₹364 crore project |
-| **LoRa Maritime** | MDPI Sensors (2024) | Validates LoRa 10–15 km range for fishing fleet mesh |
-| **Multi-Agent XAI** | MDPI (2025), *Journal of Marine Science and Engineering* | Deterministic core + XAI explanation layer — MARVO's architecture |
-| **PFZ Adoption** | INCOIS Adoption Study | 52% receive advisories, 35% use — MARVO's adoption gap solution |
-| **Ocean Data Integration** | Multi-source data fusion for marine decision systems | Basis for MARVO's evidence normalisation and conflict resolution |
+| [Open-Meteo Forecast](https://open-meteo.com/en/docs) and [Marine](https://open-meteo.com/en/docs/marine-weather-api) | Weather, waves, SST, available current forecasts | Adapters and time-series cache implemented; live availability depends on service coverage. |
+| [INCOIS](https://incois.gov.in/MarineFisheries/MarineFisheryAdvisory) | Official PFZ and ocean advisories | Bulletin/ERDDAP adapters present; product access and end-to-end coverage need validation. |
+| [IMD](https://mausam.imd.gov.in/) and [GDACS](https://www.gdacs.org/) | Official warnings and cyclone/disaster context | Scraper/feed integrations present; advisory propagation and validity need hardening. |
+| [ISRO MOSDAC](https://www.mosdac.gov.in/) | Available satellite chlorophyll/SST products | Download/parsing adapters present; product access is credential- and availability-dependent. |
+| [NOAA CoastWatch](https://coastwatch.noaa.gov/) | Additional satellite/ocean observations | Fallback adapter paths present; coverage and provenance need validation. |
+| [OBIS](https://obis.org/) / [Map of Life](https://mol.org/) | Historical species-occurrence context | Regional snapshot/heuristic context; not a live fish-location feed. |
+| [OpenStreetMap](https://www.openstreetmap.org/copyright) and approved GIS datasets | Basemap, ports, coastline, geographic constraints | Port/restricted-zone fixtures and geometry present; authoritative IMBL and operational restrictions remain planned. |
 
----
+**Proposed evidence policy:** prefer the relevant authoritative source, retain acceptable dated real observations when permitted, and disclose conflicts or gaps. DEMO fixtures remain separate from operational evidence. A cached reading is not automatically current enough for a trip; an overall LIVE setting does not establish that every source is live.
 
-## 🚀 Quick Start
+## Stakeholders and expected impact
 
-### Option A — Docker (recommended — works on any OS, no setup required)
+| Stakeholder | Proposed value |
+|---|---|
+| Fishers | Understandable trip assessments, regional voice, candidate zones, cost assumptions, and return guidance. |
+| Disaster management agencies | Cyclone exposure views, vessels-at-risk analysis, drift/SAR envelopes, and alert coordination. |
+| Coastal authorities | Shared risk/evidence views, approved geofence monitoring, advisory dissemination, and auditable decisions. |
+| Researchers | Source-traceable queries, historical analysis, conflict inspection, and PFZ validation using catch reports. |
+| Maritime operators | Weather-window assessment, route alternatives, and future fleet/voyage monitoring. |
+
+The intended outcomes are better-informed trip choices, fewer avoidable departures into adverse conditions, less unnecessary travel, and faster interpretation of marine evidence. Quantitative impact will be established through pilots; this submission does not claim measured accident reductions, fuel savings, or catch increases.
+
+### Feasibility and deployment strategy
+
+The existing stack provides a working foundation on standard phones and laptops. Public forecast interfaces support initial integration; government products, authoritative boundaries, and offshore communications require appropriate access and validation.
+
+| Challenge | Proposed response |
+|---|---|
+| Incomplete or delayed feeds | Freshness checks, bounded retries, dated real caches, explicit insufficient-evidence handling. |
+| Poor connectivity | Expiry-labeled trip packs, lightweight mobile interactions, later approved satellite/VCSS delivery integrations. |
+| Conflicting sources | Authority- and validity-aware resolution with disagreements preserved in evidence. |
+| Uncertain fish suitability and drift | Calibration by species, season, region, and vessel against independent observations. |
+| Operational scale and access control | Persistent storage, role-based access, rate limits, observability, institution-supported pilots. |
+
+## Current prototype
+
+**Status: submission prototype; checked on 7 October 2026.** The [deployed health endpoint](https://marvo-47mz.onrender.com/api/health) reported `status: ok` and `data_mode: DEMO` during review. The public demo requires no user-provided API keys.
+
+![Deployed MARVO prototype showing the Mumbai map, risk assessment, and simulated warning in DEMO mode](docs/images/prototype-demo.png)
+
+*Actual deployed interface captured in DEMO mode. Measurements and the displayed warning are demonstration data, not an official current advisory.*
+
+| Capability | Current implementation |
+|---|---|
+| Web and mobile experience | Desktop dashboard, phone-oriented interface, location/harbour selection, maps, and guided tour implemented. |
+| Conversational workflow | Chat and SSE progress implemented; planning and trace/state APIs implemented through LangGraph. |
+| Risk and route foundation | Configurable deterministic risk/floor logic and A* search implemented; cross-path advisory handling, route constraints, and forecast-time correctness require further validation. |
+| Fishing and trip views | Candidate zones, suitability factors, time windows, and indicative economics implemented as prototype heuristics. |
+| Evidence and diagnostics | Evidence, conflict, and trace schemas/APIs and UI panels implemented; consistent per-source provenance and integration remain validation priorities. |
+| External data | Weather/marine and additional advisory/satellite adapters implemented; DEMO fixtures support demonstrations. |
+| Regional language and voice | English, Hindi, and Marathi UI/text pathways present; Sarvam STT/TTS requires a key. Complete language/device coverage is not yet validated. |
+| Voyage and alerts | In-memory voyage lifecycle and alert endpoints implemented; durable fleet tracking and production broadcast delivery planned. |
+| PWA and offline access | Manifest, service worker, and initial caching implemented; complete offline maps, trip packs, and expiry-aware decisions planned. |
+| Drift / SAR and IMBL guard | Proposed; not implemented as validated operational services. |
+| Stakeholder platform | Fisher and authority-facing views exist; distinct researcher, disaster-management, and maritime workflows remain planned. |
+
+### Current runtime architecture
+
+```mermaid
+flowchart TB
+    UI["React desktop / mobile interface"]
+    API["FastAPI backend"]
+    CHAT["Chat and SSE endpoints<br/>Existing planner / stream orchestration"]
+    PLAN["Plan endpoint<br/>LangGraph orchestration"]
+    S1["Intent and specialist agents"]
+    S2["Intent and specialist graph nodes"]
+    R1["Risk, route and explanation agents"]
+    E2["Evidence store and conflict resolver"]
+    R2["Constraint engine, route and explanation nodes"]
+    JSON["Typed API responses / streamed events"]
+    SOURCES["Source adapters, DEMO fixtures,<br/>scheduler and caches"]
+    UI --> API
+    API --> CHAT --> S1 --> R1 --> JSON
+    API --> PLAN --> S2 --> E2 --> R2 --> JSON
+    SOURCES -.-> S1
+    SOURCES -.-> S2
+    JSON --> UI
+```
+
+The two paths coexist. The current LangGraph has **11 nodes**: intent, five specialists, evidence store, conflict resolver, constraint engine, route, and explanation. Its planner role is graph orchestration rather than a separate planner node. The proposed ten-role architecture and current node count describe different levels of the system.
+
+### Try the demonstration
+
+1. Open the [deployed prototype](https://marvo-47mz.onrender.com) and select **Open the MARVO App** or the guided tour.
+2. Keep **DEMO** selected and choose Mumbai, Ratnagiri, or Paradip.
+3. Inspect conditions, risk factors, fishing grounds, and restricted-area overlays.
+4. Open **Ask MARVO**, ask a location-specific trip question, and inspect agent progress and the explanation.
+5. Explore **Authority** and **Ops & Provenance**, or watch the [submission video](https://youtu.be/yg2hYYAysRA).
+
+MARVO is an evaluation prototype, not a certified navigation or emergency-response service. Follow official INCOIS, IMD, and Coast Guard instructions for real operations.
+
+## Local setup
+
+### Prerequisites
+
+- **Python 3.10+**; CI and Docker use Python 3.10.
+- **Node.js 20+** and npm.
+- **Git**; Docker with Compose is optional.
+- Internet for dependencies and map tiles. DEMO mode needs no backend provider keys. The current basemap needs a Mapbox public access token.
+
+### Windows PowerShell
+
+Run these commands on a fresh clone. Use the virtual environment directly; no activation-policy changes are needed.
+
+```powershell
+git clone https://github.com/akshatog/MARVO.git
+Set-Location MARVO
+python -m venv backend/.venv
+./backend/.venv/Scripts/python.exe -m pip install --upgrade pip
+./backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.txt
+Copy-Item backend/.env.example backend/.env
+Copy-Item frontend/.env.example frontend/.env.local
+```
+
+Set `VITE_MAPBOX_TOKEN` in `frontend/.env.local` to a Mapbox **public** token (`pk...`). Keep server-side API keys in `backend/.env`; Vite variables are included in the browser bundle.
+
+```powershell
+Set-Location frontend
+npm ci
+npm run build
+Set-Location ../backend
+$env:MARVO_DATA_MODE = "DEMO"
+$env:MARVO_USE_LLM = "0"
+./.venv/Scripts/python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+Open **[http://localhost:8000](http://localhost:8000)**. FastAPI serves the built frontend and API together. API reference: **[http://localhost:8000/docs](http://localhost:8000/docs)**. Health check: **[http://localhost:8000/api/health](http://localhost:8000/api/health)** should show `status: ok` and `data_mode: DEMO`.
+
+### macOS / Linux
 
 ```bash
 git clone https://github.com/akshatog/MARVO.git
 cd MARVO
-docker compose up --build
-```
-
-Open **http://localhost:8000** — done. ✅
-
-> With LLM + voice features enabled:
-> ```bash
-> GROQ_API_KEY=gsk_... SARVAM_API_KEY=... docker compose up --build
-> ```
-
-### Option B — Local (Python 3.10 + Node 18+)
-
-```bash
-# Install backend dependencies
-cd backend
-pip install -r requirements.txt
-
-# Build frontend
-cd ../frontend
-npm install
-npm run build
-
-# Start server
-cd ../backend
-MARVO_DATA_MODE=DEMO uvicorn app.main:app --port 8000
-```
-
-Open **http://localhost:8000**.
-
-### Option C — Dev Mode (hot reload + Vite HMR)
-
-```bash
-# Terminal 1 — backend with auto-reload
-cd backend
-MARVO_DATA_MODE=DEMO uvicorn app.main:app --reload --port 8000
-
-# Terminal 2 — Vite dev server (proxies /api → :8000)
+python3 -m venv backend/.venv
+backend/.venv/bin/python -m pip install --upgrade pip
+backend/.venv/bin/python -m pip install -r backend/requirements.txt
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env.local
+# Set VITE_MAPBOX_TOKEN in frontend/.env.local before building.
 cd frontend
-npm run dev
+npm ci
+npm run build
+cd ../backend
+MARVO_DATA_MODE=DEMO MARVO_USE_LLM=0 .venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Open **http://localhost:5173**.
+### Development with hot reload
 
-### Makefile Commands
+After installation, run the backend command above with `--reload` in one terminal. In a second terminal, run `npm run dev` from `frontend/` and open **[http://localhost:5173](http://localhost:5173)**. Vite proxies API requests to port 8000.
+
+### Docker demonstration
+
+From the repository root, set the public map token and use the explicit DEMO override:
+
+```powershell
+$env:VITE_MAPBOX_TOKEN = "YOUR_MAPBOX_PUBLIC_TOKEN"
+docker compose -f docker-compose.yml -f docker-compose.demo.yml up --build marvo
+```
+
+On macOS/Linux, replace the first line with `export VITE_MAPBOX_TOKEN="YOUR_MAPBOX_PUBLIC_TOKEN"`. Open port 8000; stop with `docker compose -f docker-compose.yml -f docker-compose.demo.yml down`.
+
+### Optional live data and language services
+
+| Configuration | Purpose |
+|---|---|
+| `MARVO_DATA_MODE=DEMO` / `LIVE` | Select fixtures or attempt live adapters; availability depends on source coverage/access. |
+| `MARVO_USE_LLM=0` / `1` | Controls the legacy optional LLM layer. To avoid provider calls across all paths, also leave all LLM keys empty. |
+| `GROQ_API_KEY`, `CEREBRAS_API_KEY`, `GEMINI_API_KEY` | Optional language-model providers; templates are available without credentials. |
+| `SARVAM_API_KEY` | Optional speech transcription, synthesis, and translation. |
+| `MOSDAC_USER`, `MOSDAC_PASS`, `MARVO_MOSDAC_ENABLED` | Optional MOSDAC credentials/activation; some scheduled requests also depend on credential presence. |
+| `VITE_MAPBOX_TOKEN` | Public frontend map token; configure before building. |
+
+Start with the blank-key templates. Add credentials only for the integration being evaluated. Restart the backend after changing its environment; rebuild the frontend after changing a `VITE_` variable. LIVE mode does not certify every result as current operational evidence. Background refresh jobs can still attempt network access in DEMO mode.
+
+### Troubleshooting
+
+| Symptom | Check |
+|---|---|
+| Port 8000 shows API information instead of the app | Build the frontend, then restart FastAPI. |
+| Blank map or token errors | Set a valid public Mapbox token, check URL restrictions, and rebuild/restart Vite. |
+| Vite API/network errors | Keep the backend running on port 8000. |
+| An older interface persists | Clear the site's service worker/cache, then reload the app. |
+| Voice or AI provider features unavailable | Check optional server-side keys; ordinary DEMO assessments do not require them. |
+
+## Implementation roadmap and validation
+
+| Milestone | Work to complete | Evidence of completion |
+|---|---|---|
+| **1. Decision correctness** | Preserve official warnings across chat, plan, and alerts; enforce evidence sufficiency; normalize units; honor trip times; correct fallback provenance. | Contract/failure tests show consistent verdicts, no synthetic LIVE values, and no GO from missing critical evidence. |
+| **2. Operational trip planning** | Validate outward/return routes against land, approved restrictions, currents, vessel limits, and changing forecasts. | Independently checked coastal scenarios and explicit no-route handling. |
+| **3. Scientific calibration** | Evaluate suitability, species relevance, and economics against regional observations and catch/trip records. | Dataset provenance, reproducible baselines, calibration results, and uncertainty reporting. |
+| **4. Proactive safety** | Implement drift/SAR envelopes and IMBL guard using authoritative geometry and validated assumptions. | Boundary, drift, and alert-delivery scenarios reviewed with domain stakeholders. |
+| **5. Durable access** | Add persistent stores, access controls, alert delivery, complete offline trip packs, and broader language testing. | Multi-user, restart-recovery, offline-expiry, mobile, and voice evaluation. |
+| **6. Coastal pilot** | Pilot with fishers/authorities; expand stakeholder views and approved offshore delivery channels. | Usability feedback, operational review, and measured outcomes against a baseline. |
+
+The main branch includes backend tests, a frontend production build, and a CI health smoke check. TypeScript can also be checked locally. These support implementation quality; they do not establish real-world marine safety or catch effectiveness.
+
+For a fresh, blank-key setup, run backend checks from `backend/`:
+
+```powershell
+./.venv/Scripts/python.exe -m pip install pytest
+$env:MARVO_DATA_MODE = "DEMO"
+$env:MARVO_USE_LLM = "0"
+./.venv/Scripts/python.exe -m pytest tests/ -q
+```
+
+On macOS/Linux use `.venv/bin/python` and the environment syntax shown earlier. Run frontend checks from `frontend/`:
 
 ```bash
-make help       # Show all available commands
-make docker     # Build + run the full app in Docker
-make run        # Local backend in DEMO mode (:8000)
-make run-live   # Local backend in LIVE data mode
-make dev        # Hot-reload backend + Vite HMR dev server
-make test       # Run the full backend test suite (119 tests)
-make build      # Build the frontend production bundle
+npx tsc --noEmit
+npm run build
 ```
 
-### Environment Variables
+## Repository guide
 
-| Variable | Default | Description |
-|---|---|---|
-| `MARVO_DATA_MODE` | `DEMO` | `DEMO` (rehearsed scenarios) or `LIVE` (real APIs) |
-| `MARVO_USE_LLM` | `0` | `1` to enable Groq LLM explanation layer |
-| `GROQ_API_KEY` | — | From [console.groq.com](https://console.groq.com) — free tier |
-| `SARVAM_API_KEY` | — | From [sarvam.ai](https://sarvam.ai) — free tier |
-
----
-
-## 🎬 Demo Deep Links
-
-| URL | Scenario | What it shows |
-|---|---|---|
-| `/?tour=1` | Guided tour | Full feature walkthrough for judges |
-| `/?demo=safe` | Goa | LOW risk 22/100, calm conditions, mackerel PFZ |
-| `/?demo=danger` | Mumbai | HIGH risk, Marathi voice response, restricted zone |
-| `/?demo=cyclone` | Paradip | EXTREME 92/100, cyclone override, SAR envelope |
-| `/?demo=pfz` | Kochi | PFZ zones on map, Hindi TTS, INCOIS data |
-| `/?demo=route` | Mumbai | A\* route planning + exclusion zone geofence |
-| `/?tab=system` | System view | Live agent pipeline trace (for technical judges) |
-| `/?m=1` | Mobile PWA | Fisherman mobile layout, voice-first |
-
----
-
-## 🌐 Deployment
-
-| | |
-|---|---|
-| **Web App (PWA)** | https://marvo-marine.onrender.com |
-| **API Documentation** | https://marvo-marine.onrender.com/docs |
-| **Health Check** | https://marvo-marine.onrender.com/api/health |
-| **Platform** | Render · Docker container · auto-deploys on `main` push |
-
-> **Note:** The live deployment runs in DEMO mode (no API keys needed). For voice + LLM features, run locally with keys per setup instructions above.
-
----
-
-## 📁 Repository Structure
-
-```
+```text
 MARVO/
-├── .github/workflows/ci.yml     # CI: pytest + npm build + /api/health check
-├── Dockerfile                    # Multi-stage: Node frontend build → Python serve
-├── docker-compose.yml            # Production + dev profiles
-├── Makefile                      # Cross-platform convenience commands
-├── render.yaml                   # Render.com deployment config
-│
+├── README.md                  # Proposal, prototype status and setup
+├── .github/workflows/ci.yml   # Backend/frontend and health checks
+├── Dockerfile                 # Frontend build, then FastAPI serving
+├── docker-compose.yml        # Base container configuration
+├── docker-compose.demo.yml   # Blank-key DEMO override
+├── render.yaml                # Render deployment configuration
 ├── backend/
+│   ├── .env.example          # Server configuration, no credentials
+│   ├── requirements.txt
+│   ├── config/               # Risk thresholds and economics YAML
 │   ├── app/
-│   │   ├── agents/               # 10 LangGraph agents
-│   │   │   ├── intent_agent.py, planner.py, weather_agent.py
-│   │   │   ├── ocean_agent.py, pfz_agent.py, cyclone_agent.py
-│   │   │   ├── gis_agent.py, risk_agent.py, route_agent.py
-│   │   │   └── explanation_agent.py
-│   │   ├── api/                  # FastAPI routers
-│   │   │   ├── chat_stream.py    # SSE streaming endpoint
-│   │   │   ├── fishing.py, forecast.py, map.py, alerts.py
-│   │   │   └── routes.py, voyages.py, voice.py, plan.py
-│   │   ├── data/                 # Data layer
-│   │   │   ├── live_client.py    # Open-Meteo 72h series cache
-│   │   │   ├── incois_erddap.py  # INCOIS ERDDAP connector
-│   │   │   ├── advisory_scraper.py  # IMD CAP + INCOIS scraper
-│   │   │   ├── demo_store.py     # Rehearsed demo scenarios
-│   │   │   └── scheduler.py      # Background refresh + keep-alive
-│   │   ├── graph/                # LangGraph state graph
-│   │   │   ├── graph.py, nodes.py, state.py
-│   │   ├── services/             # Core logic
-│   │   │   ├── conflict_resolver.py  # Authority hierarchy
-│   │   │   ├── alert_engine.py, fishing.py
-│   │   │   └── plain_language.py, i18n.py, llm.py
-│   │   ├── config.py             # All weights, thresholds, overrides
-│   │   └── main.py               # FastAPI entry point + SPA serving
-│   ├── tests/                    # 119 unit + integration tests
-│   └── requirements.txt
-│
+│   │   ├── agents/           # Specialists and existing planner
+│   │   ├── graph/            # LangGraph topology, nodes and state
+│   │   ├── api/              # Chat, plan, voyage, voice and data routes
+│   │   ├── data/             # Adapters, fixtures, scheduler and stores
+│   │   ├── services/         # Risk, routes, fishing, conflicts, language
+│   │   ├── schemas.py        # Typed contracts
+│   │   └── main.py           # FastAPI and frontend serving
+│   └── tests/
 ├── frontend/
-│   ├── src/
-│   │   ├── components/           # 27 React components
-│   │   └── App.tsx               # SSE stream state manager
-│   ├── public/                   # PWA assets (manifest, icons, sw.js)
-│   └── dist/                     # Pre-built bundle (committed for Render)
-│
-└── docs/                         # Technical reference (architecture, API, schemas)
+│   ├── .env.example          # Public frontend configuration
+│   ├── src/components/      # Current desktop/mobile interfaces
+│   └── public/              # PWA manifest, icons and service worker
+└── docs/
+    ├── images/              # Branding and labeled screenshots
+    └── 00–05 documents      # Design references
 ```
 
----
+Design references: [overview](docs/00_overview.md), [architecture](docs/01_architecture.md), [schemas](docs/02_schemas.md), [data sources](docs/03_data_sources.md), [risk/economics](docs/04_risk_and_economics_config.md), and [API contracts](docs/05_api_contracts.md). These describe the evolving design; the current prototype section and generated API reference describe implemented behavior.
 
-## 👥 Team Marines
+Build output, virtual environments, credentials, caches, and local review artifacts stay outside version control. The reference presentation is retained at the repository root. It uses earlier ORCA solution branding; this README uses **MARVO** for the team's solution and **ORCA** for the official problem statement.
 
-<div align="center">
+## Team and references
 
-**Team ID: 175766 &nbsp;·&nbsp; Smart India Hackathon 2026 &nbsp;·&nbsp; PS SIH26176 — ISRO (Space Technology)**
+**Team MARINES · Team ID 175766 · KIET Deemed to be University, Ghaziabad**
 
-**KIET Deemed to be University, Ghaziabad**
+| Member | Team role |
+|---|---|
+| Nitish Sablok | Team Leader |
+| Akshat Agarwal | Backend & AI |
+| Tanya Vaish | Frontend & UI/UX |
+| Samveg Jain | Product & Demo |
+| Muskan Singh | Research & Documentation |
+| Deepak | QA & DevOps |
 
-</div>
+Proposal reference: [Team MARINES presentation](<Problem Statement ID – 176 Problem Statement Title- S Theme- PS Category- Software Team ID- Team Name (Registered on portal)  MARINES (2).pdf>). This is the available submission reference, not necessarily the latest slide revision.
 
-| Member | Role | Contribution |
-|---|---|---|
-| **Nitish Sablok** | Team Leader | Strategy, project coordination, presentation & pitch deck |
-| **Akshat Agarwal** | Backend & AI Lead | LangGraph agent pipeline, INCOIS/NOAA integrations, backend architecture |
-| **Tanya Vaish** | Frontend & UI/UX Lead | React components, design system, PWA, mobile layout |
-| **Samveg Jain** | Product & Demo Lead | Product vision, use-case design, demo flow, stakeholder communication |
-| **Muskan Singh** | Research & Documentation | Marine domain research, data source analysis, literature review, documentation |
-| **Deepak** | QA & DevOps | Test suite (119 tests), CI/CD pipeline, Docker setup, deployment |
+Background/data references: [SIH problem statements](https://www.sih.gov.in/sih2026PS), [INCOIS advisories](https://incois.gov.in/MarineFisheries/MarineFisheryAdvisory), [IMD](https://mausam.imd.gov.in/), [Open-Meteo Marine](https://open-meteo.com/en/docs/marine-weather-api), [ISRO MOSDAC](https://www.mosdac.gov.in/), [GDACS](https://www.gdacs.org/), [OBIS](https://obis.org/), and [OpenStreetMap attribution](https://www.openstreetmap.org/copyright).
 
----
-
-## ⚠️ Safety Disclaimer
-
-MARVO is **decision support software** built for Smart India Hackathon 2026. It does **not** replace official advisories from:
-
-- **INCOIS** — National Centre for Ocean Information Services
-- **IMD** — India Meteorological Department
-- **Indian Coast Guard**
-
-This notice appears on every MARVO screen. When in doubt, always follow official government advisories.
-
----
-
-<div align="center">
-
-*Safer Fishermen &nbsp;·&nbsp; Cleaner Oceans &nbsp;·&nbsp; Stronger Coastal Communities*
-
-<br/>
-
-*Smart India Hackathon 2026 &nbsp;·&nbsp; Problem Statement SIH26176 &nbsp;·&nbsp; ISRO — Space Technology*
-
-*KIET Deemed to be University, Ghaziabad &nbsp;·&nbsp; Team MARINES #175766*
-
-</div>
+**Safer trip decisions, clearer evidence, and accessible marine intelligence.**

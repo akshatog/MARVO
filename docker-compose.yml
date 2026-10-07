@@ -1,8 +1,9 @@
-version: "3.9"
-
 services:
   marvo:
-    build: .
+    build:
+      context: .
+      args:
+        - VITE_MAPBOX_TOKEN
     ports:
       - "8000:8000"
     environment:
