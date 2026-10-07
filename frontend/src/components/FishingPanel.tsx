@@ -33,6 +33,10 @@ const RATING_WORD: Localized<Record<CatchRating, string>> = {
   en: { very_good: "Very good", good: "Good", fair: "Some chance", poor: "Low chance" },
   hi: { very_good: "बहुत अच्छा", good: "अच्छा", fair: "कुछ उम्मीद", poor: "कम उम्मीद" },
   mr: { very_good: "खूप चांगली", good: "चांगली", fair: "थोडी शक्यता", poor: "कमी शक्यता" },
+  ta: { very_good: "மிக நல்லது", good: "நல்லது", fair: "சில வாய்ப்புகள்", poor: "குறைந்த வாய்ப்பு" },
+  te: { very_good: "చాలా బాగుంది", good: "బాగుంది", fair: "కొంత అవకాశం", poor: "తక్కువ అవకాశం" },
+  bn: { very_good: "খুব ভালো", good: "ভালো", fair: "কিছু সম্ভাবনা", poor: "কম সম্ভাবনা" },
+  ml: { very_good: "വളരെ നല്ലത്", good: "നല്ലത്", fair: "ചില സാധ്യതകൾ", poor: "കുറഞ്ഞ സാധ്യത" },
 };
 
 const T: Localized<Record<string, string>> = {
@@ -150,6 +154,10 @@ const T: Localized<Record<string, string>> = {
     showMore: "अधिक दाखवा",
     showLess: "कमी दाखवा",
   },
+  ta: { advice: "நீங்கள் என்ன செய்ய வேண்டும்", areas: "சிறந்த இடங்கள்", within: "உள்ளே", away: "தூரத்தில்", chance: "வாய்ப்பு", trip: "பயணம்", stay: "தங்கு", travel: "பயணம்", total: "மொத்தம்", hours: "மணி", min: "நிமிடம்", bestTime: "சிறந்த நேரம்", avoid: "தவிர்க்க", closedNow: "மூடப்பட்டது", closedBetween: "மூடப்பட்டது", always: "எப்போதும்", forecast: "முன்னறிவிப்பு", today: "இன்று", tomorrow: "நாளை", dayAfter: "நாளை மறுநாள்", bestAt: "சிறந்த நேரம்", notWorth: "இல்லை", likely: "வாய்ப்பு", likelyNote: "குறிப்பு", returnBy: "திரும்பு", returnWhy: "ஏனெனில்", econ: "பொருளாதாரம்", fuel: "எரிபொருள்", catch: "பிடி", revenue: "வருவாய்", profit: "லாபம்", econNote: "மதிப்பீடு", barsCaption: "விளக்கம்", showMore: "மேலும் காட்டு", showLess: "குறைவாக காட்டு" },
+  te: { advice: "మీరు ఏమి చేయాలి", areas: "ఉత్తమ స్థలాలు", within: "లోపల", away: "దూరంగా", chance: "అవకాశం", trip: "యాత్ర", stay: "ఉండండి", travel: "ప్రయాణం", total: "మొత్తం", hours: "గంటలు", min: "నిమిషాలు", bestTime: "ఉత్తమ సమయం", avoid: "నివారించండి", closedNow: "మూసివేయబడింది", closedBetween: "మూసివేయబడింది", always: "ఎల్లప్పుడూ", forecast: "సూచన", today: "నేడు", tomorrow: "రేపు", dayAfter: "ఎల్లుండి", bestAt: "ఉత్తమ సమయం", notWorth: "కాదు", likely: "అవకాశం", likelyNote: "గమనిక", returnBy: "తిరిగి రండి", returnWhy: "ఎందుకంటే", econ: "ఆర్థికం", fuel: "ఇంధనం", catch: "పట్టు", revenue: "ఆదాయం", profit: "లాభం", econNote: "అంచనా", barsCaption: "వివరణ", showMore: "మరింత చూపించు", showLess: "తక్కువ చూపించు" },
+  bn: { advice: "আপনার কী করা উচিত", areas: "সেরা জায়গা", within: "মধ্যে", away: "দূরে", chance: "সুযোগ", trip: "যাত্রা", stay: "থাকুন", travel: "ভ্রমণ", total: "মোট", hours: "ঘন্টা", min: "মিনিট", bestTime: "সেরা সময়", avoid: "এড়িয়ে চলুন", closedNow: "বন্ধ", closedBetween: "বন্ধ", always: "সবসময়", forecast: "পূর্বাভাস", today: "আজ", tomorrow: "আগামীকাল", dayAfter: "পরশু", bestAt: "সেরা সময়", notWorth: "না", likely: "সম্ভাবনা", likelyNote: "বিঃদ্রঃ", returnBy: "ফিরে আসুন", returnWhy: "কারণ", econ: "অর্থনীতি", fuel: "জ্বালানী", catch: "ধরা", revenue: "আয়", profit: "লাভ", econNote: "অনুমান", barsCaption: "বিবরণ", showMore: "আরও দেখান", showLess: "কম দেখান" },
+  ml: { advice: "നിങ്ങൾ എന്ത് ചെയ്യണം", areas: "മികച്ച സ്ഥലങ്ങൾ", within: "ഉള്ളിൽ", away: "അകലെ", chance: "സാധ്യത", trip: "യാത്ര", stay: "നിൽക്കൂ", travel: "യാത്ര", total: "ആകെ", hours: "മണിക്കൂർ", min: "മിനിറ്റ്", bestTime: "മികച്ച സമയം", avoid: "ഒഴിവാക്കുക", closedNow: "അടച്ചു", closedBetween: "അടച്ചു", always: "എപ്പോഴും", forecast: "പ്രവചനം", today: "ഇന്ന്", tomorrow: "നാളെ", dayAfter: "മറ്റന്നാൾ", bestAt: "മികച്ച സമയം", notWorth: "ഇല്ല", likely: "സാധ്യത", likelyNote: "കുറിപ്പ്", returnBy: "മടങ്ങുക", returnWhy: "കാരണം", econ: "സമ്പദ് വ്യവസ്ഥ", fuel: "ഇന്ധനം", catch: "പിടിക്കുക", revenue: "വരുമാനം", profit: "ലാഭം", econNote: "കണക്കാക്കൽ", barsCaption: "വിവരണം", showMore: "കൂടുതൽ കാണിക്കുക", showLess: "കുറച്ച് കാണിക്കുക" }
 };
 
 /** The five documented model factors, in reading order, with tooltip labels. */

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import * as api from "./api";
 import AgentTracePanel from "./components/AgentTrace";
 import AlertsPanel from "./components/AlertsPanel";
@@ -38,6 +39,7 @@ import DecisionPipelineVisualizer from "./components/DecisionPipelineVisualizer"
 import VoyageTracker from "./components/VoyageTracker";
 import AlertBanner from "./components/AlertBanner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { APP_EXTRA_UI } from "./i18n";
 import type {
   Localized,
   AlertEvent,
@@ -69,11 +71,11 @@ const DEFAULT_SCENARIOS: {
   ask: string;
   hint: string;
 }[] = [
-  { id: "safe", n: "1", label: { en: "Safe", hi: "सुरक्षित", mr: "सुरक्षित" }, ask: "Is it safe to go fishing tomorrow morning near Goa?", hint: "Goa · LOW" },
-  { id: "danger", n: "2", label: { en: "Rough", hi: "ख़राब मौसम", mr: "खराब हवामान" }, ask: "मी उद्या सकाळी ६ वाजता मुंबईजवळ मासेमारीला जाऊ शकतो का?", hint: "Mumbai · मराठी" },
-  { id: "cyclone", n: "3", label: { en: "Cyclone", hi: "चक्रवात", mr: "चक्रीवादळ" }, ask: "Is there a cyclone near Paradip? Can I go fishing?", hint: "Paradip · EXTREME" },
-  { id: "pfz", n: "4", label: { en: "Fishing zones", hi: "मत्स्य क्षेत्र", mr: "मासेमारी क्षेत्रे" }, ask: "कोच्चि के पास मछली पकड़ने का क्षेत्र कहाँ है?", hint: "Kochi · हिंदी" },
-  { id: "route", n: "5", label: { en: "Safe route", hi: "सुरक्षित मार्ग", mr: "सुरक्षित मार्ग" }, ask: "Give me the safest route to the nearest fishing zone near Mumbai", hint: "Mumbai · geofence" },
+  { id: "safe", n: "1", label: { en: "Safe", hi: "सुरक्षित", mr: "सुरक्षित", ta: "பாதுகாப்பான", te: "సురక్షితమైన", bn: "নিরাপদ", ml: "സുരക്ഷിതമായ" }, ask: "Is it safe to go fishing tomorrow morning near Goa?", hint: "Goa · LOW" },
+  { id: "danger", n: "2", label: { en: "Rough", hi: "ख़राब मौसम", mr: "खराब हवामान", ta: "கடுமையான", te: "కఠినమైన", bn: "খারাপ আবহাওয়া", ml: "കഠിനമായ" }, ask: "मी उद्या सकाळी ६ वाजता मुंबईजवळ मासेमारीला जाऊ शकतो का?", hint: "Mumbai · मराठी" },
+  { id: "cyclone", n: "3", label: { en: "Cyclone", hi: "चक्रवात", mr: "चक्रीवादळ", ta: "புயல்", te: "తుఫాను", bn: "ঘূর্ণিঝড়", ml: "ചുഴലിക്കാറ്റ്" }, ask: "Is there a cyclone near Paradip? Can I go fishing?", hint: "Paradip · EXTREME" },
+  { id: "pfz", n: "4", label: { en: "Fishing zones", hi: "मत्स्य क्षेत्र", mr: "मासेमारी क्षेत्रे", ta: "மீன்பிடி பகுதிகள்", te: "మత్స్య ప్రాంతాలు", bn: "মৎস্য অঞ্চল", ml: "മത്സ്യബന്ധന മേഖലകൾ" }, ask: "कोच्चि के पास मछली पकड़ने का क्षेत्र कहाँ है?", hint: "Kochi · हिंदी" },
+  { id: "route", n: "5", label: { en: "Safe route", hi: "सुरक्षित मार्ग", mr: "सुरक्षित मार्ग", ta: "பாதுகாப்பான பாதை", te: "సురక్షితమైన మార్గం", bn: "নিরাপদ পথ", ml: "സുരക്ഷിതമായ വഴി" }, ask: "Give me the safest route to the nearest fishing zone near Mumbai", hint: "Mumbai · geofence" },
 ];
 
 const LANGUAGES: { code: SupportedLanguage; short: string; native: string }[] = [
@@ -245,11 +247,15 @@ export default function App() {
   }, [tab]);
   const [busy, setBusy] = useState(false);
   const [langChoice, setLangChoice] = useState<SupportedLanguage | null>(null);
-  const [langOpen, setLangOpen] = useState(false);
+  // Single source of truth for the language picker open/closed state.
+  const [isLangOpen, setIsLangOpen] = useState(false);
   const langBoxRef = useRef<HTMLDivElement>(null);
+  // Ref to the portal-rendered dropdown menu (needed for click-outside detection).
+  const langDropdownRef = useRef<HTMLDivElement>(null);
   const [detected, setDetected] = useState<SupportedLanguage>("en");
   const language: SupportedLanguage = langChoice ?? detected;
   const uiLang: Language = language;
+  const appEx = APP_EXTRA_UI[uiLang] ?? APP_EXTRA_UI.en;
 
   // ---- MARVO 2.0 Operational & Provenance state ----
   const [activeAlert, setActiveAlert] = useState<AlertEvent | null>(null);
@@ -331,7 +337,7 @@ export default function App() {
       }
     } catch (e) {
       console.warn("Live plan fetch error:", e);
-      setError("Could not fetch safety plan — check that the backend is running.");
+      setError(appEx.errorPlan);
       setTimeout(() => setError(null), 8000);
     } finally {
       setLoadingPlan(false);
@@ -348,7 +354,7 @@ export default function App() {
       setActiveVoyages(refreshed);
     } catch (e) {
       console.error("Start voyage failed:", e);
-      setError("Could not start voyage — check connection and try again.");
+      setError(appEx.errorStartVoyage);
       setTimeout(() => setError(null), 8000);
     }
   };
@@ -363,7 +369,7 @@ export default function App() {
       }
     } catch (e) {
       console.error("End voyage failed:", e);
-      setError("Could not end voyage — check connection.");
+      setError(appEx.errorEndVoyage);
       setTimeout(() => setError(null), 8000);
     }
   };
@@ -391,7 +397,7 @@ export default function App() {
     }
     } catch (e) {
       console.error("Trigger alert failed:", e);
-      setError("Could not trigger alert — check connection.");
+      setError(appEx.errorAlert);
       setTimeout(() => setError(null), 8000);
     }
   };
@@ -407,14 +413,22 @@ export default function App() {
     setTab("home");
   };
 
-  // ---- guided tour ----
+  // ---- language picker: close on outside click ----
   useEffect(() => {
-    const close = (e: MouseEvent) => {
-      if (langBoxRef.current && !langBoxRef.current.contains(e.target as Node)) setLangOpen(false);
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+      // Close only when click is outside BOTH the toggle container AND the portal menu.
+      const insideToggle = langBoxRef.current?.contains(target) ?? false;
+      const insideMenu = langDropdownRef.current?.contains(target) ?? false;
+      if (!insideToggle && !insideMenu) {
+        setIsLangOpen(false);
+      }
     };
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
+
+  // ---- guided tour ----
 
   const [tourOn, setTourOn] = useState(false);
   const [tourStep, setTourStep] = useState(0);
@@ -747,7 +761,7 @@ export default function App() {
           </button>
 
           {/* title-block cells */}
-          <div className="ml-auto flex flex-wrap items-stretch">
+          <div className="ml-auto flex flex-wrap items-stretch relative z-50">
             {/* mode switch */}
             <button
               onClick={cycleMode}
@@ -782,34 +796,43 @@ export default function App() {
 
             <div
               ref={langBoxRef}
-              className="relative flex flex-col justify-center border-l px-4 py-3"
+              className="relative z-10 flex flex-col justify-center border-l px-4 py-3"
               style={{ borderColor: "var(--rule-faint)" }}
             >
               <span className="label">{ui.lang}</span>
+              {/* Toggle button: directly sets isLangOpen — single source of truth */}
               <button
-                onClick={() => setLangOpen((v) => !v)}
+                onClick={() => setIsLangOpen((v) => !v)}
                 className={`mt-1 flex items-center gap-1.5 font-mono text-[13px] font-bold transition ${
-                  langOpen ? "text-chart-600" : "text-ink-800 hover:text-chart-600"
+                  isLangOpen ? "text-chart-600" : "text-ink-800 hover:text-chart-600"
                 }`}
               >
                 {LANGUAGES.find((l) => l.code === language)?.short ?? "EN"}
                 <ChevronDownGlyph
                   size={10}
-                  className={`text-ink-300 transition-transform ${langOpen ? "rotate-180" : ""}`}
+                  className={`text-ink-300 transition-transform ${isLangOpen ? "rotate-180" : ""}`}
                 />
               </button>
 
-              {langOpen && (
+              {isLangOpen && langBoxRef.current && createPortal(
                 <div
-                  className="scroll-slim absolute right-0 top-full z-[700] mt-2 max-h-[60vh] w-[168px] overflow-y-auto rounded-[3px] border shadow-xl"
-                  style={{ borderColor: "var(--rule-strong)", background: "var(--paper-bright)" }}
+                  ref={langDropdownRef}
+                  className="scroll-slim max-h-[60vh] w-[168px] overflow-y-auto rounded-[3px] border shadow-xl"
+                  style={{
+                    position: "fixed",
+                    zIndex: 9999,
+                    top: langBoxRef.current.getBoundingClientRect().bottom + 8,
+                    right: window.innerWidth - langBoxRef.current.getBoundingClientRect().right,
+                    borderColor: "var(--rule-strong)",
+                    background: "var(--paper-bright)",
+                  }}
                 >
                   {LANGUAGES.map((l) => (
                     <button
                       key={l.code}
                       onClick={() => {
                         setLangChoice(l.code);
-                        setLangOpen(false);
+                        setIsLangOpen(false);
                       }}
                       className={`flex w-full items-center justify-between gap-3 border-b px-3.5 py-2.5 text-left transition last:border-0 ${
                         language === l.code
@@ -828,7 +851,8 @@ export default function App() {
                       </span>
                     </button>
                   ))}
-                </div>
+                </div>,
+                document.body
               )}
             </div>
 
@@ -925,7 +949,7 @@ export default function App() {
           <div className="stagger-in min-w-0 space-y-4">
             {place && (
               <div className="verdict-glow" style={{ ["--glow" as string]: outlook ? RISK_COLOR[outlook.safety.category] : "#2a7391" }}>
-                <QuickRiskPanel lat={place.latitude} lon={place.longitude} />
+                <QuickRiskPanel lat={place.latitude} lon={place.longitude} language={uiLang} />
               </div>
             )}
             {outlook && (
@@ -964,7 +988,7 @@ export default function App() {
                   {
                     k: _AREAS[uiLang] ?? _AREAS.en,
                     v: `${outlook.areas.length}`,
-                    s: `in ${outlook.radius_km} km`,
+                    s: appEx.inRadius.replace("{n}", String(outlook.radius_km)),
                     color: outlook.areas.length > 0 ? "#1D7A50" : "#9C5F44",
                     icon: <CrosshairGlyph size={13} />,
                     anim: "",
@@ -1023,7 +1047,7 @@ export default function App() {
               </div>
             )}
             {place && (
-              <AlertsPanel lat={place.latitude} lon={place.longitude} compact />
+              <AlertsPanel lat={place.latitude} lon={place.longitude} compact language={uiLang} />
             )}
             {outlook && (
               <FishingPanel
@@ -1117,7 +1141,7 @@ export default function App() {
                         <span className="ml-0.5 text-[12px] font-semibold text-ink-400">/100</span>
                       </span>
                       <span className="font-display text-[16px] font-bold text-ink-900">
-                        {{ LOW: "Conditions look safe", MODERATE: "Go with caution", HIGH: "High risk — not recommended", EXTREME: "Extreme — do not go to sea" }[latest.risk.category]}
+                        {{ LOW: appEx.verdictLow, MODERATE: appEx.verdictModerate, HIGH: appEx.verdictHigh, EXTREME: appEx.verdictExtreme }[latest.risk.category]}
                       </span>
                       <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-ink-500">
                         {latest.intent.location_text}
@@ -1310,6 +1334,7 @@ export default function App() {
               requestId={planRequestId || undefined}
               onRefresh={handleRunPlan}
               isLoading={loadingPlan}
+              language={uiLang}
             />
           </div>
 

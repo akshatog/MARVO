@@ -22,6 +22,10 @@ const VERDICT: Localized<Record<string, string>> = {
     HIGH: "धोका जास्त आहे — जाऊ नका",
     EXTREME: "अत्यंत धोका — समुद्रात जाऊ नका",
   },
+  ta: { LOW: "நிலைமை பாதுகாப்பாக உள்ளது", MODERATE: "கவனமாக செல்லவும்", HIGH: "அதிக ஆபத்து — பரிந்துரைக்கப்படவில்லை", EXTREME: "மிக அதிக ஆபத்து — கடலுக்கு செல்ல வேண்டாம்" },
+  te: { LOW: "పరిస్థితులు సురక్షితంగా ఉన్నాయి", MODERATE: "జాగ్రత్తగా వెళ్లండి", HIGH: "అధిక ప్రమాదం — సిఫార్సు చేయబడలేదు", EXTREME: "అత్యంత ప్రమాదం — సముద్రానికి వెళ్ళకండి" },
+  bn: { LOW: "পরিস্থিতি নিরাপদ মনে হচ্ছে", MODERATE: "সতর্কতার সাথে যান", HIGH: "উচ্চ ঝুঁকি — সুপারিশ করা হয় না", EXTREME: "অত্যন্ত ঝুঁকি — সমুদ্রে যাবেন না" },
+  ml: { LOW: "അവസ്ഥ സുരക്ഷിതമാണ്", MODERATE: "ശ്രദ്ധയോടെ പോവുക", HIGH: "ഉയർന്ന അപകടസാധ്യത — ശുപാർശ ചെയ്യുന്നില്ല", EXTREME: "അങ്ങേയറ്റം അപകടകരം — കടലിൽ പോകരുത്" },
 };
 
 const UI: Localized<Record<string, string>> = {
@@ -67,6 +71,10 @@ const UI: Localized<Record<string, string>> = {
     hide: "लपवा ▴",
     cols: "मूल्य|वाचन|स्रोत|अपडेट",
   },
+  ta: { why: "ஏன்", warning: "எச்சரிக்கை", improves: "நிலைமை மாறும்", askAgain: "மீண்டும் கேள்", overrides: "பொருந்தும்", overrideNote: "விதிமுறை", evidence: "சான்று", traced: "மதிப்பு", show: "காட்டு", hide: "மறை", cols: "மதிப்பு|அளவீடு|மூலம்|புதுப்பிக்கப்பட்டது" },
+  te: { why: "ఎందుకు", warning: "హెచ్చరిక", improves: "పరిస్థితి మారుతుంది", askAgain: "మళ్ళీ అడుగు", overrides: "వర్తిస్తుంది", overrideNote: "గమనిక", evidence: "సాక్ష్యం", traced: "విలువ", show: "చూపించు", hide: "దాచు", cols: "విలువ|కొలత|మూలం|నవీకరించబడింది" },
+  bn: { why: "কেন", warning: "সতর্কতা", improves: "অবস্থা উন্নত হবে", askAgain: "আবার জিজ্ঞেস করুন", overrides: "প্রযোজ্য", overrideNote: "বিঃদ্রঃ", evidence: "প্রমাণ", traced: "মান", show: "দেখান", hide: "লুকান", cols: "মান|পড়া|উৎস|আপডেট" },
+  ml: { why: "എന്തുകൊണ്ട്", warning: "മുന്നറിയിപ്പ്", improves: "അവസ്ഥ മാറും", askAgain: "വീണ്ടും ചോദിക്കുക", overrides: "ബാധകമാണ്", overrideNote: "കുറിപ്പ്", evidence: "തെളിവ്", traced: "മൂല്യം", show: "കാണിക്കുക", hide: "മറയ്ക്കുക", cols: "മൂല്യം|വായന|ഉറവിടം|അപ്ഡേറ്റ്" },
 };
 
 export default function RiskCard({

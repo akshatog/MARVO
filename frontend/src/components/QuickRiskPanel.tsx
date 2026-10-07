@@ -10,7 +10,7 @@
 import { useEffect, useState, useCallback } from "react";
 import type { CSSProperties } from "react";
 import * as api from "../api";
-import type { RiskCategory } from "../types";
+import type { RiskCategory, Localized, Language } from "../types";
 import RiskDial, { RISK_COLOR } from "./RiskDial";
 import {
   ClockGlyph,
@@ -60,22 +60,68 @@ function factorIcon(key: string, size = 13) {
 interface QuickRiskPanelProps {
   lat: number;
   lon: number;
+  language?: Language;
   /** Show the per-agent factor table. Off by default here — same as
    * before, this card only shows the verdict + advice on the Today
    * page; SystemPanel opts into the full breakdown explicitly. */
   full?: boolean;
 }
 
-const CATEGORY_LABEL: Record<string, string> = {
-  LOW: "SAFE TO GO",
-  MODERATE: "MODERATE RISK",
-  HIGH: "STAY ASHORE",
-  EXTREME: "DO NOT GO",
+const CATEGORY_LABEL: Localized<Record<string, string>> = {
+  en: { LOW: "SAFE TO GO", MODERATE: "MODERATE RISK", HIGH: "STAY ASHORE", EXTREME: "DO NOT GO" },
+  hi: { LOW: "जाने के लिए सुरक्षित", MODERATE: "मध्यम जोखिम", HIGH: "किनारे पर रहें", EXTREME: "बिल्कुल न जाएं" },
+  mr: { LOW: "जाण्यासाठी सुरक्षित", MODERATE: "मध्यम धोका", HIGH: "किनाऱ्यावर राहा", EXTREME: "अजिबात जाऊ नका" },
+  ta: { LOW: "செல்வதற்கு பாதுகாப்பானது", MODERATE: "மிதமான ஆபத்து", HIGH: "கரையிலேயே இருக்கவும்", EXTREME: "செல்ல வேண்டாம்" },
+  te: { LOW: "వెళ్లడం సురక్షితం", MODERATE: "మితమైన ప్రమాదం", HIGH: "తీరంలోనే ఉండండి", EXTREME: "వెళ్లవద్దు" },
+  bn: { LOW: "যাওয়া নিরাপদ", MODERATE: "মাঝারি ঝুঁকি", HIGH: "তীরে থাকুন", EXTREME: "যাবেন না" },
+  ml: { LOW: "പോകാൻ സുരക്ഷിതം", MODERATE: "മിതമായ അപകടസാധ്യത", HIGH: "കരയിൽ തുടരുക", EXTREME: "പോകരുത്" }
 };
 
-export default function QuickRiskPanel({ lat, lon, full = false }: QuickRiskPanelProps) {
+const T: Localized<Record<string, string>> = {
+  en: {
+    riskAssessment: "Risk Assessment", conditions: "Current conditions at this location", outOf100: "out of 100 · risk score",
+    advisoryActive: "Official advisory active", improve: "Conditions improve:", noOverrides: "No active overrides — model estimate only.",
+    driving: "What's driving this score", pts: "pts", computing: "Computing risk…"
+  },
+  hi: {
+    riskAssessment: "जोखिम मूल्यांकन", conditions: "इस स्थान पर वर्तमान स्थिति", outOf100: "100 में से · जोखिम स्कोर",
+    advisoryActive: "आधिकारिक सलाह सक्रिय", improve: "स्थिति में सुधार:", noOverrides: "कोई सक्रिय ओवरराइड नहीं — केवल मॉडल अनुमान।",
+    driving: "इस स्कोर का कारण", pts: "अंक", computing: "जोखिम की गणना हो रही है…"
+  },
+  mr: {
+    riskAssessment: "धोका मूल्यांकन", conditions: "या ठिकाणी सध्याची परिस्थिती", outOf100: "100 पैकी · धोका स्कोर",
+    advisoryActive: "अधिकृत सल्ला सक्रिय", improve: "परिस्थितीत सुधारणा:", noOverrides: "कोणतेही सक्रिय ओव्हरराइड नाही — फक्त मॉडेल अंदाज.",
+    driving: "या स्कोरचे कारण", pts: "गुण", computing: "धोक्याची गणना करत आहे…"
+  },
+  ta: {
+    riskAssessment: "ஆபத்து மதிப்பீடு", conditions: "இந்த இடத்தில் தற்போதைய நிலை", outOf100: "100க்கு · ஆபத்து மதிப்பெண்",
+    advisoryActive: "அதிகாரப்பூர்வ ஆலோசனை செயலில் உள்ளது", improve: "நிலைமை மேம்படும்:", noOverrides: "செயலில் உள்ள மேலெழுதல்கள் இல்லை — மாதிரி மதிப்பீடு மட்டுமே.",
+    driving: "இந்த மதிப்பெண்ணுக்கு காரணம்", pts: "புள்ளிகள்", computing: "ஆபத்தை கணக்கிடுகிறது…"
+  },
+  te: {
+    riskAssessment: "ప్రమాద అంచనా", conditions: "ఈ ప్రదేశంలో ప్రస్తుత పరిస్థితులు", outOf100: "100కి · ప్రమాద స్కోర్",
+    advisoryActive: "అధికారిక హెచ్చరిక చురుకుగా ఉంది", improve: "పరిస్థితులు మెరుగుపడతాయి:", noOverrides: "చురుకైన ఓవర్‌రైడ్‌లు లేవు — మోడల్ అంచనా మాత్రమే.",
+    driving: "ఈ స్కోర్‌కు కారణం", pts: "పాయింట్లు", computing: "ప్రమాదాన్ని లెక్కిస్తోంది…"
+  },
+  bn: {
+    riskAssessment: "ঝুঁকি মূল্যায়ন", conditions: "এই স্থানে বর্তমান অবস্থা", outOf100: "১০০ এর মধ্যে · ঝুঁকি স্কোর",
+    advisoryActive: "সরকারি সতর্কতা সক্রিয়", improve: "অবস্থার উন্নতি হবে:", noOverrides: "কোনো সক্রিয় ওভাররাইড নেই — শুধুমাত্র মডেল অনুমান।",
+    driving: "এই স্কোরের কারণ", pts: "পয়েন্ট", computing: "ঝুঁকি গণনা করা হচ্ছে…"
+  },
+  ml: {
+    riskAssessment: "അപകടസാധ്യത വിലയിരുത്തൽ", conditions: "ഈ സ്ഥലത്തെ നിലവിലെ അവസ്ഥ", outOf100: "100-ൽ · റിസ്ക് സ്കോർ",
+    advisoryActive: "ഔദ്യോഗിക മുന്നറിയിപ്പ് സജീവമാണ്", improve: "അവസ്ഥ മെച്ചപ്പെടുന്നു:", noOverrides: "സജീവമായ ഓവർറൈഡുകളില്ല — മോഡൽ കണക്കാക്കൽ മാത്രം.",
+    driving: "ഈ സ്കോറിന് കാരണം", pts: "പോയിന്റുകൾ", computing: "അപകടസാധ്യത കണക്കാക്കുന്നു…"
+  }
+};
+
+
+
+export default function QuickRiskPanel({ lat, lon, language = "en", full = false }: QuickRiskPanelProps) {
   const [data, setData] = useState<api.RiskBreakdown | null>(null);
   const [loading, setLoading] = useState(true);
+  const t = T[language] ?? T.en;
+  const catLabel = CATEGORY_LABEL[language] ?? CATEGORY_LABEL.en;
 
   const fetchRisk = useCallback(async () => {
     try {
@@ -97,7 +143,7 @@ export default function QuickRiskPanel({ lat, lon, full = false }: QuickRiskPane
     return (
       <div className="panel flex items-center gap-3 px-4 py-3.5">
         <CompassMark size={20} className="animate-[spin_5s_linear_infinite] text-chart-500 opacity-70" />
-        <span className="text-[12px] italic text-ink-400">Computing risk…</span>
+        <span className="text-[12px] italic text-ink-400">{t.computing}</span>
       </div>
     );
   }
@@ -126,16 +172,16 @@ export default function QuickRiskPanel({ lat, lon, full = false }: QuickRiskPane
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="label !text-ink-400">Risk Assessment</span>
+            <span className="label !text-ink-400">{t.riskAssessment}</span>
             <span
               className="stamp !px-1.5 !py-0.5 !text-[9px] font-bold"
               style={{ color, border: `1px solid ${color}60`, background: `${color}12` }}
             >
-              {CATEGORY_LABEL[cat] ?? cat}
+              {catLabel[cat] ?? cat}
             </span>
           </div>
           <p className="mt-1 font-display text-[17px] font-semibold leading-snug text-ink-900">
-            {risk.headline || "Current conditions at this location"}
+            {risk.headline || t.conditions}
           </p>
         </div>
       </div>
@@ -144,24 +190,24 @@ export default function QuickRiskPanel({ lat, lon, full = false }: QuickRiskPane
       <div className="flex flex-wrap items-center gap-5 px-5 py-4">
         <RiskDial score={risk.score} category={cat} size={104} />
         <div className="min-w-[160px] flex-1 space-y-2">
-          <div className="font-mono text-[10px] uppercase tracking-wide text-ink-400">out of 100 · risk score</div>
+          <div className="font-mono text-[10px] uppercase tracking-wide text-ink-400">{t.outOf100}</div>
           {risk.official_warning && (
             <div
               className="flex items-center gap-1.5 rounded-[2px] px-2 py-1 font-mono text-[11px] font-bold text-risk-extreme"
               style={{ background: "rgba(175,35,24,0.08)" }}
             >
               <WarnGlyph size={12} />
-              Official advisory active
+              {t.advisoryActive}
             </div>
           )}
           {risk.window && (
             <div className="flex items-center gap-1.5 text-[12px] italic text-ink-500">
               <ClockGlyph size={12} className="shrink-0 text-ink-400" />
-              Conditions improve: {risk.window}
+              {t.improve} {risk.window}
             </div>
           )}
           {!risk.official_warning && !risk.window && (
-            <div className="text-[12px] text-ink-400">No active overrides — model estimate only.</div>
+            <div className="text-[12px] text-ink-400">{t.noOverrides}</div>
           )}
         </div>
       </div>
@@ -169,7 +215,7 @@ export default function QuickRiskPanel({ lat, lon, full = false }: QuickRiskPane
       {/* ---------- factor breakdown ---------- */}
       {full && sortedFactors.length > 0 && (
         <div className="border-t px-5 pt-3.5 pb-4" style={{ borderColor: "var(--rule-faint)" }}>
-          <div className="mb-2.5 label">What's driving this score</div>
+          <div className="mb-2.5 label">{t.driving}</div>
           <div className="space-y-3">
             {sortedFactors.map((f, i) => {
               const barPct = Math.max(3, Math.min(100, Math.round((f.factor ?? f.contribution / 100) * 100)));
@@ -183,7 +229,7 @@ export default function QuickRiskPanel({ lat, lon, full = false }: QuickRiskPane
                       {f.label}
                     </span>
                     <span className="shrink-0 font-mono text-[10.5px] tabular-nums text-ink-500">
-                      {Math.round(f.contribution)} pts
+                      {Math.round(f.contribution)} {t.pts}
                     </span>
                   </div>
                   <div className="ml-8 mt-1 h-[5px] overflow-hidden rounded-full" style={{ background: "var(--rule-faint)" }}>

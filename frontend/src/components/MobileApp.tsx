@@ -282,11 +282,21 @@ const SPEECH_LOCALE: Record<string, string> = {
   ml: "ml-IN",
 };
 
+let activeAudio: HTMLAudioElement | null = null;
+
 async function speak(text: string, lang: string) {
+  if (activeAudio) {
+    activeAudio.pause();
+    activeAudio.currentTime = 0;
+    activeAudio = null;
+  }
+  window.speechSynthesis.cancel();
+
   try {
     const loc = SPEECH_LOCALE[lang] || "hi-IN";
     const audioBlob = await api.speakText(text, loc, "aditya");
     const audio = new Audio(URL.createObjectURL(audioBlob));
+    activeAudio = audio;
     audio.play();
     return audio;
   } catch {
@@ -294,7 +304,6 @@ async function speak(text: string, lang: string) {
       const u = new SpeechSynthesisUtterance(text);
       u.lang = SPEECH_LOCALE[lang] || "hi-IN";
       u.rate = 0.95;
-      window.speechSynthesis.cancel();
       window.speechSynthesis.speak(u);
     } catch {
       /* no TTS fallback */
@@ -590,6 +599,11 @@ export default function MobileApp() {
   const speakPlan = () => {
     if (!outlook) return;
     if (speaking) {
+      if (activeAudio) {
+        activeAudio.pause();
+        activeAudio.currentTime = 0;
+        activeAudio = null;
+      }
       window.speechSynthesis.cancel();
       setSpeaking(false);
       return;

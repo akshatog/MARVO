@@ -2855,6 +2855,7 @@ html.ocean .hd-src {
   overflow: hidden;
   border-radius: 11px;
   background: #cfe0e6;
+  user-select: none; /* let Mapbox own all pointer/touch events; prevents browser intercepting trackpad pan */
 }
 /* Quieter basemap so MARVO's own layers carry the colour. */
 .map-deck .leaflet-tile {
