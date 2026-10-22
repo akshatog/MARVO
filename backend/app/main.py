@@ -19,7 +19,7 @@ from fastapi.staticfiles import StaticFiles
 
 from . import __version__
 from .api import alerts, chat, chat_stream, field, fishing, forecast, map as map_api, plan, routes, voyages, voice
-from .config import get_data_mode
+from .config import CORS_ALLOWED_ORIGINS, get_data_mode
 from .data.scheduler import start_scheduler, stop_scheduler
 
 
@@ -47,7 +47,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],          # hackathon demo; lock down per-origin in production
+    allow_origins=CORS_ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

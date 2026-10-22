@@ -285,6 +285,10 @@ The two paths coexist. The current LangGraph has **11 nodes**: intent, five spec
 
 MARVO is an evaluation prototype, not a certified navigation or emergency-response service. Follow official INCOIS, IMD, and Coast Guard instructions for real operations.
 
+## Deploy with Render and Vercel
+
+For a fresh deployment with the backend on Render and frontend on Vercel, follow [the split deployment guide](docs/DEPLOYMENT.md). It includes a backend-only Docker image, a separate Render Blueprint, Vercel configuration, API/CORS environment settings, and a verification checklist. The existing combined Docker deployment remains available below.
+
 ## Local setup
 
 ### Prerequisites
