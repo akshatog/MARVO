@@ -3,6 +3,7 @@
 services:
   - type: web
     name: marvo-api
+    branch: main
     runtime: docker
     plan: free
     rootDir: backend
@@ -17,4 +18,4 @@ services:
       - key: MARVO_MOSDAC_ENABLED
         value: "0"
       - key: MARVO_CORS_ORIGINS
-        sync: false
+        value: https://marvo-red.vercel.app

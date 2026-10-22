@@ -12,7 +12,7 @@
 [![PS SIH26176](https://img.shields.io/badge/Problem_Statement-SIH26176-1E5F7A)](https://www.sih.gov.in/sih2026PS)
 [![Team MARINES](https://img.shields.io/badge/Team-MARINES_%23175766-1D7A50)](https://github.com/akshatog/MARVO)
 
-**[Deployed prototype](https://marvo-47mz.onrender.com)** · **[Demo video](https://youtu.be/yg2hYYAysRA)** · **[API documentation](https://marvo-47mz.onrender.com/docs)**
+**[Deployed prototype](https://marvo-red.vercel.app)** · **[Demo video](https://youtu.be/yg2hYYAysRA)** · **[API documentation](https://marvo-api.onrender.com/docs)**
 
 </div>
 
@@ -27,6 +27,7 @@
 - [Data sources and evidence](#data-sources-and-evidence)
 - [Stakeholders and expected impact](#stakeholders-and-expected-impact)
 - [Current prototype](#current-prototype)
+- [Deploy with Render and Vercel](#deploy-with-render-and-vercel)
 - [Local setup](#local-setup)
 - [Implementation roadmap and validation](#implementation-roadmap-and-validation)
 - [Repository guide](#repository-guide)
@@ -230,7 +231,7 @@ The existing stack provides a working foundation on standard phones and laptops.
 
 ## Current prototype
 
-**Status: submission prototype; checked on 7 October 2026.** The [deployed health endpoint](https://marvo-47mz.onrender.com/api/health) reported `status: ok` and `data_mode: DEMO` during review. The public demo requires no user-provided API keys.
+**Status: submission prototype; deployment checked on 22 October 2026.** The [frontend](https://marvo-red.vercel.app) runs on Vercel and the [API health endpoint](https://marvo-api.onrender.com/api/health) reports `status: ok`. The backend starts in `DEMO` mode, and its runtime DEMO/LIVE toggle remains available. The public demo requires no user-provided API keys.
 
 ![Deployed MARVO prototype showing the Mumbai map, risk assessment, and simulated warning in DEMO mode](docs/images/prototype-demo.png)
 
@@ -254,8 +255,8 @@ The existing stack provides a working foundation on standard phones and laptops.
 
 ```mermaid
 flowchart TB
-    UI["React desktop / mobile interface"]
-    API["FastAPI backend"]
+    UI["React desktop / mobile interface<br/>Vercel"]
+    API["FastAPI backend<br/>Render"]
     CHAT["Chat and SSE endpoints<br/>Existing planner / stream orchestration"]
     PLAN["Plan endpoint<br/>LangGraph orchestration"]
     S1["Intent and specialist agents"]
@@ -277,7 +278,7 @@ The two paths coexist. The current LangGraph has **11 nodes**: intent, five spec
 
 ### Try the demonstration
 
-1. Open the [deployed prototype](https://marvo-47mz.onrender.com) and select **Open the MARVO App** or the guided tour.
+1. Open the [deployed prototype](https://marvo-red.vercel.app) and select **Open the MARVO App** or the guided tour.
 2. Keep **DEMO** selected and choose Mumbai, Ratnagiri, or Paradip.
 3. Inspect conditions, risk factors, fishing grounds, and restricted-area overlays.
 4. Open **Ask MARVO**, ask a location-specific trip question, and inspect agent progress and the explanation.
@@ -287,13 +288,21 @@ MARVO is an evaluation prototype, not a certified navigation or emergency-respon
 
 ## Deploy with Render and Vercel
 
-For a fresh deployment with the backend on Render and frontend on Vercel, follow [the split deployment guide](docs/DEPLOYMENT.md). It includes a backend-only Docker image, a separate Render Blueprint, Vercel configuration, API/CORS environment settings, and a verification checklist. The existing combined Docker deployment remains available below.
+Production deployments use **`main` only**, after changes have been reviewed, checked and merged.
+
+| Service | Production URL | Host | Branch |
+| --- | --- | --- | --- |
+| Frontend / live demonstration | [marvo-red.vercel.app](https://marvo-red.vercel.app) | Vercel | `main` |
+| Backend / API | [marvo-api.onrender.com](https://marvo-api.onrender.com) | Render | `main` |
+| API reference | [Interactive API documentation](https://marvo-api.onrender.com/docs) | Render | `main` |
+
+Follow [the deployment guide](docs/DEPLOYMENT.md) for backend-only Docker, Render Blueprint, Vercel, API/CORS environment settings, and verification. Vercel serves frontend assets; browsers call Render directly. The combined Docker deployment remains available for local use below.
 
 ## Local setup
 
 ### Prerequisites
 
-- **Python 3.10+**; CI and Docker use Python 3.10.
+- **Python 3.10+**; CI and the combined Docker image use 3.10, and the Render backend-only image uses 3.11.
 - **Node.js 20+** and npm.
 - **Git**; Docker with Compose is optional.
 - Internet for dependencies and map tiles. DEMO mode needs no backend provider keys. The current basemap needs a Mapbox public access token.
@@ -420,9 +429,11 @@ MARVO/
 ├── Dockerfile                 # Frontend build, then FastAPI serving
 ├── docker-compose.yml        # Base container configuration
 ├── docker-compose.demo.yml   # Blank-key DEMO override
-├── render.yaml                # Render deployment configuration
+├── render.backend.yaml        # Production Render backend, main branch
+├── render.yaml                # Optional combined Render deployment
 ├── backend/
 │   ├── .env.example          # Server configuration, no credentials
+│   ├── Dockerfile            # Backend-only Render image
 │   ├── requirements.txt
 │   ├── config/               # Risk thresholds and economics YAML
 │   ├── app/
@@ -436,16 +447,18 @@ MARVO/
 │   └── tests/
 ├── frontend/
 │   ├── .env.example          # Public frontend configuration
+│   ├── vercel.json           # Vite hosting, main-only Git deployments
 │   ├── src/components/      # Current desktop/mobile interfaces
 │   └── public/              # PWA manifest, icons and service worker
 └── docs/
+    ├── DEPLOYMENT.md         # Production URLs, main workflow and host setup
     ├── images/              # Branding and labeled screenshots
     └── 00–05 documents      # Design references
 ```
 
 Design references: [overview](docs/00_overview.md), [architecture](docs/01_architecture.md), [schemas](docs/02_schemas.md), [data sources](docs/03_data_sources.md), [risk/economics](docs/04_risk_and_economics_config.md), and [API contracts](docs/05_api_contracts.md). These describe the evolving design; the current prototype section and generated API reference describe implemented behavior.
 
-Build output, virtual environments, credentials, caches, and local review artifacts stay outside version control. The reference presentation is retained at the repository root. It uses earlier ORCA solution branding; this README uses **MARVO** for the team's solution and **ORCA** for the official problem statement.
+Build output, virtual environments, credentials, caches, and local review artifacts stay outside version control. The current Team MARINES submission presentation is retained at the repository root, with the active prototype link.
 
 ## Team and references
 
@@ -460,7 +473,7 @@ Build output, virtual environments, credentials, caches, and local review artifa
 | Muskan Singh | Research & Documentation |
 | Deepak | QA & DevOps |
 
-Proposal reference: [Team MARINES presentation](<Problem Statement ID – 176 Problem Statement Title- S Theme- PS Category- Software Team ID- Team Name (Registered on portal)  MARINES (2).pdf>). This is the available submission reference, not necessarily the latest slide revision.
+Proposal reference: [Team MARINES presentation](Team_MARINES_SIH26176.pdf).
 
 Background/data references: [SIH problem statements](https://www.sih.gov.in/sih2026PS), [INCOIS advisories](https://incois.gov.in/MarineFisheries/MarineFisheryAdvisory), [IMD](https://mausam.imd.gov.in/), [Open-Meteo Marine](https://open-meteo.com/en/docs/marine-weather-api), [ISRO MOSDAC](https://www.mosdac.gov.in/), [GDACS](https://www.gdacs.org/), [OBIS](https://obis.org/), and [OpenStreetMap attribution](https://www.openstreetmap.org/copyright).
 

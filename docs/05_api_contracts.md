@@ -1,5 +1,9 @@
 # MARVO — API Contracts
 
+Production frontend: [marvo-red.vercel.app](https://marvo-red.vercel.app). Production backend origin: **`https://marvo-api.onrender.com`**. Use this backend origin for the paths documented below; the Vercel frontend is a static site and does not serve API routes. The frontend's `VITE_API_BASE_URL` is `https://marvo-api.onrender.com/api`.
+
+Check [API health](https://marvo-api.onrender.com/api/health) and the [generated API reference](https://marvo-api.onrender.com/docs) for current implemented routes. Both deployments track `main`; see the [deployment guide](DEPLOYMENT.md).
+
 Every endpoint below is what the system exposes. The old `/api/chat` path remains
 for backward compatibility with the existing frontend. The new MARVO 2.0 endpoints
 (`/plan`, `/trace`, `/voyages`, `/alerts`) are the canonical API going forward.

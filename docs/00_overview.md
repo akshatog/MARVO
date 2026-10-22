@@ -3,6 +3,8 @@
 **SIH Problem Statement 26176. Round 2: Sep 12, 2026.**
 **Build started Sep 10, 2026. Solo builder with AI coding agents.**
 
+Production: [MARVO frontend](https://marvo-red.vercel.app) on Vercel, [FastAPI backend](https://marvo-api.onrender.com) on Render, and [interactive API reference](https://marvo-api.onrender.com/docs). Both hosts deploy reviewed changes merged into `main` only. See [deployment and verification](DEPLOYMENT.md).
+
 ## The one-line spine
 
 > MARVO helps fishermen decide where, when, and whether to fish — and keeps

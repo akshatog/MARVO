@@ -9,18 +9,27 @@ Use a Render workspace with free instance hours remaining, or a paid compute pla
 - Frontend: [marvo-red.vercel.app](https://marvo-red.vercel.app)
 - Backend: [marvo-api.onrender.com](https://marvo-api.onrender.com)
 - API health: [marvo-api.onrender.com/api/health](https://marvo-api.onrender.com/api/health)
-- Both services track `codex/render-vercel-deployment` for this fresh deployment.
+- API reference: [marvo-api.onrender.com/docs](https://marvo-api.onrender.com/docs)
+- Both services deploy **`main` only**.
 - Render starts in `DEMO`; `MARVO_USE_LLM=1` enables the configured provider explanations. The existing runtime mode toggle remains available.
 
-Vercel initially imports the repository's default branch. For a separate deployment branch, set **Settings > Environments > Production > Branch Tracking** to that branch before pushing its next commit. A push to the tracked branch creates the production deployment using `frontend/` and the configured Render API URL.
+## Review and release workflow
+
+1. Make changes on a feature branch and open a pull request targeting `main`.
+2. Review the diff and wait for backend tests, frontend type checking/build, and the API health smoke check to pass.
+3. Merge the checked pull request into `main`.
+4. Render's service branch and Vercel's **Settings > Environments > Production > Branch Tracking** must both be `main`. Deploy the merged `main` commit and verify the public URLs above.
+
+`frontend/vercel.json` allows automatic Git deployments only from `main`, including no automatic feature-branch previews. Render's Blueprint also pins `branch: main`. Do not point production back at a feature branch. Keep all credentials in the existing hosting environments when changing the source branch.
 
 ## 1. Deploy the backend to Render
 
-Push the deployment changes to the GitHub branch you intend to deploy. In the intended Render account/workspace, create a **new Web Service** from that repository and branch:
+After merging the deployment changes into `main`, create a **new Web Service** from that repository in the intended Render account/workspace, or update the existing backend service:
 
 | Setting | Value |
 | --- | --- |
 | Runtime / Language | Docker |
+| Branch | `main` |
 | Root Directory | `backend` |
 | Dockerfile Path | `./Dockerfile` |
 | Docker Build Context | `.` |
@@ -29,7 +38,7 @@ Push the deployment changes to the GitHub branch you intend to deploy. In the in
 
 The Dockerfile starts one Uvicorn worker and uses Render's `PORT`. One worker matches the existing in-memory voyage/session store and background scheduler.
 
-Alternatively, create a **new Blueprint**, select the deployment branch, and set its Blueprint Path to `render.backend.yaml`. Do not select the original `render.yaml`, which builds the combined frontend/backend image.
+Alternatively, create a **new Blueprint**, select `main`, and set its Blueprint Path to `render.backend.yaml`. The original `render.yaml` is the optional combined frontend/backend image.
 
 Set these Render environment variables:
 
@@ -38,22 +47,23 @@ Set these Render environment variables:
 | `MARVO_DATA_MODE` | `DEMO` |
 | `MARVO_USE_LLM` | `0` for template explanations; `1` with provider keys for LLM features |
 | `MARVO_MOSDAC_ENABLED` | `0` unless authenticated satellite access is configured |
-| `MARVO_CORS_ORIGINS` | Your exact Vercel production origin, e.g. `https://your-project.vercel.app` |
+| `MARVO_CORS_ORIGINS` | `https://marvo-red.vercel.app` for the current production frontend |
 
 If the frontend has not been created yet, use the intended frontend origin temporarily, then replace it with the actual Vercel production URL in step 3. This does not prevent Render health checks or direct API requests.
 
-Copy the backend URL shown by Render; do not assume it matches the service name. Confirm that `https://YOUR-RENDER-HOST/api/health` returns JSON with `status: ok`, and `/docs` opens the API reference.
+For the existing production backend, confirm that [the health endpoint](https://marvo-api.onrender.com/api/health) returns JSON with `status: ok` and [the API reference](https://marvo-api.onrender.com/docs) opens. For an additional service, copy the actual URL shown by Render and update the frontend API setting accordingly.
 
 The backend image only copies `requirements.txt`, `app/`, and `config/`. Local `.env` files, virtual environments, frontend assets, and tests are excluded.
 
 ## 2. Deploy the frontend to Vercel
 
-Import the same GitHub repository into Vercel using the intended account/team and deployment branch.
+Import the same GitHub repository into Vercel using the intended account/team. Set Production Branch Tracking to `main`.
 
 | Setting | Value |
 | --- | --- |
 | Root Directory | `frontend` |
 | Framework Preset | Vite |
+| Production Branch | `main` |
 | Install Command | `npm ci` |
 | Build Command | `npm run build` |
 | Output Directory | `dist` |
@@ -64,10 +74,10 @@ Set these frontend environment variables before building:
 
 | Variable | Value |
 | --- | --- |
-| `VITE_API_BASE_URL` | `https://YOUR-RENDER-HOST/api` **including `/api`** |
+| `VITE_API_BASE_URL` | `https://marvo-api.onrender.com/api` **including `/api`** |
 | `VITE_MAPBOX_TOKEN` | Your Mapbox **public** token (`pk...`) |
 
-Apply these variables to Production and any Preview environments you intend to test. They are embedded in the browser bundle at build time; changes require a new Vercel deployment. Mapbox token URL restrictions must allow the actual Vercel origin.
+Apply these variables to Production. They are embedded in the browser bundle at build time; changes require a new Vercel deployment from `main`. Mapbox token URL restrictions must allow `https://marvo-red.vercel.app`.
 
 Do not put Groq, Cerebras, Gemini, Sarvam, or MOSDAC credentials in Vercel `VITE_` variables. Those credentials belong only in Render's backend environment.
 
@@ -96,6 +106,6 @@ Save and let Render redeploy. Ensure `VITE_API_BASE_URL` on Vercel contains the 
 
 ## Existing combined deployment and local development
 
-Leave `VITE_API_BASE_URL` blank to retain the original `/api` behavior. Vite's local proxy and the combined root Dockerfile continue to work. The original `render.yaml` is unchanged. Backend CORS defaults allow `http://localhost:5173` and `http://127.0.0.1:5173`; requests from the same origin as the backend do not require CORS.
+Leave `VITE_API_BASE_URL` blank to retain the original `/api` behavior. Vite's local proxy and the combined root Dockerfile continue to work. The original `render.yaml` also pins `main` and remains available for combined hosting. Backend CORS defaults allow `http://localhost:5173` and `http://127.0.0.1:5173`; requests from the same origin as the backend do not require CORS.
 
 References: [Render Docker deployment](https://render.com/docs/docker), [Render free limits](https://render.com/docs/free), [Render Blueprint configuration](https://render.com/docs/blueprint-spec), [Vite on Vercel](https://vercel.com/docs/frameworks/frontend/vite).
