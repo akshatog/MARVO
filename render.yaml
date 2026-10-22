@@ -1,6 +1,8 @@
+# Optional combined deployment. Production split hosting uses render.backend.yaml.
 services:
   - type: web
     name: marvo-marine
+    branch: main
     runtime: docker
     # Render builds and runs the Dockerfile at repo root.
     # Stage 1: Node 20 builds the React frontend

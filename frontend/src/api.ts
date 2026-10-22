@@ -14,7 +14,9 @@ import type {
   ZoneFeature,
 } from "./types";
 
-const BASE = "/api";
+// Split hosting: set the full backend API URL, e.g. https://marvo-api.onrender.com/api.
+// Local development and the combined Docker deployment continue to use /api.
+const BASE = (import.meta.env.VITE_API_BASE_URL?.trim() || "/api").replace(/\/+$/, "");
 
 async function json<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, {

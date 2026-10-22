@@ -1,0 +1,21 @@
+# Fresh split deployment. The existing render.yaml remains the combined app.
+# In Render's Blueprint flow, set Blueprint Path to render.backend.yaml.
+services:
+  - type: web
+    name: marvo-api
+    branch: main
+    runtime: docker
+    plan: free
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    envVars:
+      - key: MARVO_DATA_MODE
+        value: DEMO
+      - key: MARVO_USE_LLM
+        value: "0"
+      - key: MARVO_MOSDAC_ENABLED
+        value: "0"
+      - key: MARVO_CORS_ORIGINS
+        value: https://marvo-red.vercel.app

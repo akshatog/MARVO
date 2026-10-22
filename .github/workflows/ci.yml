@@ -60,6 +60,9 @@ jobs:
       - name: Production build
         run: npm run build
 
+      - name: Type check
+        run: npx tsc --noEmit
+
       - name: Confirm dist/index.html exists
         run: test -f dist/index.html && echo "Build OK" || (echo "Build MISSING" && exit 1)
 

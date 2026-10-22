@@ -36,6 +36,16 @@ def _load_dotenv() -> None:
 _load_dotenv()
 
 
+# Browser origins allowed to call a separately hosted API. Same-origin Docker
+# requests do not need CORS; local Vite origins remain allowed by default.
+CORS_ALLOWED_ORIGINS = [
+    origin.strip().rstrip("/")
+    for origin in os.getenv(
+        "MARVO_CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
+    ).split(",")
+    if origin.strip()
+]
+
 
 # --------------------------------------------------------------------------
 # Data mode
