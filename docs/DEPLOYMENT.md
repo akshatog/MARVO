@@ -4,6 +4,16 @@ The frontend is a static Vite build on Vercel. The FastAPI backend runs as one D
 
 Use a Render workspace with free instance hours remaining, or a paid compute plan. A new service in the exhausted workspace shares the same exhausted allowance.
 
+## Deployment targets created on 22 October 2026
+
+- Frontend: [marvo-red.vercel.app](https://marvo-red.vercel.app)
+- Backend: [marvo-api.onrender.com](https://marvo-api.onrender.com)
+- API health: [marvo-api.onrender.com/api/health](https://marvo-api.onrender.com/api/health)
+- Both services track `codex/render-vercel-deployment` for this fresh deployment.
+- Render starts in `DEMO`; `MARVO_USE_LLM=1` enables the configured provider explanations. The existing runtime mode toggle remains available.
+
+Vercel initially imports the repository's default branch. For a separate deployment branch, set **Settings > Environments > Production > Branch Tracking** to that branch before pushing its next commit. A push to the tracked branch creates the production deployment using `frontend/` and the configured Render API URL.
+
 ## 1. Deploy the backend to Render
 
 Push the deployment changes to the GitHub branch you intend to deploy. In the intended Render account/workspace, create a **new Web Service** from that repository and branch:
